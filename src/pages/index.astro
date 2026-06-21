@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Container from '@components/Container.astro';
+import Button from '@components/Button.astro';
+import { cta } from '@data/cta';
+
+// Phase 1 scaffold: hero only. Full homepage sections land in Phase 3.
+export const prerender = true;
+---
+
+<BaseLayout>
+  <section class="relative overflow-hidden border-b border-line bg-gradient-to-b from-tint/50 to-canvas">
+    <Container class="py-20 lg:py-28">
+      <div class="max-w-3xl">
+        <span
+          class="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-sm font-medium text-brand-700"
+        >
+          <span class="h-2 w-2 rounded-full bg-brand-500"></span>
+          Data-driven marketing &amp; analytics
+        </span>
+        <h1 class="mt-5 text-4xl leading-[1.05] font-bold text-ink sm:text-5xl lg:text-6xl">
+          Analytics Powered Marketing for <span class="text-brand-600">Real Results</span>
+        </h1>
+        <p class="mt-5 max-w-2xl text-lg text-muted">
+          Data-driven businesses succeed — and we help you become one of them. We provide customized
+          data solutions that help you scale, optimize, and make smarter decisions, faster. From
+          strategy to execution, we turn insights into sales.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <Button href={cta.becomeClient.href} external size="lg">{cta.becomeClient.label}</Button>
+          <Button href={cta.customQuote.href} external variant="secondary" size="lg">
+            {cta.customQuote.label}
+          </Button>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <Container class="py-16">
+    <p class="text-sm text-muted">
+      🚧 Scaffold in place. Homepage sections (certifications, testimonials, portfolio teaser, FAQ)
+      are built in Phase 3.
+    </p>
+  </Container>
+</BaseLayout>

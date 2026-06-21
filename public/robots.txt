@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://agoradatadriven.com/sitemap-index.xml

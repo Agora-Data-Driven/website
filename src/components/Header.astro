@@ -1,0 +1,141 @@
+---
+import Container from '@components/Container.astro';
+import Button from '@components/Button.astro';
+import { mainNav } from '@data/nav';
+import { cta } from '@data/cta';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href.replace(/\/$/, ''));
+
+const linkBase =
+  'rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-brand-600';
+---
+
+<header class="sticky top-0 z-50 border-b border-line bg-surface/90 backdrop-blur">
+  <Container>
+    <div class="flex h-16 items-center justify-between gap-4 lg:h-20">
+      <!-- Wordmark (swap for brand SVG when supplied) -->
+      <a
+        href="/"
+        class="flex items-center gap-2 text-lg font-bold text-ink"
+        aria-label="Agora Data Driven — home"
+      >
+        <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-500 text-white">A</span>
+        <span>Agora<span class="text-brand-600"> Data Driven</span></span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden items-center gap-1 lg:flex" aria-label="Primary">
+        {
+          mainNav.map((item) =>
+            item.children ? (
+              <div class="group relative">
+                <a
+                  href={item.href}
+                  class={`${linkBase} inline-flex items-center gap-1 ${isActive(item.href) ? 'text-brand-600' : 'text-body'}`}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </a>
+                <div class="invisible absolute left-0 top-full w-56 translate-y-1 rounded-xl border border-line bg-surface p-1.5 opacity-0 shadow-pop transition group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  {item.children.map((child) => (
+                    <a
+                      href={child.href}
+                      class="block rounded-lg px-3 py-2 text-sm text-body hover:bg-canvas hover:text-brand-600"
+                      rel={child.external ? 'noopener noreferrer' : undefined}
+                      target={child.external ? '_blank' : undefined}
+                    >
+                      {child.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <a
+                href={item.href}
+                class={`${linkBase} ${isActive(item.href) ? 'text-brand-600' : 'text-body'}`}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            ),
+          )
+        }
+      </nav>
+
+      <!-- Desktop CTAs -->
+      <div class="hidden items-center gap-3 lg:flex">
+        <Button href={cta.joinTeam.href} external variant="secondary">{cta.joinTeam.label}</Button>
+        <Button href={cta.becomeClient.href} external variant="primary">{cta.becomeClient.label}</Button>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button
+        id="navToggle"
+        type="button"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line text-ink lg:hidden"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="mobileNav"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+    </div>
+  </Container>
+
+  <!-- Mobile panel -->
+  <div id="mobileNav" class="hidden border-t border-line bg-surface lg:hidden">
+    <Container>
+      <nav class="flex flex-col gap-1 py-4" aria-label="Mobile">
+        {
+          mainNav.flatMap((item) =>
+            item.children
+              ? [
+                  <a href={item.href} class="rounded-lg px-3 py-2.5 font-medium text-ink">
+                    {item.label}
+                  </a>,
+                  ...item.children.map((child) => (
+                    <a
+                      href={child.href}
+                      class="rounded-lg px-3 py-2.5 pl-6 text-body"
+                      rel={child.external ? 'noopener noreferrer' : undefined}
+                      target={child.external ? '_blank' : undefined}
+                    >
+                      {child.label}
+                    </a>
+                  )),
+                ]
+              : [
+                  <a href={item.href} class="rounded-lg px-3 py-2.5 font-medium text-ink">
+                    {item.label}
+                  </a>,
+                ],
+          )
+        }
+      </nav>
+      <div class="flex flex-col gap-3 pb-6">
+        <Button href={cta.joinTeam.href} external variant="secondary" size="lg">{cta.joinTeam.label}</Button>
+        <Button href={cta.becomeClient.href} external variant="primary" size="lg">{cta.becomeClient.label}</Button>
+      </div>
+    </Container>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('navToggle');
+  const panel = document.getElementById('mobileNav');
+  btn?.addEventListener('click', () => {
+    const isHidden = panel?.classList.toggle('hidden');
+    btn.setAttribute('aria-expanded', String(isHidden === false));
+  });
+</script>

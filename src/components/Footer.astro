@@ -1,0 +1,71 @@
+---
+import Container from '@components/Container.astro';
+import Button from '@components/Button.astro';
+import { footerNav, legalNav } from '@data/nav';
+import { cta } from '@data/cta';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line bg-surface">
+  <Container class="py-14 lg:py-20">
+    <!-- Final CTA band -->
+    <div
+      class="mb-14 flex flex-col items-start justify-between gap-6 rounded-2xl bg-ink px-7 py-10 text-white sm:px-10 lg:flex-row lg:items-center"
+    >
+      <div>
+        <h2 class="text-2xl font-bold text-white sm:text-3xl">Data Driven Success Starts Today!</h2>
+        <p class="mt-2 max-w-xl text-white/70">
+          Working with us is not a cost. It's an investment. Let's turn your data into sales.
+        </p>
+      </div>
+      <Button href={cta.becomeClient.href} external variant="primary" size="lg">
+        {cta.becomeClient.label}
+      </Button>
+    </div>
+
+    <div class="flex flex-col gap-10 sm:flex-row sm:justify-between">
+      <div class="max-w-sm">
+        <a href="/" class="flex items-center gap-2 text-lg font-bold text-ink">
+          <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-500 text-white">A</span>
+          <span>Agora<span class="text-brand-600"> Data Driven</span></span>
+        </a>
+        <p class="mt-3 text-sm text-muted">
+          Analytics-powered marketing for real results. We turn insights into sales.
+        </p>
+      </div>
+
+      <nav aria-label="Footer">
+        <h3 class="text-sm font-semibold tracking-wide text-ink uppercase">Pages</h3>
+        <ul class="mt-3 space-y-2">
+          {
+            footerNav.map((item) => (
+              <li>
+                <a href={item.href} class="text-sm text-muted transition-colors hover:text-brand-600">
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <div
+      class="mt-12 flex flex-col gap-3 border-t border-line pt-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {year} Agora Data Driven. All rights reserved.</p>
+      <ul class="flex gap-5">
+        {
+          legalNav.map((item) => (
+            <li>
+              <a href={item.href} class="transition-colors hover:text-brand-600">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Container>
+</footer>

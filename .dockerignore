@@ -1,0 +1,13 @@
+node_modules
+dist
+.astro
+.git
+.github
+.vscode
+.env
+.env.*
+*.log
+npm-debug.log*
+README.md
+PLAN.md
+CLAUDE.md

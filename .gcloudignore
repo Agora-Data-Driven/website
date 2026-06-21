@@ -1,0 +1,12 @@
+# Files NOT uploaded to Cloud Build. The Dockerfile rebuilds from source.
+.git
+.gitignore
+node_modules
+dist
+.astro
+.env
+.env.*
+*.log
+README.md
+PLAN.md
+CLAUDE.md
