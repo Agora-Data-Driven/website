@@ -9,6 +9,52 @@ Marketing site + blog for **Agora Data Driven**, a data-driven marketing & analy
 
 See [PLAN.md](PLAN.md) for the build plan and [CLAUDE.md](CLAUDE.md) for conventions.
 
+## Set up on a new machine (clone-and-go)
+
+After cloning, run the bootstrap script for your OS. It installs Node.js + the
+gcloud CLI (if missing), logs you into Google Cloud, selects the
+`agora-data-driven` project + region, enables the required APIs, and runs
+`npm install`.
+
+```bash
+git clone <your-remote-url> agora-website
+cd agora-website
+```
+
+```powershell
+# Windows (PowerShell) — a UAC prompt may appear during Node install; click Yes
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+```
+
+```bash
+# macOS / Linux
+bash ./setup.sh
+```
+
+> This is a **Node** project — the local dependency environment is `node_modules/`
+> (created by `npm install`). There is no Python `venv`.
+
+Then:
+
+```bash
+npm run dev      # local dev server → http://localhost:4321
+npm run deploy   # build remotely + deploy to Cloud Run (prints the live URL)
+```
+
+## Make the repo cloneable (one-time)
+
+The code is committed locally but has no git remote yet. To pull it onto other
+machines, push it to GitHub once from this machine:
+
+```bash
+# with the GitHub CLI:
+gh repo create agora-data-driven-website --private --source . --push
+
+# …or manually:
+git remote add origin https://github.com/<you>/<repo>.git
+git push -u origin main
+```
+
 ## Prerequisites
 
 - **Node.js ≥ 20** (use the version in `.nvmrc`)
