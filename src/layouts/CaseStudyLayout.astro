@@ -50,7 +50,7 @@ const { eyebrow, title, summary, heroImage, heroAlt, metrics } = Astro.props;
         <div class="grid gap-4 sm:grid-cols-3">
           {metrics.map((m) => (
             <div class="rounded-2xl border border-line bg-surface p-6 text-center">
-              <div class="font-mono text-3xl font-bold tracking-tight text-brand-600 tabular-nums">
+              <div class="font-display text-3xl font-bold tracking-tight text-brand-600 tabular-nums">
                 {m.value}
               </div>
               <div class="mt-1 text-sm text-muted">{m.label}</div>
