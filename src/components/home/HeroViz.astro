@@ -1,0 +1,384 @@
+---
+// Looping canvas that cycles through the ML techniques Agora actually uses.
+// Pure Canvas2D, no assets — light on slow connections, crisp on mobile.
+---
+
+<div class="rounded-2xl border border-line bg-surface p-5 shadow-pop sm:p-6">
+  <div class="flex items-center justify-between">
+    <span class="flex items-center gap-2 font-display text-sm font-bold text-ink">
+      <span class="hv-dot" aria-hidden="true"></span>
+      <span id="hero-scene">Neural network</span>
+    </span>
+    <span class="font-display text-[0.7rem] tracking-widest text-muted uppercase">Models we ship</span>
+  </div>
+
+  <canvas id="hero-canvas" class="mt-3 h-48 w-full sm:h-56"></canvas>
+
+  <p class="sr-only">
+    Animated showcase of machine-learning techniques we use: neural networks, non-linear curve
+    fitting, decision trees, XGBoost, forecasting, and random forests.
+  </p>
+</div>
+
+<style>
+  .hv-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--color-brand-500);
+    box-shadow: 0 0 0 0 rgba(79, 168, 74, 0.5);
+    animation: hv-pulse 2s ease-out infinite;
+  }
+  @keyframes hv-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(79, 168, 74, 0.5);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 7px rgba(79, 168, 74, 0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hv-dot {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement | null;
+  const nameEl = document.getElementById('hero-scene');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      const GREEN = '#4fa84a';
+      const GREEN_D = '#2f7a3a';
+      const GREEN_L = '#9bd39a';
+      const PURPLE = '#6a6aea';
+      const GRID = '#e9eaec';
+      const MUT = '#aab0a9';
+      const IDLE = '#cfd6cf';
+
+      let w = 0;
+      let h = 0;
+
+      const clamp = (v: number) => Math.max(0, Math.min(1, v));
+      const easeOut = (t: number) => 1 - Math.pow(1 - clamp(t), 3);
+      const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+      function resize() {
+        const r = canvas!.getBoundingClientRect();
+        w = r.width;
+        h = r.height;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas!.width = Math.max(1, Math.round(w * dpr));
+        canvas!.height = Math.max(1, Math.round(h * dpr));
+        ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function dot(x: number, y: number, r: number, color: string) {
+        ctx!.beginPath();
+        ctx!.arc(x, y, r, 0, Math.PI * 2);
+        ctx!.fillStyle = color;
+        ctx!.fill();
+      }
+
+      function miniTree(x: number, y: number, s: number, color: string) {
+        ctx!.strokeStyle = color;
+        ctx!.lineWidth = 2;
+        ctx!.beginPath();
+        ctx!.moveTo(x, y - s);
+        ctx!.lineTo(x - s, y + s);
+        ctx!.moveTo(x, y - s);
+        ctx!.lineTo(x + s, y + s);
+        ctx!.stroke();
+        dot(x, y - s, 2.6, color);
+        dot(x - s, y + s, 2.6, color);
+        dot(x + s, y + s, 2.6, color);
+      }
+
+      // ---- Scenes ------------------------------------------------------------
+      function neuralNet(p: number, now: number) {
+        const pad = 22;
+        const layers = [4, 6, 5, 3];
+        const xs = layers.map((_, k) => pad + (k / (layers.length - 1)) * (w - 2 * pad));
+        const nodes = layers.map((n, k) => {
+          const arr: { x: number; y: number }[] = [];
+          for (let j = 0; j < n; j++) {
+            const y = n === 1 ? h / 2 : pad + (j / (n - 1)) * (h - 2 * pad);
+            arr.push({ x: xs[k], y });
+          }
+          return arr;
+        });
+        const sweep = (now / 1500) % 1;
+        const pulseX = pad + sweep * (w - 2 * pad);
+        for (let k = 0; k < layers.length - 1; k++) {
+          for (const a of nodes[k]) {
+            for (const b of nodes[k + 1]) {
+              const mid = (a.x + b.x) / 2;
+              const active = Math.abs(mid - pulseX) < 46;
+              ctx!.beginPath();
+              ctx!.moveTo(a.x, a.y);
+              ctx!.lineTo(b.x, b.y);
+              ctx!.strokeStyle = active ? GREEN : GRID;
+              ctx!.lineWidth = active ? 1.6 : 0.8;
+              ctx!.stroke();
+            }
+          }
+        }
+        for (let k = 0; k < layers.length; k++) {
+          for (const nd of nodes[k]) {
+            const on = nd.x <= pulseX + 8;
+            if (on) dot(nd.x, nd.y, 9, 'rgba(79,168,74,0.16)');
+            dot(nd.x, nd.y, 5, on ? GREEN : IDLE);
+          }
+        }
+      }
+
+      function curveFit(p: number) {
+        const pad = 26;
+        const X0 = pad;
+        const X1 = w - pad;
+        const baseY = h / 2;
+        const A = h * 0.24;
+        const target = (x: number) => {
+          const t = (x - X0) / (X1 - X0);
+          return baseY - A * Math.sin(t * Math.PI * 1.6) + A * 0.35 * Math.cos(t * Math.PI * 3.2);
+        };
+        // axes
+        ctx!.strokeStyle = GRID;
+        ctx!.lineWidth = 1;
+        ctx!.beginPath();
+        ctx!.moveTo(pad, pad);
+        ctx!.lineTo(pad, h - pad);
+        ctx!.lineTo(w - pad, h - pad);
+        ctx!.stroke();
+        // points
+        const N = 16;
+        for (let i = 0; i < N; i++) {
+          const x = X0 + (i / (N - 1)) * (X1 - X0);
+          const jitter = (((i * 73) % 11) / 11 - 0.5) * A * 0.5;
+          dot(x, target(x) + jitter, 3, GREEN);
+        }
+        // fitting curve morphs from gentle start to target
+        const e = easeOut(Math.min(p / 0.8, 1));
+        ctx!.strokeStyle = GREEN_D;
+        ctx!.lineWidth = 2.6;
+        ctx!.beginPath();
+        for (let i = 0; i <= 64; i++) {
+          const x = X0 + (i / 64) * (X1 - X0);
+          const t = (x - X0) / (X1 - X0);
+          const start = baseY - A * 0.5 * Math.sin(t * Math.PI * 0.5);
+          const y = start + (target(x) - start) * e;
+          if (i === 0) ctx!.moveTo(x, y);
+          else ctx!.lineTo(x, y);
+        }
+        ctx!.stroke();
+      }
+
+      function decisionTree(p: number) {
+        const pad = 24;
+        const ys = [pad + 6, h / 2, h - pad - 6];
+        const lvl = (l: number) => {
+          const n = Math.pow(2, l);
+          const arr: { x: number; y: number }[] = [];
+          for (let i = 0; i < n; i++) arr.push({ x: pad + ((i + 0.5) / n) * (w - 2 * pad), y: ys[l] });
+          return arr;
+        };
+        const L = [lvl(0), lvl(1), lvl(2)];
+        const reveal = [0, 0.3, 0.6];
+        for (let l = 0; l < 2; l++) {
+          const a = easeOut((p - reveal[l + 1]) / 0.25);
+          if (a <= 0) continue;
+          for (let i = 0; i < L[l].length; i++) {
+            const pnt = L[l][i];
+            for (const c of [L[l + 1][i * 2], L[l + 1][i * 2 + 1]]) {
+              ctx!.strokeStyle = GRID;
+              ctx!.lineWidth = 1.4;
+              ctx!.beginPath();
+              ctx!.moveTo(pnt.x, pnt.y);
+              ctx!.lineTo(pnt.x + (c.x - pnt.x) * a, pnt.y + (c.y - pnt.y) * a);
+              ctx!.stroke();
+            }
+          }
+        }
+        for (let l = 0; l < 3; l++) {
+          const a = easeOut((p - reveal[l]) / 0.25);
+          if (a <= 0) continue;
+          for (const nd of L[l]) {
+            if (l === 2) {
+              const s = 6 * a;
+              ctx!.fillStyle = GREEN;
+              ctx!.fillRect(nd.x - s, nd.y - s, 2 * s, 2 * s);
+            } else {
+              dot(nd.x, nd.y, 7 * a, '#ffffff');
+              ctx!.lineWidth = 2;
+              ctx!.strokeStyle = GREEN_D;
+              ctx!.beginPath();
+              ctx!.arc(nd.x, nd.y, 7 * a, 0, Math.PI * 2);
+              ctx!.stroke();
+            }
+          }
+        }
+      }
+
+      function xgboost(p: number) {
+        const pad = 22;
+        const n = 4;
+        const slot = (w - 2 * pad) / n;
+        const built = p * (n + 0.5);
+        const cy = h * 0.42;
+        for (let i = 0; i < n; i++) {
+          const a = easeOut(clamp(built - i));
+          if (a <= 0) continue;
+          const cx = pad + slot * (i + 0.5);
+          miniTree(cx, cy, 16 * a, GREEN);
+          if (i > 0) {
+            ctx!.fillStyle = MUT;
+            ctx!.font = '600 16px Archivo, sans-serif';
+            ctx!.textAlign = 'center';
+            ctx!.textBaseline = 'middle';
+            ctx!.fillText('+', pad + slot * i, cy);
+          }
+        }
+        // improving accuracy bar
+        const by = h - pad - 4;
+        const x0 = pad;
+        const x1 = w - pad;
+        const acc = 0.55 + 0.4 * easeOut(p);
+        ctx!.lineCap = 'round';
+        ctx!.lineWidth = 6;
+        ctx!.strokeStyle = GRID;
+        ctx!.beginPath();
+        ctx!.moveTo(x0, by);
+        ctx!.lineTo(x1, by);
+        ctx!.stroke();
+        ctx!.strokeStyle = GREEN;
+        ctx!.beginPath();
+        ctx!.moveTo(x0, by);
+        ctx!.lineTo(x0 + (x1 - x0) * acc, by);
+        ctx!.stroke();
+        ctx!.lineCap = 'butt';
+      }
+
+      function bars(p: number, now: number) {
+        const pad = 20;
+        const n = 6;
+        const slot = (w - 2 * pad) / n;
+        const baseY = h - pad;
+        const heights = [0.34, 0.5, 0.42, 0.68, 0.82, 0.96];
+        const pts: { x: number; y: number }[] = [];
+        for (let i = 0; i < n; i++) {
+          const osc = 0.06 * Math.sin(now / 600 + i);
+          const grow = easeOut(clamp(p * 1.4 - i * 0.08));
+          const bh = (heights[i] + osc) * (h - 2 * pad) * grow;
+          const bw = slot * 0.5;
+          const x = pad + slot * i + (slot - bw) / 2;
+          ctx!.fillStyle = i === n - 1 ? GREEN : GREEN_L;
+          if (ctx!.roundRect) {
+            ctx!.beginPath();
+            ctx!.roundRect(x, baseY - bh, bw, bh, [4, 4, 0, 0]);
+            ctx!.fill();
+          } else {
+            ctx!.fillRect(x, baseY - bh, bw, bh);
+          }
+          pts.push({ x: x + bw / 2, y: baseY - bh });
+        }
+        ctx!.strokeStyle = GREEN_D;
+        ctx!.lineWidth = 2.4;
+        ctx!.beginPath();
+        pts.forEach((pt, i) => (i === 0 ? ctx!.moveTo(pt.x, pt.y) : ctx!.lineTo(pt.x, pt.y)));
+        ctx!.stroke();
+      }
+
+      function randomForest(p: number) {
+        const pad = 20;
+        const cols = 3;
+        const rows = 2;
+        const gx1 = w * 0.6;
+        const gy0 = pad + 4;
+        const gy1 = h - pad - 4;
+        let k = 0;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const a = easeOut(clamp(p * 1.7 - k * 0.09));
+            k++;
+            if (a <= 0) continue;
+            const cx = pad + ((c + 0.5) / cols) * (gx1 - pad);
+            const cy = gy0 + ((r + 0.5) / rows) * (gy1 - gy0);
+            miniTree(cx, cy, 11 * a, k % 5 === 0 ? PURPLE : GREEN);
+          }
+        }
+        const ra = easeOut((p - 0.55) / 0.4);
+        if (ra > 0) {
+          const rx = w - pad - 22;
+          const ry = h / 2;
+          ctx!.strokeStyle = MUT;
+          ctx!.lineWidth = 1.5;
+          ctx!.beginPath();
+          ctx!.moveTo(gx1 + 4, ry);
+          ctx!.lineTo(rx - 16, ry);
+          ctx!.moveTo(rx - 16, ry);
+          ctx!.lineTo(rx - 22, ry - 4);
+          ctx!.moveTo(rx - 16, ry);
+          ctx!.lineTo(rx - 22, ry + 4);
+          ctx!.stroke();
+          dot(rx, ry, 13 * ra, GREEN);
+          ctx!.strokeStyle = '#ffffff';
+          ctx!.lineWidth = 2.5;
+          ctx!.lineCap = 'round';
+          ctx!.beginPath();
+          ctx!.moveTo(rx - 5 * ra, ry);
+          ctx!.lineTo(rx - 1 * ra, ry + 4 * ra);
+          ctx!.lineTo(rx + 6 * ra, ry - 4 * ra);
+          ctx!.stroke();
+          ctx!.lineCap = 'butt';
+        }
+      }
+
+      const scenes = [
+        { name: 'Neural network', draw: neuralNet },
+        { name: 'Non-linear fit', draw: curveFit },
+        { name: 'Decision tree', draw: decisionTree },
+        { name: 'XGBoost', draw: xgboost },
+        { name: 'Forecasting', draw: bars },
+        { name: 'Random forest', draw: randomForest },
+      ];
+      const DUR = 5200;
+
+      function fade(p: number) {
+        return Math.min(1, p / 0.09, (1 - p) / 0.09);
+      }
+
+      resize();
+      if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(canvas);
+      else window.addEventListener('resize', resize);
+
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduce) {
+        ctx.clearRect(0, 0, w, h);
+        neuralNet(0.5, 600);
+      } else {
+        let idx = 0;
+        let start = performance.now();
+        if (nameEl) nameEl.textContent = scenes[0].name;
+        const frame = (now: number) => {
+          let p = (now - start) / DUR;
+          if (p >= 1) {
+            idx = (idx + 1) % scenes.length;
+            start = now;
+            p = 0;
+            if (nameEl) nameEl.textContent = scenes[idx].name;
+          }
+          ctx.clearRect(0, 0, w, h);
+          ctx.globalAlpha = fade(p);
+          scenes[idx].draw(p, now);
+          ctx.globalAlpha = 1;
+          requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      }
+    }
+  }
+</script>
