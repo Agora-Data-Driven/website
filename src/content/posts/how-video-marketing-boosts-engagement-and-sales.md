@@ -2,9 +2,9 @@
 title: 'How Video Marketing Boosts Engagement and Sales'
 publishDate: 2025-05-30
 excerpt: 'Placeholder — the live page for this post currently shows duplicated content. Awaiting the real article copy before publishing.'
-heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/05/Gemini_Generated_Image_344g7a344g7a344g.jpg'
+heroImage: '/placeholders/cover-3.svg'
 heroAlt: 'Video marketing concept.'
-category: 'Marketing'
+category: 'Organic Growth'
 draft: true
 ---
 

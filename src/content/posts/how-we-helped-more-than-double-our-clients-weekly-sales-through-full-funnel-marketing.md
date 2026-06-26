@@ -2,9 +2,10 @@
 title: "How We Helped More Than Double Our Client's Weekly Sales Through Full-Funnel Marketing"
 publishDate: 2026-06-13
 excerpt: 'More sales rarely come from changing everything. By stabilizing Meta ads, reinforcing the message with email and SMS, and improving the mobile checkout, we more than doubled a client’s weekly sales—from roughly $1.7K to $4.2K.'
-heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/04/Mask-group.png'
+heroImage: '/placeholders/cover-1.svg'
 heroAlt: 'Full-funnel marketing performance chart trending upward.'
-category: 'Case Study'
+category: 'Strategy & Growth'
+type: 'case-study'
 ---
 
 More sales do not always come from changing everything. Sometimes, they come from optimizing the full customer journey.

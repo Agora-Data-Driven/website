@@ -25,14 +25,20 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
           mainNav.map((item) =>
             item.children ? (
               <div class="group relative">
-                <a
-                  href={item.href}
-                  class={`${linkBase} inline-flex items-center gap-1 ${isActive(item.href) ? 'text-brand-600' : 'text-body'}`}
-                  aria-current={isActive(item.href) ? 'page' : undefined}
+                {/*
+                  Trigger is a <button>, not a link: a parent that navigated
+                  closed its own menu the instant you clicked it. The real
+                  destinations live in the panel below (Marketing & Analytics →
+                  the portfolio page). Menu opens on hover and on keyboard focus.
+                */}
+                <button
+                  type="button"
+                  class={`${linkBase} inline-flex cursor-pointer items-center gap-1 bg-transparent ${isActive(item.href) ? 'text-brand-600' : 'text-body'}`}
+                  aria-haspopup="true"
                 >
                   {item.label}
                   <svg
-                    class="h-3.5 w-3.5"
+                    class="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                     aria-hidden="true"
@@ -43,7 +49,7 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
                       clip-rule="evenodd"
                     />
                   </svg>
-                </a>
+                </button>
                 {/*
                   Hover bridge: a transparent padding strip (pt-2) connects the trigger
                   to the panel so the cursor never crosses a gap. Without it, the 4px
@@ -83,7 +89,9 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
 
       <!-- Desktop CTAs -->
       <div class="hidden items-center gap-3 lg:flex">
-        <Button href={cta.joinTeam.href} external variant="secondary">{cta.joinTeam.label}</Button>
+        <Button href={cta.clientLogin.href} external variant="secondary"
+          >{cta.clientLogin.label}</Button
+        >
         <Button href={cta.becomeClient.href} external variant="primary"
           >{cta.becomeClient.label}</Button
         >
@@ -120,9 +128,9 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
           mainNav.flatMap((item) =>
             item.children
               ? [
-                  <a href={item.href} class="text-ink rounded-lg px-3 py-2.5 font-medium">
+                  <span class="text-ink block rounded-lg px-3 py-2.5 font-medium">
                     {item.label}
-                  </a>,
+                  </span>,
                   ...item.children.map((child) => (
                     <a
                       href={child.href}
@@ -148,8 +156,8 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
         }
       </nav>
       <div class="flex flex-col gap-3 pb-6">
-        <Button href={cta.joinTeam.href} external variant="secondary" size="lg"
-          >{cta.joinTeam.label}</Button
+        <Button href={cta.clientLogin.href} external variant="secondary" size="lg"
+          >{cta.clientLogin.label}</Button
         >
         <Button href={cta.becomeClient.href} external variant="primary" size="lg"
           >{cta.becomeClient.label}</Button

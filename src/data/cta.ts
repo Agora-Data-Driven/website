@@ -23,6 +23,12 @@ export const cta = {
     href: 'https://apply.agoradatadriven.com',
     external: true,
   },
+  /** Existing-client sign-in to the Agora portal. */
+  clientLogin: {
+    label: 'Client Log in',
+    href: 'https://portal.agoradatadriven.com/login',
+    external: true,
+  },
   /** Replaces the old fake pricing tiers — routes to Upwork for a custom quote. */
   customQuote: {
     label: 'Get a custom quote',

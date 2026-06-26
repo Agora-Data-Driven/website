@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { skillMasteryUrl } from '@data/nav';
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="Skill Mastery"
+  description="AGORA Skill Mastery — our hands-on training platform for aspiring data, analytics, and marketing talent. Build the skills we hire for, right here."
+>
+  {/*
+    Skill Mastery is a separate Cloud Run app; we embed it inline rather than
+    linking out. The frame fills the viewport below the sticky header (4rem on
+    mobile, 5rem at lg). If embedding is ever blocked, the fallback link opens
+    the app directly.
+  */}
+  <iframe
+    src={skillMasteryUrl}
+    title="AGORA Skill Mastery"
+    class="block h-[calc(100dvh-4rem)] w-full border-0 lg:h-[calc(100dvh-5rem)]"
+    loading="eager"
+    allow="clipboard-write; fullscreen"
+    referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <noscript>
+    <p class="text-muted p-6 text-center text-sm">
+      Skill Mastery is an interactive app.
+      <a
+        class="text-brand-600 hover:text-brand-700 font-medium underline"
+        href={skillMasteryUrl}
+        target="_blank"
+        rel="noopener noreferrer">Open Skill Mastery in a new tab</a
+      >.
+    </p>
+  </noscript>
+</BaseLayout>

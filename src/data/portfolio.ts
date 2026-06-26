@@ -38,7 +38,7 @@ export const caseStudies: CaseStudy[] = [
     tag: 'Spa & Wellness',
     summary:
       'Content strategy, refined brand messaging, and geo-targeted ads turned an off-highway spa into a membership growth story.',
-    heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/05/sabbath-e1748689078591.jpg',
+    heroImage: '/placeholders/cover-1.svg',
     sections: [
       {
         heading: 'Background & Context',
@@ -79,7 +79,7 @@ export const caseStudies: CaseStudy[] = [
     tag: 'Events & Civic',
     summary:
       'Campaign materials and targeted social activity built awareness for a community-events initiative, with results showing within two weeks.',
-    heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/05/dapatbayan5-scaled.jpg',
+    heroImage: '/placeholders/cover-2.svg',
     sections: [
       {
         heading: 'Background & Context',
@@ -115,8 +115,7 @@ export const caseStudies: CaseStudy[] = [
     tag: 'Digital Products',
     summary:
       'Full-funnel marketing and analytics for a digital-product business selling legal resources to entrepreneurs and small business owners.',
-    heroImage:
-      'https://agoradatadriven.com/wp-content/uploads/2025/06/Gemini_Generated_Image_v29gc4v29gc4v29g-scaled.jpg',
+    heroImage: '/placeholders/cover-3.svg',
     sections: [
       {
         heading: 'Background & Context',
@@ -156,7 +155,7 @@ export const competitions: Competition[] = [
     event: 'Codebasics Resume Project Challenge #9',
     summary:
       'Analyzed 10,000 survey responses for a beverage brand (CodeX) to deliver clear, decision-ready marketing insights.',
-    heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/07/1-1024x768.png',
+    heroImage: '/placeholders/cover-3.svg',
     body: [
       'In the Codebasics Resume Project Challenge #9, we placed 2nd out of 2,459 participants in the Marketing Analytics category.',
       'The brief: analyze 10,000 survey responses for the beverage brand CodeX and turn them into clear marketing insights. We focused on translating the raw survey data into findings a marketing team could actually act on—segments, preferences, and the messaging implications behind them.',
@@ -171,7 +170,7 @@ export const competitions: Competition[] = [
     event: 'DataCamp Datalab — Predicting Industrial Machine Downtime (Level 3)',
     summary:
       'Cleaned and analyzed industrial operations data to surface bottlenecks and cost-optimization opportunities with Python.',
-    heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/07/2.png',
+    heroImage: '/placeholders/cover-2.svg',
     body: [
       'In DataCamp Datalab’s global "Predicting industrial machine downtime: Level 3" competition, we placed 1st and received the cash prize in the Operations Analytics category.',
       'The work balanced technical depth with business relevance: dataset cleaning, exploratory analysis, and business-insight generation using Python (pandas, seaborn, and matplotlib), ending in strategic recommendations focused on operational efficiency and cost optimization.',

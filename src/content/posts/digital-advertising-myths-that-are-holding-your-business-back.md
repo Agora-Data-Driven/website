@@ -2,9 +2,9 @@
 title: 'Digital Advertising Myths That Are Holding Your Business Back'
 publishDate: 2025-05-30
 excerpt: 'Boosting posts, “set-and-forget” SEO, and spending more aren’t strategies. We debunk the most common digital advertising myths—and show what actually works.'
-heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/05/Gemini_Generated_Image_2uo7jr2uo7jr2uo7.jpg'
+heroImage: '/placeholders/cover-2.svg'
 heroAlt: 'Digital advertising dashboard with charts and metrics.'
-category: 'Marketing'
+category: 'Paid Marketing'
 ---
 
 Digital advertising is one of the most powerful tools available to businesses today—but only when it's used correctly.

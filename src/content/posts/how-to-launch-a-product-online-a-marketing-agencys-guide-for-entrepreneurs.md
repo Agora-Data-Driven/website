@@ -2,9 +2,9 @@
 title: "How to Launch a Product Online: A Marketing Agency's Guide for Entrepreneurs"
 publishDate: 2025-05-30
 excerpt: 'Most failed product launches don’t fail because the product was bad—they fail because the launch wasn’t strategically planned. Here are the essential steps to plan, promote, and scale a launch that delivers.'
-heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/05/Gemini_Generated_Image_5ot2025ot2025ot2.jpg'
+heroImage: '/placeholders/cover-2.svg'
 heroAlt: 'Entrepreneur planning an online product launch.'
-category: 'Marketing'
+category: 'Strategy & Growth'
 ---
 
 Launching a product online is one of the most important milestones in any business. But while it's exciting, it's also a complex and high-stakes process.

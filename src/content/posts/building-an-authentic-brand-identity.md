@@ -2,9 +2,9 @@
 title: 'From Display to Demand: Marketing Our LED Wall'
 publishDate: 2024-12-02
 excerpt: 'How we treated our own LED wall like a client—turning a high-traffic screen into real advertising bookings with a data-informed marketing strategy.'
-heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/04/Gemini_Generated_Image_5ot2045ot2045ot2.jpg'
+heroImage: '/placeholders/cover-1.svg'
 heroAlt: 'A large outdoor LED advertising wall in a high-traffic location.'
-category: 'Case Study'
+category: 'Strategy & Growth'
 ---
 
 When investing in an LED wall, our goal extended beyond displaying advertisements—it aimed to produce measurable outcomes. Positioned strategically in a high-traffic location, the wall reached thousands of people daily. The critical question became: how do we turn visibility into value—not just for us, but for our future clients?

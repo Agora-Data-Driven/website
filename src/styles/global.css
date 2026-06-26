@@ -70,6 +70,10 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    /* Light-only design: opt out of browser "auto dark theme" force-inversion
+       (Chrome Android, etc.) so badge artwork & cards stay readable on phones
+       set to dark mode. */
+    color-scheme: light;
   }
 
   body {

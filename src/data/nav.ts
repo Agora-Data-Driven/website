@@ -8,10 +8,13 @@ export interface NavItem {
 
 /**
  * AGORA Mastery Engine — a separate Cloud Run app (project `agora-data-driven`).
- * TODO: swap for https://mastery.agoradatadriven.com once a Cloud Run domain
- * mapping + DNS record are set up (matches the webdev./apply. subdomain pattern).
+ * `skillMasteryUrl` is the live app origin; we embed it (iframe) on the internal
+ * `skillMasteryPath` page rather than linking out, so nav points at the path.
+ * TODO: swap the origin for https://mastery.agoradatadriven.com once a Cloud Run
+ * domain mapping + DNS record are set up (matches the webdev./apply. pattern).
  */
 export const skillMasteryUrl = 'https://mastery-engine-c732u7m57a-uc.a.run.app';
+export const skillMasteryPath = '/skill-mastery/';
 
 export const mainNav: NavItem[] = [
   { label: 'Home', href: '/' },
@@ -21,12 +24,12 @@ export const mainNav: NavItem[] = [
     children: [
       { label: 'Marketing & Analytics', href: '/agora-portfolio/' },
       { label: 'Web Development', href: 'https://webdev.agoradatadriven.com/', external: true },
+      { label: 'Skill Mastery', href: skillMasteryPath },
     ],
   },
   { label: 'Blog', href: '/blog/' },
   // "LED Wall" points to the real flagship article slug (preserved for SEO).
   { label: 'LED Wall', href: '/building-an-authentic-brand-identity/' },
-  { label: 'Skill Mastery', href: skillMasteryUrl, external: true },
 ];
 
 export const footerNav: NavItem[] = [
@@ -34,7 +37,7 @@ export const footerNav: NavItem[] = [
   { label: 'Portfolio', href: '/agora-portfolio/' },
   { label: 'Blog', href: '/blog/' },
   { label: 'LED Wall', href: '/building-an-authentic-brand-identity/' },
-  { label: 'Skill Mastery', href: skillMasteryUrl, external: true },
+  { label: 'Skill Mastery', href: skillMasteryPath },
 ];
 
 export const legalNav: NavItem[] = [

@@ -68,6 +68,9 @@ const realCount = certifications.length;
     scrollbar-width: none;
     -ms-overflow-style: none;
     scroll-behavior: auto;
+    /* let the browser own horizontal touch scrolling; vertical swipes still
+       scroll the page */
+    touch-action: pan-x;
   }
   .cert-track::-webkit-scrollbar {
     display: none;
@@ -81,29 +84,59 @@ const realCount = certifications.length;
   const track = document.getElementById('cert-track');
   if (track) {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let paused = false;
-    let down = false;
+
+    const DRIFT = 0.35; // idle auto-scroll (px/frame)
+    const MAX_HOVER = 12; // top speed when the cursor sits at an edge
+    const DEAD = 0.06; // central neutral zone — cursor here ⇒ rest
+
+    const halfWidth = () => track.scrollWidth / 2;
+
+    // Assign scrollLeft, wrapping seamlessly within the first copy [0, half)
+    // so the marquee loops infinitely in either direction.
+    const setScroll = (v: number) => {
+      const h = halfWidth();
+      if (h > 0) v = ((v % h) + h) % h;
+      track.scrollLeft = v;
+    };
+
+    let hovering = false; // mouse/pen is inside the box
+    let hoverVel = 0; // px/frame derived from cursor position
+    let down = false; // an active click-drag
     let moved = false;
     let startX = 0;
     let startScroll = 0;
 
-    const half = () => track.scrollWidth / 2;
-    const wrap = () => {
-      const h = half();
-      if (h > 0 && track.scrollLeft >= h) track.scrollLeft -= h;
+    // The "speed follows my mouse" mapping: cursor position across the box →
+    // signed velocity. Center = 0, edges = ±MAX_HOVER, eased for fine control.
+    const updateHoverVel = (clientX: number) => {
+      const rect = track.getBoundingClientRect();
+      if (rect.width === 0) {
+        hoverVel = 0;
+        return;
+      }
+      const ratio = (clientX - rect.left) / rect.width; // 0 (left) .. 1 (right)
+      const off = ratio * 2 - 1; // -1 (left) .. 1 (right)
+      const mag = Math.abs(off);
+      hoverVel =
+        mag < DEAD ? 0 : Math.sign(off) * Math.pow((mag - DEAD) / (1 - DEAD), 1.4) * MAX_HOVER;
     };
 
-    // pause auto-slide on hover
-    track.addEventListener('pointerenter', () => (paused = true));
-    track.addEventListener('pointerleave', () => {
-      if (!down) paused = false;
+    track.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'touch') return;
+      hovering = true;
+      updateHoverVel(e.clientX);
+    });
+    track.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'touch') return;
+      hovering = false;
+      hoverVel = 0;
     });
 
-    // drag-to-scroll (desktop) + swipe (touch is native, but this unifies)
+    // click-drag (mouse / pen): direct 1:1 grab, overrides the hover scrub.
     track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'touch') return; // touch uses native scrolling
       down = true;
       moved = false;
-      paused = true;
       startX = e.clientX;
       startScroll = track.scrollLeft;
       track.classList.add('is-grabbing');
@@ -112,15 +145,21 @@ const realCount = certifications.length;
       } catch {}
     });
     track.addEventListener('pointermove', (e) => {
-      if (!down) return;
-      const dx = e.clientX - startX;
-      if (Math.abs(dx) > 5) moved = true;
-      track.scrollLeft = startScroll - dx;
+      if (e.pointerType === 'touch') return;
+      if (down) {
+        const dx = e.clientX - startX;
+        if (Math.abs(dx) > 5) moved = true;
+        setScroll(startScroll - dx);
+      } else {
+        // any mouse movement inside the box counts as hovering (also self-heals
+        // the hover state after a pointer-captured drag ends)
+        hovering = true;
+        updateHoverVel(e.clientX);
+      }
     });
     const endDrag = () => {
       if (!down) return;
       down = false;
-      paused = false;
       track.classList.remove('is-grabbing');
       // suppress the click that follows a real drag so links don't fire
       if (moved) {
@@ -135,19 +174,27 @@ const realCount = certifications.length;
     track.addEventListener('pointerup', endDrag);
     track.addEventListener('pointercancel', endDrag);
 
-    // keep manual touch/trackpad scrolling seamless
-    track.addEventListener('scroll', wrap, { passive: true });
+    // keep native (touch / trackpad / wheel) scrolling seamless
+    track.addEventListener(
+      'scroll',
+      () => {
+        const h = halfWidth();
+        if (h > 0 && track.scrollLeft >= h) track.scrollLeft -= h;
+      },
+      { passive: true },
+    );
 
-    if (!reduce) {
-      const speed = 0.35; // px/frame — slow drift
-      const step = () => {
-        if (!paused) {
-          track.scrollLeft += speed;
-          wrap();
+    // single loop, priority: manual drag > hover scrub > idle drift
+    const frame = () => {
+      if (!down) {
+        if (hovering) {
+          if (hoverVel !== 0) setScroll(track.scrollLeft + hoverVel);
+        } else if (!reduce) {
+          setScroll(track.scrollLeft + DRIFT);
         }
-        requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    }
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
   }
 </script>

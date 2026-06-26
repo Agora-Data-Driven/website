@@ -2,9 +2,9 @@
 title: 'Why Consistent Content Is the Key to Long-Term Growth'
 publishDate: 2025-05-30
 excerpt: 'Viral moments bring short-term spikes, but consistency builds lasting growth. Here’s why showing up regularly with valuable content is a strategy, not just a best practice.'
-heroImage: 'https://agoradatadriven.com/wp-content/uploads/2025/05/Gemini_Generated_Image_5ot2035ot2035ot2.jpg'
+heroImage: '/placeholders/cover-3.svg'
 heroAlt: 'A steady content calendar representing consistent publishing.'
-category: 'Marketing'
+category: 'Organic Growth'
 ---
 
 What truly moves the needle over time is consistent content.
