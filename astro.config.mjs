@@ -23,12 +23,12 @@ export default defineConfig({
   // server provides headroom for future dynamic routes.
   output: 'server',
   adapter: node({ mode: 'standalone' }),
-  integrations: [
-    mdx(),
-    sitemap(),
-  ],
+  integrations: [mdx(), sitemap()],
   vite: {
-    plugins: [tailwindcss()],
+    // @tailwindcss/vite is typed against a different bundled Vite version than
+    // Astro's, so the plugin type doesn't line up even though it works at
+    // runtime. Cast to sidestep the type-only version skew.
+    plugins: [/** @type {any} */ (tailwindcss())],
   },
   image: {
     // Allow remote optimization of legacy WordPress media during migration.
