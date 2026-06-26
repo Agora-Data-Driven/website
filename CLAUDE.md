@@ -13,6 +13,7 @@ Marketing + blog site for **Agora Data Driven**, a data-driven marketing & analy
 - Content via **Astro Content Collections** (Markdown/MDX + zod-validated frontmatter).
 - Lint/format: **ESLint + Prettier**. Images: **`astro:assets`**.
 - **SSR via `@astrojs/node`** (standalone), containerized and deployed to **GCP Cloud Run** via Cloud Build + Artifact Registry. gcloud project: `agora-data-driven`. Local Docker optional (Cloud Build builds remotely).
+- **GCP structure & rules:** before running any `gcloud`/`bq` against the cloud estate, read **[docs/GCP.md](docs/GCP.md)** — it documents the two-org layout, what's active vs archived, billing, access limits, and the safety rules (always `--project`, archive-don't-delete, soft-delete recovery).
 
 ## Commands
 
