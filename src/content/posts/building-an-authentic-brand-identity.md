@@ -5,6 +5,7 @@ excerpt: 'How we treated our own LED wall like a client—turning a high-traffic
 heroImage: '/placeholders/cover-1.svg'
 heroAlt: 'A large outdoor LED advertising wall in a high-traffic location.'
 category: 'Strategy & Growth'
+industry: 'Local Business'
 ---
 
 When investing in an LED wall, our goal extended beyond displaying advertisements—it aimed to produce measurable outcomes. Positioned strategically in a high-traffic location, the wall reached thousands of people daily. The critical question became: how do we turn visibility into value—not just for us, but for our future clients?

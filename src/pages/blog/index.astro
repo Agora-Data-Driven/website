@@ -1,170 +1,895 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Container from '@components/Container.astro';
+import BlogThumbnail from '@components/BlogThumbnail.astro';
 import { getCollection } from 'astro:content';
-import { silos } from '@data/categories';
+import type { CollectionEntry } from 'astro:content';
+import { blogPosts, topicOptions, industryOptions } from '@data/blogData';
+import type { BlogPost } from '@data/blogData';
+import { cta } from '@data/cta';
 
 export const prerender = true;
 
-// Blog silos only — case studies live under Portfolio (type: 'case-study').
-const posts = (
-  await getCollection('posts', ({ data }) => !data.draft && data.type === 'post')
-).sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+// All non-draft markdown posts, sorted newest first.
+const markdownPosts = await getCollection('posts', ({ data }) => !data.draft);
+markdownPosts.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+// Body map for accurate read-time calculation.
+const bodyBySlug = new Map<string, string>(
+  markdownPosts.map((p) => [p.id, p.body ?? '']),
+);
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-// Filter chips, in canonical silo order, only for silos that have posts.
-const populated = new Set(posts.map((p) => p.data.category));
-const chips = silos.filter((s) => populated.has(s.name));
+function getReadTime(slug: string, fallback: string): string {
+  const body = bodyBySlug.get(slug);
+  if (body && body.trim().length > 100) {
+    const words = body.trim().split(/\s+/).length;
+    const mins = Math.max(1, Math.ceil(words / 220));
+    return `${mins} min read`;
+  }
+  return fallback;
+}
+
+// Default thumbnail per silo category for posts not in blogData.ts.
+const thumbByCategory: Record<string, string> = {
+  'Marketing Analytics': 'dashboard-metrics',
+  'Paid Marketing': 'channel-launch',
+  'Organic Growth': 'content-engine',
+  'Strategy & Growth': 'email-retargeting',
+  'Careers & Skill-Building': 'course-review',
+};
+
+// Posts with bespoke custom landing pages — exclude from the carousel.
+const BESPOKE_SLUGS = new Set(['building-an-authentic-brand-identity']);
+
+// Slugs already curated in blogData.ts — don't double-render.
+const curatedSlugs = new Set(blogPosts.map((p) => p.slug));
+
+// Convert any markdown post not already in blogData.ts into a BlogPost card.
+function toCard(p: CollectionEntry<'posts'>): BlogPost {
+  return {
+    id: p.id,
+    slug: p.id,
+    title: p.data.title,
+    excerpt: p.data.excerpt,
+    section: p.data.type === 'case-study' ? 'case-studies' : 'data-driven-marketing',
+    category: p.data.category,
+    topic: p.data.category,
+    industry: p.data.industry ?? 'All industries',
+    date: fmt(p.data.publishDate),
+    readTimeFallback: `${Math.max(1, Math.ceil((p.body ?? '').split(/\s+/).length / 220))} min read`,
+    thumbnailVariant: thumbByCategory[p.data.category] ?? 'attribution-flow',
+    href: `/${p.id}/`,
+  };
+}
+
+const extraCards = markdownPosts
+  .filter((p) => !curatedSlugs.has(p.id) && !BESPOKE_SLUGS.has(p.id))
+  .map(toCard);
+
+// Curated posts first (have proper thumbnail/featured metadata), extras after.
+const ddmPosts: BlogPost[] = [
+  ...blogPosts.filter((p) => p.section === 'data-driven-marketing'),
+  ...extraCards.filter((p) => p.section === 'data-driven-marketing'),
+];
+const csPosts: BlogPost[] = [
+  ...blogPosts.filter((p) => p.section === 'case-studies'),
+  ...extraCards.filter((p) => p.section === 'case-studies'),
+];
+const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
 ---
 
 <BaseLayout
-  title="Blog"
-  description="Insights on data-driven marketing, analytics, and growth from Agora Data Driven."
+  title="Blog | Data-Driven Marketing Insights & Case Studies | Agora Data Driven"
+  description="Read data-driven marketing insights, practical guides, course reviews, and real business case studies from Agora Data Driven."
 >
-  <section class="border-line from-tint/40 to-canvas border-b bg-linear-to-b">
-    <Container class="py-16 lg:py-20">
-      <p class="eyebrow">Blog</p>
-      <h1 class="text-ink mt-2 text-4xl font-bold sm:text-5xl">Latest from the blog</h1>
-      <p class="text-muted mt-3 max-w-2xl">
-        Practical insights on analytics-powered marketing, full-funnel growth, and what actually
-        moves the needle.
-      </p>
+  <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+  <section class="hero-section relative overflow-hidden border-b border-line bg-surface">
+    <div class="bg-grid pointer-events-none absolute inset-0 opacity-40" aria-hidden="true"></div>
+    <div
+      class="pointer-events-none absolute inset-0"
+      style="background: radial-gradient(800px 500px at 110% -10%, rgba(79,168,74,0.08) 0%, transparent 60%), linear-gradient(150deg, rgba(238,246,237,0.55) 0%, transparent 45%);"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="border-brand-200/25 pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full border"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="border-brand-200/15 pointer-events-none absolute -right-6 -top-6 h-44 w-44 rounded-full border"
+      aria-hidden="true"
+    ></div>
+
+    <Container class="relative py-14 lg:py-20">
+      <div class="hero-grid">
+        <!-- Left: copy -->
+        <div class="hero-left">
+          <p
+            class="eyebrow text-brand-600 mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em]"
+          >
+            <span
+              class="bg-brand-500/10 border-brand-200 rounded-full border px-2.5 py-0.5"
+              >Blog</span
+            >
+          </p>
+          <h1 class="text-ink font-display text-4xl font-bold leading-[1.12] sm:text-5xl">
+            Insights that<br /><span class="text-gradient">drive growth.</span>
+          </h1>
+          <p class="text-muted mt-4 max-w-md text-base leading-relaxed sm:text-[1.0625rem]">
+            Real-world lessons on marketing, data, and growth — written by practitioners, for
+            practitioners.
+          </p>
+
+          <!-- Value props -->
+          <ul class="hero-values mt-7 grid grid-cols-2 gap-x-6 gap-y-3">
+            {
+              [
+                'Actionable insights',
+                'Data-backed strategy',
+                'Practical frameworks',
+                'Real business stories',
+              ].map((v) => (
+                <li class="text-muted flex items-center gap-2 text-sm">
+                  <svg
+                    class="text-brand-500 h-3.5 w-3.5 shrink-0"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M2 7l3.5 3.5L12 3" />
+                  </svg>
+                  {v}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <!-- Right: featured article card -->
+        {
+          featuredPost && (
+            <div class="hero-right">
+              <a href={featuredPost.href} class="featured-card group block">
+                <article class="overflow-hidden rounded-2xl border border-line bg-surface shadow-pop">
+                  {/* Thumbnail */}
+                  <div class="featured-thumb overflow-hidden bg-tint">
+                    <BlogThumbnail variant={featuredPost.thumbnailVariant} />
+                  </div>
+                  <div class="p-5">
+                    {/* Badges */}
+                    <div class="mb-3 flex flex-wrap items-center gap-2.5">
+                      <span class="bg-brand-500 rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white">
+                        Featured
+                      </span>
+                      <span class="text-brand-600 text-[10px] font-bold uppercase tracking-widest">
+                        {featuredPost.category}
+                      </span>
+                    </div>
+                    <h2 class="text-ink text-[0.9375rem] font-bold leading-snug transition-colors group-hover:text-brand-700 sm:text-base">
+                      {featuredPost.title}
+                    </h2>
+                    <p class="text-muted mt-2 line-clamp-2 text-sm leading-relaxed">
+                      {featuredPost.excerpt}
+                    </p>
+                    <div class="mt-4 flex items-center justify-between">
+                      <span class="text-muted text-xs">
+                        {featuredPost.date} · {getReadTime(featuredPost.slug, featuredPost.readTimeFallback)}
+                      </span>
+                      <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 transition-all group-hover:gap-2.5 group-hover:text-brand-700">
+                        Read article
+                        <svg
+                          class="h-3.5 w-3.5 shrink-0"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M3 8h10M9 4l4 4-4 4" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              </a>
+            </div>
+          )
+        }
+      </div>
     </Container>
   </section>
 
+  <!-- ── FILTERS + SECTIONS ────────────────────────────────────────────────── -->
   <Container class="py-12 lg:py-16">
-    {/* Controls: search (JS-enhanced) + category filter (crawlable links) */}
-    <div class="mb-10 flex flex-col gap-5">
-      <div id="blog-search-wrap" hidden class="max-w-md">
-        <label for="blog-search" class="sr-only">Search articles</label>
+    <!-- Search + filter bar -->
+    <div class="filter-bar mb-12 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <!-- Search -->
+      <div class="relative flex-1 sm:max-w-xs">
+        <svg
+          class="text-muted pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="6.5" cy="6.5" r="4.5"></circle>
+          <path d="M10 10l3.5 3.5"></path>
+        </svg>
         <input
           id="blog-search"
           type="search"
           placeholder="Search articles…"
           autocomplete="off"
-          class="border-line bg-surface text-ink placeholder:text-muted focus:border-brand-400 w-full rounded-full border px-5 py-2.5 text-sm shadow-sm outline-none"
+          class="border-line bg-surface text-ink placeholder:text-muted focus:border-brand-400 w-full rounded-full border py-2.5 pl-10 pr-4 text-sm shadow-sm outline-none transition-colors"
         />
       </div>
 
-      <div class="flex flex-wrap gap-2" role="group" aria-label="Filter by topic">
-        <a href="/blog/" data-filter="all" class="chip chip-active">All</a>
-        {
-          chips.map((s) => (
-            <a href={`/blog/category/${s.slug}/`} data-filter={s.name} class="chip">
-              {s.name}
-            </a>
-          ))
-        }
-      </div>
+      <!-- Topic filter -->
+      <select id="topic-filter" class="filter-select" aria-label="Filter by topic">
+        <option value="all">All topics</option>
+        {topicOptions.map((t) => <option value={t}>{t}</option>)}
+      </select>
+
+      <!-- Industry filter -->
+      <select id="industry-filter" class="filter-select" aria-label="Filter by industry">
+        <option value="all">All industries</option>
+        {industryOptions.map((i) => <option value={i}>{i}</option>)}
+      </select>
     </div>
 
-    <div id="post-grid" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {
-        posts.map((post) => (
-          <article
-            class="post-card border-line bg-surface shadow-card card-hover flex flex-col rounded-2xl border p-6"
-            data-category={post.data.category}
-            data-search={`${post.data.title} ${post.data.excerpt} ${post.data.category}`.toLowerCase()}
+    <!-- ── Section 1: Data Driven Marketing ─────────────────────────────────── -->
+    <section class="mb-16" aria-label="Data Driven Marketing articles">
+      <div class="section-header mb-6 flex items-start justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <div
+            class="bg-tint border-brand-100 mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border"
           >
-            <p class="text-brand-600 text-xs font-semibold tracking-wide uppercase">
-              {post.data.category}
+            <svg
+              class="text-brand-600 h-4.5 w-4.5"
+              viewBox="0 0 18 18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M2 14l4-5 3.5 2.5 3.5-7L17 7" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-ink text-xl font-bold leading-tight">Data Driven Marketing</h2>
+            <p class="text-muted mt-1 text-sm leading-relaxed">
+              Actionable blogs, course reviews, guides, and how-tos to help you grow smarter with
+              data.
             </p>
-            <h2 class="text-ink mt-2 text-lg font-semibold">
-              <a href={`/${post.id}/`} class="hover:text-brand-700">
-                {post.data.title}
-              </a>
-            </h2>
-            <p class="text-muted mt-2 flex-1 text-sm">{post.data.excerpt}</p>
-            <p class="text-muted mt-4 text-xs">{fmt(post.data.publishDate)}</p>
-          </article>
-        ))
-      }
-    </div>
+          </div>
+        </div>
+        <div class="flex shrink-0 items-center gap-1">
+          <button
+            id="ddm-left"
+            class="carousel-btn"
+            aria-label="Scroll Data Driven Marketing articles left"
+            disabled
+          >
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"><path d="M10 4L6 8l4 4"></path></svg
+            >
+          </button>
+          <button id="ddm-right" class="carousel-btn" aria-label="Scroll Data Driven Marketing articles right">
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg
+            >
+          </button>
+          <a
+            href="/blog/category/marketing-analytics/"
+            class="text-brand-600 hover:text-brand-700 ml-2 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+          >
+            See all
+            <svg
+              class="h-3.5 w-3.5"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+            >
+          </a>
+        </div>
+      </div>
 
-    <p id="no-results" hidden class="text-muted py-12 text-center">
-      No articles match your search. <button type="button" id="clear-filters" class="text-brand-600 hover:text-brand-700 font-semibold underline">Clear filters</button>
-    </p>
+      <div class="carousel-wrap">
+        <div class="carousel-track" id="ddm-track" role="list">
+          {
+            ddmPosts.map((post) => (
+              <article
+                class="ddm-card carousel-card"
+                role="listitem"
+                data-section="data-driven-marketing"
+                data-topic={post.topic}
+                data-industry={post.industry}
+                data-search={`${post.title} ${post.excerpt} ${post.category} ${post.topic} ${post.industry}`.toLowerCase()}
+              >
+                <a href={post.href} class="ddm-card-inner group">
+                  <div class="ddm-thumb overflow-hidden">
+                    <BlogThumbnail variant={post.thumbnailVariant} class="ddm-thumb-svg" />
+                  </div>
+                  <div class="ddm-body flex flex-col">
+                    <span class="text-brand-600 text-[10px] font-bold uppercase tracking-[0.16em]">
+                      {post.category}
+                    </span>
+                    <h3 class="text-ink mt-2 flex-1 text-[0.875rem] font-semibold leading-snug transition-colors group-hover:text-brand-700 line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p class="text-muted mt-2 line-clamp-2 text-xs leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                    <p class="text-muted mt-3 text-[11px]">
+                      {post.date} · {getReadTime(post.slug, post.readTimeFallback)}
+                    </p>
+                  </div>
+                </a>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+
+      <div id="ddm-empty" hidden class="py-10 text-center">
+        <p class="text-muted text-sm">No articles match your filters.</p>
+        <button
+          type="button"
+          class="clear-filters text-brand-600 hover:text-brand-700 mt-3 text-sm font-semibold underline"
+        >
+          Clear filters
+        </button>
+      </div>
+    </section>
+
+    <!-- ── Section 2: Case Studies ──────────────────────────────────────────── -->
+    <section aria-label="Case Studies">
+      <div class="section-header mb-6 flex items-start justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <div
+            class="bg-tint border-brand-100 mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border"
+          >
+            <svg
+              class="text-brand-600 h-4.5 w-4.5"
+              viewBox="0 0 18 18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="4" width="14" height="11" rx="2"></rect>
+              <path d="M6 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"></path>
+              <path d="M6 9h6M6 12h4"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-ink text-xl font-bold leading-tight">Case Studies</h2>
+            <p class="text-muted mt-1 text-sm leading-relaxed">
+              Real business stories dissected through the lens of marketing, data, and growth.
+            </p>
+          </div>
+        </div>
+        <div class="flex shrink-0 items-center gap-1">
+          <button
+            id="cs-left"
+            class="carousel-btn"
+            aria-label="Scroll Case Studies left"
+            disabled
+          >
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"><path d="M10 4L6 8l4 4"></path></svg
+            >
+          </button>
+          <button id="cs-right" class="carousel-btn" aria-label="Scroll Case Studies right">
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg
+            >
+          </button>
+          <a
+            href="/agora-portfolio/"
+            class="text-brand-600 hover:text-brand-700 ml-2 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+          >
+            See all
+            <svg
+              class="h-3.5 w-3.5"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+            >
+          </a>
+        </div>
+      </div>
+
+      <div class="carousel-wrap">
+        <div class="carousel-track" id="cs-track" role="list">
+          {
+            csPosts.map((post) => (
+              <article
+                class="cs-card carousel-card"
+                role="listitem"
+                data-section="case-studies"
+                data-topic={post.topic}
+                data-industry={post.industry}
+                data-search={`${post.title} ${post.excerpt} ${post.category} ${post.topic} ${post.industry}`.toLowerCase()}
+              >
+                <a href={post.href} class="cs-card-inner group flex h-full flex-col">
+                  <div class="cs-thumb overflow-hidden">
+                    <BlogThumbnail variant={post.thumbnailVariant} />
+                  </div>
+                  <div class="flex flex-1 flex-col p-5">
+                    <div class="mb-2 flex flex-wrap items-center gap-2">
+                      <span class="text-brand-600 text-[10px] font-bold uppercase tracking-[0.16em]">
+                        {post.category}
+                      </span>
+                      {post.sourceLabel && (
+                        <span class="text-muted rounded-full bg-canvas px-2 py-0.5 text-[10px] font-medium">
+                          {post.sourceLabel}
+                        </span>
+                      )}
+                    </div>
+                    <h3 class="text-ink flex-1 text-[0.875rem] font-semibold leading-snug transition-colors group-hover:text-brand-700 line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p class="text-muted mt-2 line-clamp-2 text-xs leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                    <div class="mt-4 flex items-center justify-between">
+                      <p class="text-muted text-[11px]">
+                        {post.date} · {getReadTime(post.slug, post.readTimeFallback)}
+                      </p>
+                      <span class="text-brand-600 inline-flex items-center gap-1 text-[11px] font-semibold transition-all group-hover:gap-1.5">
+                        Read
+                        <svg
+                          class="h-3 w-3 shrink-0"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M3 8h10M9 4l4 4-4 4" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+
+      <div id="cs-empty" hidden class="py-10 text-center">
+        <p class="text-muted text-sm">No articles match your filters.</p>
+        <button
+          type="button"
+          class="clear-filters text-brand-600 hover:text-brand-700 mt-3 text-sm font-semibold underline"
+        >
+          Clear filters
+        </button>
+      </div>
+    </section>
   </Container>
+
+  <!-- ── CTA BANNER ────────────────────────────────────────────────────────── -->
+  <section class="cta-banner-section py-8 pb-16 lg:py-12 lg:pb-20">
+    <Container>
+      <div class="cta-banner relative overflow-hidden rounded-2xl px-8 py-12 text-center lg:px-16 lg:py-16">
+        <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-30" aria-hidden="true"></div>
+        <div
+          class="pointer-events-none absolute inset-0"
+          style="background: radial-gradient(600px 400px at 50% 120%, rgba(79,168,74,0.22) 0%, transparent 70%);"
+          aria-hidden="true"
+        ></div>
+        <div class="relative">
+          <h2 class="font-display text-2xl font-bold text-white sm:text-3xl lg:text-[2rem]">
+            Need help finding growth opportunities<br class="hidden sm:block" /> in your business?
+          </h2>
+          <p class="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/75">
+            We use data, experimentation, and strategy to unlock sustainable growth.
+          </p>
+          <a
+            href={cta.becomeClient.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-8 inline-flex items-center gap-2 rounded-full bg-brand-500 px-7 py-3.5 text-sm font-bold text-white shadow-glow-sm transition-all hover:bg-brand-600 hover:shadow-glow"
+          >
+            Let's talk growth
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+            >
+          </a>
+        </div>
+      </div>
+    </Container>
+  </section>
 </BaseLayout>
 
 <style>
-  .chip {
-    border-radius: 9999px;
+  /* ── Hero ── */
+  .hero-grid {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 1fr 440px;
+      gap: 4rem;
+    }
+  }
+
+  .featured-thumb {
+    aspect-ratio: 16 / 7;
+    background-color: var(--color-tint);
+  }
+  .featured-thumb svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── Filter selects ── */
+  .filter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--color-surface);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236b6f6c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 0.875rem;
     border: 1px solid var(--color-line);
-    background: var(--color-surface);
+    border-radius: 9999px;
     color: var(--color-body);
-    padding: 0.375rem 1rem;
+    cursor: pointer;
+    font-family: var(--font-sans);
     font-size: 0.875rem;
     font-weight: 500;
+    outline: none;
+    padding: 0.5rem 2.25rem 0.5rem 1rem;
     transition:
-      color 0.2s ease,
-      background-color 0.2s ease,
-      border-color 0.2s ease;
+      border-color 0.18s ease,
+      color 0.18s ease;
+    width: 100%;
   }
-  .chip:hover {
+  .filter-select:hover,
+  .filter-select:focus {
     border-color: var(--color-brand-300);
     color: var(--color-brand-700);
   }
-  .chip-active,
-  .chip-active:hover {
-    background: var(--color-brand-500);
-    border-color: var(--color-brand-500);
-    color: #fff;
+  @media (min-width: 640px) {
+    .filter-select {
+      width: auto;
+      min-width: 160px;
+    }
+  }
+
+  /* ── Carousel buttons ── */
+  .carousel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-surface);
+    color: var(--color-body);
+    cursor: pointer;
+    transition:
+      border-color 0.18s ease,
+      color 0.18s ease,
+      opacity 0.18s ease;
+  }
+  .carousel-btn:hover:not(:disabled) {
+    border-color: var(--color-brand-300);
+    color: var(--color-brand-600);
+  }
+  .carousel-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  /* ── Carousel track ── */
+  .carousel-wrap {
+    position: relative;
+    /* Right fade hint */
+    mask-image: linear-gradient(to right, black 88%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
+  }
+
+  .carousel-track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 8px; /* prevent shadow clip */
+  }
+  .carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Card widths: 1.08 on mobile → 2 on sm → 3 on lg */
+  .carousel-card {
+    flex: 0 0 88%;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+  @media (min-width: 640px) {
+    .carousel-card {
+      flex: 0 0 calc(50% - 0.625rem);
+    }
+  }
+  @media (min-width: 1024px) {
+    .carousel-card {
+      flex: 0 0 calc(33.333% - 0.834rem);
+    }
+  }
+
+  /* ── DDM horizontal mini-card ── */
+  .ddm-card {
+    border: 1px solid var(--color-line);
+    border-radius: 1.25rem;
+    background-color: var(--color-surface);
+    overflow: hidden;
+    transition:
+      box-shadow 0.22s ease,
+      transform 0.22s ease;
+  }
+  .ddm-card:hover {
+    box-shadow: var(--shadow-pop);
+    transform: translateY(-2px);
+  }
+
+  .ddm-card-inner {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    text-decoration: none;
+  }
+
+  .ddm-thumb {
+    flex: 0 0 40%;
+    background-color: var(--color-tint);
+    border-radius: 1.2rem 0 0 1.2rem;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+  }
+  .ddm-thumb-svg {
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+  }
+
+  .ddm-body {
+    flex: 1;
+    padding: 1.125rem 1.25rem;
+    min-width: 0;
+  }
+
+  /* On mobile, stack vertically */
+  @media (max-width: 479px) {
+    .ddm-card-inner {
+      flex-direction: column;
+    }
+    .ddm-thumb {
+      flex: 0 0 auto;
+      border-radius: 1.2rem 1.2rem 0 0;
+      min-height: 9rem;
+    }
+  }
+
+  /* ── CS vertical card ── */
+  .cs-card {
+    border: 1px solid var(--color-line);
+    border-radius: 1.25rem;
+    background-color: var(--color-surface);
+    overflow: hidden;
+    transition:
+      box-shadow 0.22s ease,
+      transform 0.22s ease;
+  }
+  .cs-card:hover {
+    box-shadow: var(--shadow-pop);
+    transform: translateY(-2px);
+  }
+  .cs-card-inner {
+    text-decoration: none;
+  }
+  .cs-thumb {
+    aspect-ratio: 16 / 9;
+    background-color: var(--color-tint);
+  }
+  .cs-thumb svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── CTA Banner ── */
+  .cta-banner {
+    background-color: var(--color-night);
+    background-image: linear-gradient(135deg, var(--color-night-600) 0%, var(--color-night) 60%);
   }
 </style>
 
 <script>
-  // Progressive enhancement: with JS off, the chips are plain links to each
-  // crawlable /blog/category/<slug>/ page and the search box is hidden. With JS,
-  // they filter the cards in place (no query-string URLs are minted).
-  const grid = document.getElementById('post-grid');
-  if (grid) {
-    const cards = Array.from(document.querySelectorAll<HTMLElement>('.post-card'));
-    const chips = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-filter]'));
-    const searchWrap = document.getElementById('blog-search-wrap');
-    const search = document.getElementById('blog-search') as HTMLInputElement | null;
-    const noResults = document.getElementById('no-results');
-    const clearBtn = document.getElementById('clear-filters');
+  // ── Carousel arrow logic ──────────────────────────────────────────────────
+  function setupCarousel(id: string) {
+    const track = document.getElementById(`${id}-track`);
+    const leftBtn = document.getElementById(`${id}-left`) as HTMLButtonElement | null;
+    const rightBtn = document.getElementById(`${id}-right`) as HTMLButtonElement | null;
+    if (!track) return;
 
-    if (searchWrap) searchWrap.hidden = false;
-
-    let activeFilter = 'all';
-    let query = '';
-
-    const apply = () => {
-      let shown = 0;
-      for (const card of cards) {
-        const matchCat = activeFilter === 'all' || card.dataset.category === activeFilter;
-        const matchText = query === '' || (card.dataset.search ?? '').includes(query);
-        const visible = matchCat && matchText;
-        card.hidden = !visible;
-        if (visible) shown++;
-      }
-      if (noResults) noResults.hidden = shown !== 0;
+    const getScrollAmount = () => {
+      const card = track.querySelector<HTMLElement>('.carousel-card');
+      return card ? card.offsetWidth + 20 : track.clientWidth * 0.9;
     };
 
-    for (const chip of chips) {
-      chip.addEventListener('click', (e) => {
-        e.preventDefault();
-        activeFilter = chip.dataset.filter ?? 'all';
-        for (const c of chips) c.classList.toggle('chip-active', c === chip);
-        apply();
-      });
+    const updateButtons = () => {
+      const atStart = track.scrollLeft <= 4;
+      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      if (leftBtn) leftBtn.disabled = atStart;
+      if (rightBtn) rightBtn.disabled = atEnd;
+    };
+
+    leftBtn?.addEventListener('click', () => {
+      track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+    });
+    rightBtn?.addEventListener('click', () => {
+      track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+    });
+    track.addEventListener('scroll', updateButtons, { passive: true });
+    updateButtons();
+  }
+
+  setupCarousel('ddm');
+  setupCarousel('cs');
+
+  // ── Filtering ─────────────────────────────────────────────────────────────
+  const ddmCards = Array.from(document.querySelectorAll<HTMLElement>('.ddm-card'));
+  const csCards = Array.from(document.querySelectorAll<HTMLElement>('.cs-card'));
+
+  const topicFilter = document.getElementById('topic-filter') as HTMLSelectElement | null;
+  const industryFilter = document.getElementById('industry-filter') as HTMLSelectElement | null;
+  const searchInput = document.getElementById('blog-search') as HTMLInputElement | null;
+
+  let activeTopic = 'all';
+  let activeIndustry = 'all';
+  let query = '';
+
+  function filterSection(
+    cards: HTMLElement[],
+    trackId: string,
+    emptyId: string,
+  ): number {
+    const track = document.getElementById(trackId);
+    const empty = document.getElementById(emptyId);
+    let shown = 0;
+
+    for (const card of cards) {
+      const cardTopic = card.dataset.topic ?? '';
+      const cardIndustry = card.dataset.industry ?? '';
+      const cardSearch = card.dataset.search ?? '';
+
+      const matchTopic = activeTopic === 'all' || cardTopic === activeTopic;
+      const matchIndustry =
+        activeIndustry === 'all' ||
+        cardIndustry === activeIndustry ||
+        cardIndustry === 'All industries';
+      const matchSearch = !query || cardSearch.includes(query);
+
+      const visible = matchTopic && matchIndustry && matchSearch;
+      card.hidden = !visible;
+      if (visible) shown++;
     }
 
-    search?.addEventListener('input', () => {
-      query = search.value.trim().toLowerCase();
-      apply();
-    });
-
-    clearBtn?.addEventListener('click', () => {
-      activeFilter = 'all';
-      query = '';
-      if (search) search.value = '';
-      for (const c of chips) c.classList.toggle('chip-active', c.dataset.filter === 'all');
-      apply();
-    });
+    if (track) track.hidden = shown === 0;
+    if (empty) empty.hidden = shown > 0;
+    return shown;
   }
+
+  function applyFilters() {
+    filterSection(ddmCards, 'ddm-track', 'ddm-empty');
+    filterSection(csCards, 'cs-track', 'cs-empty');
+
+    // Reset scroll on filter change
+    const ddmTrack = document.getElementById('ddm-track');
+    const csTrack = document.getElementById('cs-track');
+    ddmTrack?.scrollTo({ left: 0, behavior: 'instant' });
+    csTrack?.scrollTo({ left: 0, behavior: 'instant' });
+
+    // Re-sync arrow states after scroll reset
+    setupCarousel('ddm');
+    setupCarousel('cs');
+  }
+
+  topicFilter?.addEventListener('change', () => {
+    activeTopic = topicFilter.value;
+    applyFilters();
+  });
+  industryFilter?.addEventListener('change', () => {
+    activeIndustry = industryFilter.value;
+    applyFilters();
+  });
+  searchInput?.addEventListener('input', () => {
+    query = searchInput.value.trim().toLowerCase();
+    applyFilters();
+  });
+
+  // Clear filters — handles both the single clear button (future global) and
+  // the per-section clear buttons inside the empty states.
+  function clearAll() {
+    activeTopic = 'all';
+    activeIndustry = 'all';
+    query = '';
+    if (topicFilter) topicFilter.value = 'all';
+    if (industryFilter) industryFilter.value = 'all';
+    if (searchInput) searchInput.value = '';
+    applyFilters();
+  }
+
+  document.querySelectorAll('.clear-filters').forEach((btn) => {
+    btn.addEventListener('click', clearAll);
+  });
 </script>

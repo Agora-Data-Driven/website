@@ -5,6 +5,7 @@ excerpt: 'This is an honest look at when LED-wall advertising earns its place in
 heroImage: '/placeholders/cover-1.svg'
 heroAlt: 'A large LED-wall digital out-of-home advertising screen on a busy street.'
 category: 'Paid Marketing'
+industry: 'Local Business'
 draft: false
 ---
 

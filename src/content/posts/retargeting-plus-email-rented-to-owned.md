@@ -5,6 +5,7 @@ excerpt: 'Stop renting attention: strategically use retargeting to capture email
 heroImage: '/placeholders/cover-3.svg'
 heroAlt: 'Audiences moving from paid retargeting into an owned email channel.'
 category: 'Strategy & Growth'
+industry: 'E-commerce'
 draft: false
 ---
 

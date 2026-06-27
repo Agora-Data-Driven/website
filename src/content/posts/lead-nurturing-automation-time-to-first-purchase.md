@@ -5,6 +5,7 @@ excerpt: 'Shorten your time-to-first-purchase and boost revenue with strategic l
 heroImage: '/placeholders/cover-2.svg'
 heroAlt: 'Lead-nurturing automation shortening the time to a first purchase.'
 category: 'Strategy & Growth'
+industry: 'B2B'
 draft: false
 ---
 

@@ -5,6 +5,7 @@ excerpt: 'Platform-reported ROAS often overstates ad performance because each pl
 heroImage: '/placeholders/cover-2.svg'
 heroAlt: 'Platform-reported ad revenue compared against real booked revenue.'
 category: 'Marketing Analytics'
+industry: 'E-commerce'
 draft: false
 ---
 

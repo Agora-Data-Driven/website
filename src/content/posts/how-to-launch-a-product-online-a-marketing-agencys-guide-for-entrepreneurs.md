@@ -5,6 +5,7 @@ excerpt: 'Most failed product launches donâ€™t fail because the product was badâ
 heroImage: '/placeholders/cover-2.svg'
 heroAlt: 'Entrepreneur planning an online product launch.'
 category: 'Strategy & Growth'
+industry: 'E-commerce'
 ---
 
 Launching a product online is one of the most important milestones in any business. But while it's exciting, it's also a complex and high-stakes process.

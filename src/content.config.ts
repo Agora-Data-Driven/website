@@ -20,6 +20,8 @@ const posts = defineCollection({
     // 'case-study' posts are surfaced under Portfolio, not in the blog silos.
     type: z.enum(['post', 'case-study']).default('post'),
     draft: z.boolean().default(false),
+    // Optional industry tag for filtering (e.g. 'E-commerce', 'Local Business', 'B2B').
+    industry: z.string().optional(),
   }),
 });
 

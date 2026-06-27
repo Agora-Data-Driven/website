@@ -5,6 +5,7 @@ excerpt: 'Lifecycle email sequences transform new leads into loyal repeat custom
 heroImage: '/placeholders/cover-1.svg'
 heroAlt: 'An automated lifecycle email sequence moving a lead toward purchase.'
 category: 'Strategy & Growth'
+industry: 'E-commerce'
 draft: false
 ---
 
