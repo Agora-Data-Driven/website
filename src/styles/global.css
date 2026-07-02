@@ -82,6 +82,9 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Mobile hardening: clip any stray horizontal overflow so the page never
+       scrolls sideways. `clip` (not `hidden`) keeps the sticky header working. */
+    overflow-x: clip;
   }
 
   h1,

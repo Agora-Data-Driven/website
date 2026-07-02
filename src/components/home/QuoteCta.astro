@@ -36,8 +36,13 @@ import { cta } from '@data/cta';
           <Button href={cta.becomeClient.href} external variant="icon" size="lg">
             {cta.becomeClient.label}
           </Button>
-          <Button href={cta.clientLogin.href} external variant="secondary" size="lg">
-            {cta.clientLogin.label}
+          <Button
+            href={cta.customQuote.href}
+            external={cta.customQuote.external}
+            variant="secondary"
+            size="lg"
+          >
+            {cta.customQuote.label}
           </Button>
         </div>
         <p class="text-muted mt-6 text-xs font-medium tracking-wide uppercase">

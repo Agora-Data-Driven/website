@@ -173,8 +173,8 @@ const iconCls = `${iconShell} ${iconShellSize[size]} ${className}`;
     width: 0.5rem;
     flex: none;
     border-radius: 9999px;
-    /* brand-700 (not 500) so the flooded pill keeps white label text at >=4.5:1 (AA). */
-    background: var(--color-brand-700);
+    /* Agora brand green (matches the "Become a client" CTA). */
+    background: var(--color-brand-500);
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
   /* Big enough to flood even the widest button from the dot's off-centre origin. */
@@ -229,7 +229,7 @@ const iconCls = `${iconShell} ${iconShellSize[size]} ${className}`;
     flex: none;
   }
   .ihb:hover {
-    border-color: var(--color-brand-700);
+    border-color: var(--color-brand-500);
   }
   .ihb:active {
     transform: scale(0.98);
@@ -247,8 +247,8 @@ const iconCls = `${iconShell} ${iconShellSize[size]} ${className}`;
     }
     .ihb:hover,
     .ihb:focus-visible {
-      background: var(--color-brand-700);
-      border-color: var(--color-brand-700);
+      background: var(--color-brand-500);
+      border-color: var(--color-brand-500);
     }
     .ihb:hover .ihb-label,
     .ihb:focus-visible .ihb-label {

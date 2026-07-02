@@ -10,8 +10,10 @@ import { cta } from '@data/cta';
   </div>
   <!-- Ambient "data stream" backdrop: slow, faint drifting code/hex behind the
        display. Pure Canvas2D, masked to fade at the edges, off for reduced-motion. -->
-  <canvas id="hero-code" class="hero-code pointer-events-none absolute inset-0" aria-hidden="true"
-  ></canvas>
+  <canvas
+    id="hero-code"
+    class="hero-code pointer-events-none absolute inset-0 hidden lg:block"
+    aria-hidden="true"></canvas>
   <div
     class="glow-pulse bg-brand-300/30 pointer-events-none absolute -top-40 -right-32 h-[34rem] w-[34rem] rounded-full blur-[130px]"
   >
