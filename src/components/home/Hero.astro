@@ -30,86 +30,88 @@ import { cta } from '@data/cta';
   <div
     class="relative z-10 mx-auto grid w-full max-w-[100rem] items-center gap-10 px-5 py-8 sm:px-6 lg:grid-cols-[minmax(0,33rem)_minmax(0,52rem)] lg:justify-center lg:gap-14 lg:px-10 lg:py-12"
   >
-      <!-- Copy -->
-      <div>
-        <p
-          class="reveal border-brand-200 bg-tint/70 text-brand-700 inline-flex items-center gap-2 rounded-full border py-1.5 pr-4 pl-2.5 text-xs font-semibold tracking-wide uppercase backdrop-blur"
-        >
-          <span
-            class="bg-brand-500 grid h-4 w-4 place-items-center rounded-full"
-            aria-hidden="true"
-          >
-            <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
-          </span>
-          Data-driven marketing &amp; analytics
-        </p>
-        <h1
-          class="reveal text-ink mt-6 text-4xl leading-[1.04] font-bold sm:text-5xl lg:text-[4rem]"
-          style="--reveal-delay: 80ms"
-        >
-          Analytics powered marketing for
-          <span class="sr-only">real results.</span>
-          <span class="mt-2 block whitespace-nowrap" aria-hidden="true">
-            <span id="hero-rotator" class="text-gradient">real results</span><span
-              class="hero-caret"></span>
-          </span>
-        </h1>
-        <p class="reveal text-muted mt-6 max-w-xl text-lg" style="--reveal-delay: 160ms">
-          We turn insights into sales. From strategy to execution, we help you scale, optimize, and
-          make smarter decisions, faster. Working with us isn't a cost; it's an investment.
-        </p>
+    <!-- Copy -->
+    <div>
+      <p
+        class="reveal border-brand-200 bg-tint/70 text-brand-700 inline-flex items-center gap-2 rounded-full border py-1.5 pr-4 pl-2.5 text-xs font-semibold tracking-wide uppercase backdrop-blur"
+      >
+        <span class="bg-brand-500 grid h-4 w-4 place-items-center rounded-full" aria-hidden="true">
+          <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
+        </span>
+        Data-driven marketing &amp; analytics
+      </p>
+      <h1
+        class="reveal text-ink mt-6 text-4xl leading-[1.04] font-bold sm:text-5xl lg:text-[4rem]"
+        style="--reveal-delay: 80ms"
+      >
+        Analytics powered marketing for
+        <span class="sr-only">real results.</span>
+        <span class="mt-2 block whitespace-nowrap" aria-hidden="true">
+          <span id="hero-rotator" class="text-gradient">real results</span><span class="hero-caret"
+          ></span>
+        </span>
+      </h1>
+      <p class="reveal text-muted mt-6 max-w-xl text-lg" style="--reveal-delay: 160ms">
+        We turn insights into sales. From strategy to execution, we help you scale, optimize, and
+        make smarter decisions, faster. Working with us isn't a cost; it's an investment.
+      </p>
 
-        <div class="reveal mt-8 flex flex-wrap gap-4" style="--reveal-delay: 240ms">
-          <Button href={cta.becomeClient.href} external variant="icon" size="lg">
-            {cta.becomeClient.label}
-          </Button>
-          <Button href={cta.customQuote.href} external={cta.customQuote.external} variant="secondary" size="lg">
-            {cta.customQuote.label}
-          </Button>
-        </div>
-
-        <div
-          class="reveal text-muted mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
-          style="--reveal-delay: 320ms"
+      <div class="reveal mt-8 flex flex-wrap gap-4" style="--reveal-delay: 240ms">
+        <Button href={cta.becomeClient.href} external variant="icon" size="lg">
+          {cta.becomeClient.label}
+        </Button>
+        <Button
+          href={cta.customQuote.href}
+          external={cta.customQuote.external}
+          variant="secondary"
+          size="lg"
         >
-          <span class="flex items-center gap-2">
-            <span class="tracking-tight text-[#f5a623]" aria-hidden="true">★★★★★</span>
-            <span><span class="text-ink font-semibold">Top Rated</span> on Upwork</span>
-          </span>
-          <span class="bg-line hidden h-4 w-px sm:block" aria-hidden="true"></span>
-          <span class="flex items-center gap-2">
-            <span class="font-display text-ink font-bold">9</span> verifiable certifications
-          </span>
-          <span class="bg-line hidden h-4 w-px sm:block" aria-hidden="true"></span>
-          <span class="flex items-center gap-2">
-            <span class="font-display text-ink font-bold">2×</span> award-winning analytics
-          </span>
-        </div>
+          {cta.customQuote.label}
+        </Button>
       </div>
 
-      <!-- Brand video showcase -->
-      <div class="reveal relative w-full" style="--reveal-delay: 200ms">
-        <div
-          class="glow-pulse bg-brand-300/25 pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] blur-3xl"
-        >
-        </div>
-        <div
-          class="group border-line bg-surface shadow-pop relative w-full overflow-hidden rounded-2xl border"
-        >
-          <video
-            class="bg-surface aspect-video w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-            autoplay
-            loop
-            muted
-            playsinline
-            preload="auto"
-            aria-label="A short look at how Agora Data Driven works with clients"
-          >
-            <source src="/Agora-Website-Video.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
+      <div
+        class="reveal text-muted mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
+        style="--reveal-delay: 320ms"
+      >
+        <span class="flex items-center gap-2">
+          <span class="tracking-tight text-[#f5a623]" aria-hidden="true">★★★★★</span>
+          <span><span class="text-ink font-semibold">Top Rated</span> on Upwork</span>
+        </span>
+        <span class="bg-line hidden h-4 w-px sm:block" aria-hidden="true"></span>
+        <span class="flex items-center gap-2">
+          <span class="font-display text-ink font-bold">9</span> verifiable certifications
+        </span>
+        <span class="bg-line hidden h-4 w-px sm:block" aria-hidden="true"></span>
+        <span class="flex items-center gap-2">
+          <span class="font-display text-ink font-bold">2×</span> award-winning analytics
+        </span>
       </div>
+    </div>
+
+    <!-- Brand video showcase -->
+    <div class="reveal relative w-full" style="--reveal-delay: 200ms">
+      <div
+        class="glow-pulse bg-brand-300/25 pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] blur-3xl"
+      >
+      </div>
+      <div
+        class="group border-line bg-surface shadow-pop relative w-full overflow-hidden rounded-2xl border"
+      >
+        <video
+          class="bg-surface aspect-video w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+          autoplay
+          loop
+          muted
+          playsinline
+          preload="auto"
+          aria-label="A short look at how Agora Data Driven works with clients"
+        >
+          <source src="/Agora-Website-Video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
   </div>
 </section>
 

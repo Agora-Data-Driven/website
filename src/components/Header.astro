@@ -129,13 +129,13 @@ const linkBase =
           mainNav.flatMap((item) =>
             item.children
               ? [
-                  <span class="text-ink block rounded-lg px-3 py-2.5 font-medium uppercase tracking-wide">
+                  <span class="text-ink block rounded-lg px-3 py-2.5 font-medium tracking-wide uppercase">
                     {item.label}
                   </span>,
                   ...item.children.map((child) => (
                     <a
                       href={child.href}
-                      class="text-body rounded-lg px-3 py-2.5 pl-6 uppercase tracking-wide"
+                      class="text-body rounded-lg px-3 py-2.5 pl-6 tracking-wide uppercase"
                       rel={child.external ? 'noopener noreferrer' : undefined}
                       target={child.external ? '_blank' : undefined}
                     >
@@ -146,7 +146,7 @@ const linkBase =
               : [
                   <a
                     href={item.href}
-                    class="text-ink rounded-lg px-3 py-2.5 font-medium uppercase tracking-wide"
+                    class="text-ink rounded-lg px-3 py-2.5 font-medium tracking-wide uppercase"
                     rel={item.external ? 'noopener noreferrer' : undefined}
                     target={item.external ? '_blank' : undefined}
                   >

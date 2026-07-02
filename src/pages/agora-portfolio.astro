@@ -48,7 +48,7 @@ const postCaseStudies = (
               style={`--reveal-delay: ${i * 80}ms`}
             >
               {post.data.heroImage && (
-                <a href={`/${post.id}/`} class="block overflow-hidden bg-canvas">
+                <a href={`/${post.id}/`} class="bg-canvas block overflow-hidden">
                   <img
                     src={post.data.heroImage}
                     alt=""
@@ -68,7 +68,10 @@ const postCaseStudies = (
                   class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
                 >
                   Read the story
-                  <span class="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">
+                  <span
+                    class="transition-transform duration-200 group-hover:translate-x-1"
+                    aria-hidden="true"
+                  >
                     →
                   </span>
                 </a>
@@ -82,7 +85,7 @@ const postCaseStudies = (
               class="card-hover reveal border-line bg-surface shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
               style={`--reveal-delay: ${(postCaseStudies.length + i) * 80}ms`}
             >
-              <a href={`/${c.slug}/`} class="block overflow-hidden bg-canvas">
+              <a href={`/${c.slug}/`} class="bg-canvas block overflow-hidden">
                 <img
                   src={c.cardImage ?? c.image ?? c.heroImage}
                   alt=""
@@ -101,7 +104,10 @@ const postCaseStudies = (
                   class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
                 >
                   Learn more
-                  <span class="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">
+                  <span
+                    class="transition-transform duration-200 group-hover:translate-x-1"
+                    aria-hidden="true"
+                  >
                     →
                   </span>
                 </a>
@@ -126,7 +132,7 @@ const postCaseStudies = (
           competitions.map((c, i) => (
             <a
               href={`/${c.slug}/`}
-              class="card-hover reveal border-line bg-canvas hover:shadow-pop flex flex-col rounded-2xl border p-7 shadow-card transition-all duration-300"
+              class="card-hover reveal border-line bg-canvas hover:shadow-pop shadow-card flex flex-col rounded-2xl border p-7 transition-all duration-300"
               style={`--reveal-delay: ${i * 80}ms`}
             >
               <span class="text-brand-600 text-3xl font-bold">{c.placement}</span>

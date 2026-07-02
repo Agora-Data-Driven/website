@@ -7,11 +7,11 @@ import { cta } from '@data/cta';
 const year = new Date().getFullYear();
 ---
 
-<footer class="surface-dark relative border-t border-night-600">
+<footer class="surface-dark border-night-600 relative border-t">
   <Container class="py-14 lg:py-20">
     <!-- Final CTA band -->
     <div
-      class="border-night-600 relative mb-14 flex flex-col items-start justify-between gap-6 overflow-hidden rounded-3xl border bg-night-400/20 px-7 py-12 backdrop-blur sm:px-10 lg:flex-row lg:items-center"
+      class="border-night-600 bg-night-400/20 relative mb-14 flex flex-col items-start justify-between gap-6 overflow-hidden rounded-3xl border px-7 py-12 backdrop-blur sm:px-10 lg:flex-row lg:items-center"
     >
       <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-30" aria-hidden="true">
       </div>
@@ -34,20 +34,20 @@ const year = new Date().getFullYear();
         <a href="/" class="flex items-center" aria-label="Agora Data Driven, home">
           <img src="/agora-logo.webp" alt="Agora Data Driven" class="h-9 w-auto invert" />
         </a>
-        <p class="text-white/60 mt-3 text-sm">
+        <p class="mt-3 text-sm text-white/60">
           Analytics-powered marketing for real results. We turn insights into sales.
         </p>
       </div>
 
       <nav aria-label="Footer">
-        <h3 class="text-sm font-semibold tracking-wide uppercase text-white">Pages</h3>
+        <h3 class="text-sm font-semibold tracking-wide text-white uppercase">Pages</h3>
         <ul class="mt-3 space-y-2">
           {
             footerNav.map((item) => (
               <li>
                 <a
                   href={item.href}
-                  class="text-white/60 hover:text-white transition-colors text-sm uppercase tracking-wide"
+                  class="text-sm tracking-wide text-white/60 uppercase transition-colors hover:text-white"
                   rel={item.external ? 'noopener noreferrer' : undefined}
                   target={item.external ? '_blank' : undefined}
                 >
@@ -61,13 +61,15 @@ const year = new Date().getFullYear();
     </div>
 
     <!-- Copyright + legal -->
-    <div class="border-night-600 text-white/60 mt-12 flex flex-col gap-4 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
+    <div
+      class="border-night-600 mt-12 flex flex-col gap-4 border-t pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between"
+    >
       <p>© {year} Agora Data Driven. All rights reserved.</p>
       <ul class="flex gap-5">
         {
           legalNav.map((item) => (
             <li>
-              <a href={item.href} class="text-white/60 hover:text-white transition-colors">
+              <a href={item.href} class="text-white/60 transition-colors hover:text-white">
                 {item.label}
               </a>
             </li>
@@ -94,8 +96,8 @@ const year = new Date().getFullYear();
       stroke-linejoin="round"
       aria-hidden="true"
     >
-      <line x1="12" y1="19" x2="12" y2="5" />
-      <polyline points="6 11 12 5 18 11" />
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="6 11 12 5 18 11"></polyline>
     </svg>
   </button>
 </footer>

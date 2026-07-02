@@ -81,5 +81,4 @@ export const siloNames = silos.map((s) => s.name) as [SiloName, ...SiloName[]];
 export const FALLBACK_CATEGORY: SiloName = 'Strategy & Growth';
 
 export const getSilo = (name: string): Silo | undefined => silos.find((s) => s.name === name);
-export const getSiloBySlug = (slug: string): Silo | undefined =>
-  silos.find((s) => s.slug === slug);
+export const getSiloBySlug = (slug: string): Silo | undefined => silos.find((s) => s.slug === slug);

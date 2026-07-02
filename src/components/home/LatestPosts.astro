@@ -55,82 +55,86 @@ function formatDate(date: Date): string {
       </p>
     </SectionHeading>
 
-    {posts.length > 0 ? (
-      <>
-        {/* Blog card grid, matches the blog page card style */}
-        <div class="mt-12 grid gap-6 md:grid-cols-3">
-          {posts.map((post, i) => (
-            <article
-              class="card-hover reveal group border-line bg-canvas flex flex-col overflow-hidden rounded-2xl border shadow-card transition-all duration-300"
-              style={`--reveal-delay: ${i * 80}ms`}
-            >
-              {/* Topic-relevant vector illustration (no bitmap, brand-colored). */}
-              <a
-                href={`/${post.id}/`}
-                class="border-line block overflow-hidden border-b"
-                aria-hidden="true"
-                tabindex="-1"
+    {
+      posts.length > 0 ? (
+        <>
+          {/* Blog card grid, matches the blog page card style */}
+          <div class="mt-12 grid gap-6 md:grid-cols-3">
+            {posts.map((post, i) => (
+              <article
+                class="card-hover reveal group border-line bg-canvas shadow-card flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
+                style={`--reveal-delay: ${i * 80}ms`}
               >
-                <div class="aspect-video w-full">
-                  <BlogThumbnail
-                    variant={thumbFor(post)}
-                    class="h-full w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                  />
-                </div>
-              </a>
-
-              <div class="flex flex-1 flex-col p-6">
-                {/* Category badge */}
-                <span class="bg-tint text-brand-700 w-fit rounded-full px-3 py-1 text-xs font-semibold">
-                  {post.data.category}
-                </span>
-
-                {/* Title */}
-                <h3 class="text-ink mt-3 text-lg font-semibold leading-tight">
-                  <a href={`/${post.id}/`} class="hover:text-brand-600 transition-colors">
-                    {post.data.title}
-                  </a>
-                </h3>
-
-                {/* Excerpt */}
-                <p class="text-muted mt-2 flex-1 text-sm">{post.data.excerpt}</p>
-
-                {/* Meta: date + read time */}
-                <div class="text-muted mt-4 flex items-center gap-3 border-t border-line pt-4 text-xs">
-                  <time datetime={post.data.publishDate.toISOString()}>
-                    {formatDate(post.data.publishDate)}
-                  </time>
-                  <span aria-hidden="true">·</span>
-                  <span>{getReadTime(post.body)}</span>
-                </div>
-
-                {/* Read more link */}
+                {/* Topic-relevant vector illustration (no bitmap, brand-colored). */}
                 <a
                   href={`/${post.id}/`}
-                  class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+                  class="border-line block overflow-hidden border-b"
+                  aria-hidden="true"
+                  tabindex="-1"
                 >
-                  Read more
-                  <span
-                    class="transition-transform duration-200 group-hover:translate-x-1"
-                    aria-hidden="true"
-                  >
-                    →
-                  </span>
+                  <div class="aspect-video w-full">
+                    <BlogThumbnail
+                      variant={thumbFor(post)}
+                      class="h-full w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                    />
+                  </div>
                 </a>
-              </div>
-            </article>
-          ))}
-        </div>
 
-        {/* View all posts CTA */}
-        <div class="reveal mt-12 flex justify-center">
-          <Button href="/blog/" variant="secondary">View all posts</Button>
+                <div class="flex flex-1 flex-col p-6">
+                  {/* Category badge */}
+                  <span class="bg-tint text-brand-700 w-fit rounded-full px-3 py-1 text-xs font-semibold">
+                    {post.data.category}
+                  </span>
+
+                  {/* Title */}
+                  <h3 class="text-ink mt-3 text-lg leading-tight font-semibold">
+                    <a href={`/${post.id}/`} class="hover:text-brand-600 transition-colors">
+                      {post.data.title}
+                    </a>
+                  </h3>
+
+                  {/* Excerpt */}
+                  <p class="text-muted mt-2 flex-1 text-sm">{post.data.excerpt}</p>
+
+                  {/* Meta: date + read time */}
+                  <div class="text-muted border-line mt-4 flex items-center gap-3 border-t pt-4 text-xs">
+                    <time datetime={post.data.publishDate.toISOString()}>
+                      {formatDate(post.data.publishDate)}
+                    </time>
+                    <span aria-hidden="true">·</span>
+                    <span>{getReadTime(post.body)}</span>
+                  </div>
+
+                  {/* Read more link */}
+                  <a
+                    href={`/${post.id}/`}
+                    class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+                  >
+                    Read more
+                    <span
+                      class="transition-transform duration-200 group-hover:translate-x-1"
+                      aria-hidden="true"
+                    >
+                      →
+                    </span>
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* View all posts CTA */}
+          <div class="reveal mt-12 flex justify-center">
+            <Button href="/blog/" variant="secondary">
+              View all posts
+            </Button>
+          </div>
+        </>
+      ) : (
+        <div class="reveal border-line bg-canvas mt-12 rounded-2xl border border-dashed p-12 text-center">
+          <p class="text-muted">No posts yet. Check back soon!</p>
         </div>
-      </>
-    ) : (
-      <div class="reveal mt-12 rounded-2xl border border-dashed border-line bg-canvas p-12 text-center">
-        <p class="text-muted">No posts yet. Check back soon!</p>
-      </div>
-    )}
+      )
+    }
   </Container>
 </section>

@@ -42,7 +42,7 @@ That last point is the one that mattered most in the Agora rebuild. Sending the 
 |                               | **Client-Side Tracking**                    | **Server-Side Tracking**                                                                   |
 | :---------------------------- | :------------------------------------------ | :----------------------------------------------------------------------------------------- |
 | **Where data is collected**   | In the visitor's browser                    | On a server you control                                                                    |
-| **Setup effort**              | Low, default GTM install                     | Higher, requires a server container + hosting                                               |
+| **Setup effort**              | Low, default GTM install                    | Higher, requires a server container + hosting                                              |
 | **Resilience to ad blockers** | Poor; scripts get blocked                   | Higher; the heavy lifting moves off the browser, though the first hit can still be blocked |
 | **Data control**              | Limited; you send what the browser captures | High; enrich, validate, and filter before sending                                          |
 | **Revenue accuracy**          | Often estimated or partial                  | Can use confirmed backend values                                                           |

@@ -42,7 +42,7 @@ const interactiveCls = `${base} ${sizes[size]} ihb border-line bg-surface text-i
 //
 // How the slide works: the badge is absolutely positioned. At rest it sits at
 // `right-1` (4px from the right). On hover it animates to
-// `right: calc(100% - <badge+4px>)`, which places it 4px from the LEFT edge, 
+// `right: calc(100% - <badge+4px>)`, which places it 4px from the LEFT edge,
 // a perfectly mirrored slide. The label's inline padding flips at the same time
 // (e.g. ps-5/pe-12 -> ps-12/pe-5) so the text shifts right out of the badge's way.
 const iconShell =
@@ -66,7 +66,7 @@ const iconCls = `${iconShell} ${iconShellSize[size]} ${className}`;
           <slot />
         </span>
         <span
-          class={`absolute top-1/2 grid -translate-y-1/2 place-items-center rounded-full bg-white text-brand-600 shadow-sm transition-all duration-500 ease-out group-hover:rotate-45 ${badgeSize[size]}`}
+          class={`text-brand-600 absolute top-1/2 grid -translate-y-1/2 place-items-center rounded-full bg-white shadow-sm transition-all duration-500 ease-out group-hover:rotate-45 ${badgeSize[size]}`}
           aria-hidden="true"
         >
           <svg
@@ -89,7 +89,7 @@ const iconCls = `${iconShell} ${iconShellSize[size]} ${className}`;
           <slot />
         </span>
         <span
-          class={`absolute top-1/2 grid -translate-y-1/2 place-items-center rounded-full bg-white text-brand-600 shadow-sm transition-all duration-500 ease-out group-hover:rotate-45 ${badgeSize[size]}`}
+          class={`text-brand-600 absolute top-1/2 grid -translate-y-1/2 place-items-center rounded-full bg-white shadow-sm transition-all duration-500 ease-out group-hover:rotate-45 ${badgeSize[size]}`}
           aria-hidden="true"
         >
           <svg
