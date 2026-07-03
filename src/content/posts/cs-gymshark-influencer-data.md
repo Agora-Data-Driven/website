@@ -1,11 +1,11 @@
 ---
-title: "How Gymshark Found Influencers Nobody Else Was Looking For"
+title: 'How Gymshark Found Influencers Nobody Else Was Looking For'
 publishDate: 2026-06-27
-excerpt: "Ben Francis started Gymshark with no marketing budget. He looked at one number that bigger brands ignored, engagement rate, and used it to find the fitness influencers who actually converted."
-category: "Paid Marketing"
+excerpt: 'Ben Francis started Gymshark with no marketing budget. He looked at one number that bigger brands ignored, engagement rate, and used it to find the fitness influencers who actually converted.'
+category: 'Paid Marketing'
 type: case-study
 draft: false
-industry: "Ecommerce"
+industry: 'Ecommerce'
 ---
 
 In 2012, Ben Francis was 19, working at Pizza Hut, and making fitness apparel in his parents' garage in Solihull. He had no money for celebrity endorsements and no brand equity to trade on. Gymshark was competing against established names with real marketing budgets.

@@ -1,0 +1,140 @@
+---
+import Container from '@components/Container.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import Button from '@components/Button.astro';
+import BlogThumbnail from '@components/BlogThumbnail.astro';
+import { blogPosts } from '@data/blogData';
+import { getCollection } from 'astro:content';
+
+// Fetch all published blog posts, sorted newest first
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const posts = allPosts
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3); // Show only the 3 most recent
+
+// Pick a topic-relevant illustration for each card, mirroring the blog page:
+// prefer the per-post variant curated in blogData.ts, then fall back to a
+// per-category default so a card is never left blank.
+const variantById = new Map(blogPosts.map((p) => [p.id, p.thumbnailVariant]));
+const thumbByCategory: Record<string, string> = {
+  'Marketing Analytics': 'dashboard-metrics',
+  Analytics: 'dashboard-metrics',
+  Attribution: 'attribution-flow',
+  'Paid Marketing': 'channel-launch',
+  'Paid Media': 'channel-launch',
+  'Organic Growth': 'content-engine',
+  'Strategy & Growth': 'email-retargeting',
+  Experimentation: 'experiment-roadmap',
+  'Course Review': 'course-review',
+  'Careers & Skill-Building': 'course-review',
+};
+function thumbFor(post: (typeof posts)[number]): string {
+  return variantById.get(post.id) ?? thumbByCategory[post.data.category] ?? 'attribution-flow';
+}
+
+// Helper to calculate read time from markdown body
+function getReadTime(body: string | undefined): string {
+  if (!body || body.trim().length < 100) return '5 min read';
+  const words = body.trim().split(/\s+/).length;
+  const mins = Math.max(1, Math.ceil(words / 220));
+  return `${mins} min read`;
+}
+
+// Format date as "Month Day, Year"
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+---
+
+<section class="border-line border-b py-16 lg:py-24">
+  <Container>
+    <SectionHeading eyebrow="Latest insights" title="Latest from the blog" class="reveal">
+      <p class="text-muted mt-3">
+        Real strategies, real results. Actionable insights on marketing analytics, paid growth, and
+        data-driven strategy.
+      </p>
+    </SectionHeading>
+
+    {
+      posts.length > 0 ? (
+        <>
+          {/* Blog card grid, matches the blog page card style */}
+          <div class="mt-12 grid gap-6 md:grid-cols-3">
+            {posts.map((post, i) => (
+              <article
+                class="card-hover reveal group border-line bg-canvas shadow-card flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
+                style={`--reveal-delay: ${i * 80}ms`}
+              >
+                {/* Topic-relevant vector illustration (no bitmap, brand-colored). */}
+                <a
+                  href={`/${post.id}/`}
+                  class="border-line block overflow-hidden border-b"
+                  aria-hidden="true"
+                  tabindex="-1"
+                >
+                  <div class="aspect-video w-full">
+                    <BlogThumbnail
+                      variant={thumbFor(post)}
+                      class="h-full w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                    />
+                  </div>
+                </a>
+
+                <div class="flex flex-1 flex-col p-6">
+                  {/* Category badge */}
+                  <span class="bg-tint text-brand-700 w-fit rounded-full px-3 py-1 text-xs font-semibold">
+                    {post.data.category}
+                  </span>
+
+                  {/* Title */}
+                  <h3 class="text-ink mt-3 text-lg leading-tight font-semibold">
+                    <a href={`/${post.id}/`} class="hover:text-brand-600 transition-colors">
+                      {post.data.title}
+                    </a>
+                  </h3>
+
+                  {/* Excerpt */}
+                  <p class="text-muted mt-2 flex-1 text-sm">{post.data.excerpt}</p>
+
+                  {/* Meta: date + read time */}
+                  <div class="text-muted border-line mt-4 flex items-center gap-3 border-t pt-4 text-xs">
+                    <time datetime={post.data.publishDate.toISOString()}>
+                      {formatDate(post.data.publishDate)}
+                    </time>
+                    <span aria-hidden="true">·</span>
+                    <span>{getReadTime(post.body)}</span>
+                  </div>
+
+                  {/* Read more link */}
+                  <a
+                    href={`/${post.id}/`}
+                    class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+                  >
+                    Read more
+                    <span
+                      class="transition-transform duration-200 group-hover:translate-x-1"
+                      aria-hidden="true"
+                    >
+                      →
+                    </span>
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* View all posts CTA */}
+          <div class="reveal mt-12 flex justify-center">
+            <Button href="/blog/" variant="secondary">
+              View all posts
+            </Button>
+          </div>
+        </>
+      ) : (
+        <div class="reveal border-line bg-canvas mt-12 rounded-2xl border border-dashed p-12 text-center">
+          <p class="text-muted">No posts yet. Check back soon!</p>
+        </div>
+      )
+    }
+  </Container>
+</section>

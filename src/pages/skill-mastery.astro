@@ -7,14 +7,16 @@ export const prerender = true;
 
 <BaseLayout
   title="Skill Mastery"
-  description="AGORA Skill Mastery: our hands-on training platform for aspiring data, analytics, and marketing talent. Build the skills we hire for, right here."
+  description="AGORA Skill Mastery, our hands-on training platform for aspiring data, analytics, and marketing talent. Build the skills we hire for, right here."
 >
-  {/*
+  {
+    /*
     Skill Mastery is a separate Cloud Run app; we embed it inline rather than
     linking out. The frame fills the viewport below the sticky header (4rem on
     mobile, 5rem at lg). If embedding is ever blocked, the fallback link opens
     the app directly.
-  */}
+  */
+  }
   <iframe
     src={skillMasteryUrl}
     title="AGORA Skill Mastery"

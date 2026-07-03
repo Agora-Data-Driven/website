@@ -1,4 +1,4 @@
-/** Global site metadata — single source of truth for SEO defaults. */
+/** Global site metadata, single source of truth for SEO defaults. */
 export const site = {
   name: 'Agora Data Driven',
   shortName: 'Agora',

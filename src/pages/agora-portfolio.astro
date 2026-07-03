@@ -42,14 +42,17 @@ const postCaseStudies = (
       </SectionHeading>
       <div class="mt-10 grid gap-6 md:grid-cols-3">
         {
-          postCaseStudies.map((post) => (
-            <article class="border-line bg-surface shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-shadow">
+          postCaseStudies.map((post, i) => (
+            <article
+              class="card-hover reveal border-line bg-surface shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
+              style={`--reveal-delay: ${i * 80}ms`}
+            >
               {post.data.heroImage && (
-                <a href={`/${post.id}/`} class="block">
+                <a href={`/${post.id}/`} class="bg-canvas block overflow-hidden">
                   <img
                     src={post.data.heroImage}
                     alt=""
-                    class="bg-canvas aspect-[16/10] w-full object-cover"
+                    class="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                   />
                 </a>
@@ -62,22 +65,31 @@ const postCaseStudies = (
                 <p class="text-muted mt-2 flex-1 text-sm">{post.data.excerpt}</p>
                 <a
                   href={`/${post.id}/`}
-                  class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold"
+                  class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
                 >
-                  Read the story <span aria-hidden="true">&rarr;</span>
+                  Read the story
+                  <span
+                    class="transition-transform duration-200 group-hover:translate-x-1"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
                 </a>
               </div>
             </article>
           ))
         }
         {
-          caseStudies.map((c) => (
-            <article class="border-line bg-surface shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-shadow">
-              <a href={`/${c.slug}/`} class="block">
+          caseStudies.map((c, i) => (
+            <article
+              class="card-hover reveal border-line bg-surface shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
+              style={`--reveal-delay: ${(postCaseStudies.length + i) * 80}ms`}
+            >
+              <a href={`/${c.slug}/`} class="bg-canvas block overflow-hidden">
                 <img
-                  src={c.heroImage}
+                  src={c.cardImage ?? c.image ?? c.heroImage}
                   alt=""
-                  class="bg-canvas aspect-[16/10] w-full object-cover"
+                  class="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                 />
               </a>
@@ -89,9 +101,15 @@ const postCaseStudies = (
                 <p class="text-muted mt-2 flex-1 text-sm">{c.summary}</p>
                 <a
                   href={`/${c.slug}/`}
-                  class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold"
+                  class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
                 >
-                  Learn more <span aria-hidden="true">&rarr;</span>
+                  Learn more
+                  <span
+                    class="transition-transform duration-200 group-hover:translate-x-1"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
                 </a>
               </div>
             </article>
@@ -111,10 +129,11 @@ const postCaseStudies = (
       </SectionHeading>
       <div class="mt-10 grid gap-6 md:grid-cols-2">
         {
-          competitions.map((c) => (
+          competitions.map((c, i) => (
             <a
               href={`/${c.slug}/`}
-              class="border-line bg-canvas hover:shadow-pop flex flex-col rounded-2xl border p-7 transition-shadow"
+              class="card-hover reveal border-line bg-canvas hover:shadow-pop shadow-card flex flex-col rounded-2xl border p-7 transition-all duration-300"
+              style={`--reveal-delay: ${i * 80}ms`}
             >
               <span class="text-brand-600 text-3xl font-bold">{c.placement}</span>
               <h3 class="text-ink mt-3 text-xl font-semibold">{c.cardTitle}</h3>

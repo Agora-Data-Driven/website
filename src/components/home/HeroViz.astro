@@ -1,20 +1,17 @@
 ---
 // Looping canvas that cycles through the ML techniques Agora actually uses.
-// Pure Canvas2D, no assets — light on slow connections, crisp on mobile.
+// Pure Canvas2D, no assets, light on slow connections, crisp on mobile.
 ---
 
 <div class="border-line bg-surface shadow-pop rounded-2xl border p-5 sm:p-6">
-  <div class="flex items-center justify-between">
+  <div class="flex items-center">
     <span class="font-display text-ink flex items-center gap-2 text-sm font-bold">
       <span class="hv-dot" aria-hidden="true"></span>
       <span id="hero-scene">Neural network</span>
     </span>
-    <span class="font-display text-muted text-[0.7rem] tracking-widest uppercase"
-      >Models we ship</span
-    >
   </div>
 
-  <canvas id="hero-canvas" class="mt-3 h-48 w-full sm:h-56"></canvas>
+  <canvas id="hero-canvas" class="mt-4 h-64 w-full sm:h-72 lg:h-80"></canvas>
 
   <p class="sr-only">
     Animated showcase of machine-learning techniques we use: neural networks, non-linear curve

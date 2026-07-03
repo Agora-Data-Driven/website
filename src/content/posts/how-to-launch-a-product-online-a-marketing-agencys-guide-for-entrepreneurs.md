@@ -1,7 +1,7 @@
 ---
 title: "How to Launch a Product Online: A Marketing Agency's Guide for Entrepreneurs"
 publishDate: 2025-05-30
-excerpt: ‘Most failed product launches don\’t fail because the product was bad, they fail because the launch wasn\’t strategically planned. Here are the essential steps to plan, promote, and scale a launch that delivers.’
+excerpt: 'Most failed product launches don’t fail because the product was bad, they fail because the launch wasn’t strategically planned. Here are the essential steps to plan, promote, and scale a launch that delivers.'
 heroImage: '/placeholders/cover-2.svg'
 heroAlt: 'Entrepreneur planning an online product launch.'
 category: 'Strategy & Growth'

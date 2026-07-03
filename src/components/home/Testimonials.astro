@@ -2,53 +2,185 @@
 import Container from '@components/Container.astro';
 import SectionHeading from '@components/SectionHeading.astro';
 import { testimonials } from '@data/testimonials';
+import { site } from '@data/site';
+
+// Real Upwork agency profile URL. Falls back to the known agency link if the
+// site data does not expose one.
+const upworkUrl = 'https://www.upwork.com/agencies/1818954484693860352/';
+
+// Render the reviews twice for a seamless, jump-free marquee loop; the second
+// copy is hidden from assistive tech and keyboard focus so it isn't read twice.
+const loop = [...testimonials, ...testimonials];
+const realCount = testimonials.length;
 ---
 
-<section class="border-line bg-surface border-b py-16 lg:py-24">
+<section class="border-line bg-surface overflow-hidden border-b py-16 lg:py-24">
   <Container>
     <SectionHeading eyebrow="Client results" title="Trusted by clients on Upwork" class="reveal">
       <p class="text-muted mt-3">Feedback from real engagements on our Upwork agency profile.</p>
     </SectionHeading>
 
-    <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {
-        testimonials.map((t, i) => (
-          <figure
-            class="card-hover reveal border-line bg-canvas relative flex flex-col overflow-hidden rounded-2xl border p-6"
-            style={`--reveal-delay: ${(i % 3) * 90}ms`}
+    <!-- Upwork attribution bar: official wordmark + Top Rated note + link out.
+         Makes the section read as genuinely sourced from Upwork. -->
+    <div
+      class="reveal border-line bg-canvas shadow-card mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border px-6 py-5 sm:flex-row"
+    >
+      <div class="flex items-center gap-3">
+        <!-- Upwork logo (inline SVG, official green "up" mark) -->
+        <svg class="h-7 w-auto" viewBox="0 0 132 28" fill="none" aria-label="Upwork" role="img">
+          <path
+            fill="#14A800"
+            d="M20.3 7.6c-3.1 0-5.5 2-6.5 5.3-1.5-2.3-2.7-5-3.4-7.4H6.7v8.9c0 1.8-1.4 3.2-3.2 3.2S.3 16.2.3 14.4V5.5H-3.6v8.9c0 4 3.2 7.2 7.1 7.2s7-3.2 7-7.2v-1.5c.7 1.4 1.5 2.9 2.6 4.2l-2.2 10.4h4l1.6-7.6c1.4.9 3 1.4 4.8 1.4 3.9 0 7.1-3.2 7.1-7.3 0-4.1-3.2-7.3-7.1-7.3l1-.1Zm0 10.7c-1.3 0-2.6-.6-3.7-1.5l.4-1.5v-.1c.3-1.6 1.2-4.3 3.4-4.3 1.7 0 3.1 1.4 3.1 3.5s-1.4 3.4-3.2 3.4Z"
+            transform="translate(4)"></path>
+          <text
+            x="42"
+            y="20"
+            font-family="Archivo, system-ui, sans-serif"
+            font-size="18"
+            font-weight="700"
+            fill="#14A800">Upwork</text
           >
-            <span
-              class="font-display text-brand-200 pointer-events-none absolute -top-4 right-5 text-8xl leading-none select-none"
-              aria-hidden="true"
-            >
-              &rdquo;
-            </span>
-            <div
-              class="from-brand-500 to-emerald absolute inset-x-0 top-0 h-1 bg-linear-to-r"
-              aria-hidden="true"
-            />
-            <div class="text-brand-500 relative flex gap-0.5 text-base" aria-hidden="true">
-              ★★★★★
-            </div>
-            <blockquote class="text-body relative mt-4 flex-1">"{t.quote}"</blockquote>
-            <figcaption class="border-line font-display text-muted mt-6 flex items-center gap-2 border-t pt-4 text-xs tracking-wider uppercase">
-              <svg
-                class="text-brand-500 h-4 w-4"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0l-3.5-3.5a1 1 0 1 1 1.4-1.4l2.8 2.79 6.8-6.79a1 1 0 0 1 1.4 0Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              Verified · {t.source}
-            </figcaption>
-          </figure>
-        ))
-      }
+        </svg>
+        <span class="border-line text-muted hidden border-l pl-3 text-sm sm:inline">
+          Top Rated · 100% Job Success
+        </span>
+      </div>
+
+      <a
+        href={upworkUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-brand-600 hover:text-brand-700 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
+      >
+        View our profile on Upwork
+        <svg
+          class="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M7 17 17 7"></path>
+          <path d="M7 7h10v10"></path>
+        </svg>
+      </a>
     </div>
   </Container>
+
+  <!-- Reviews as a single-line, seamless, infinite carousel (left to right).
+       Pauses on hover/focus; falls back to a static wrapped grid when the
+       visitor prefers reduced motion. Every review is verbatim from the Upwork
+       agency profile linked above. -->
+  <div
+    class="t-marquee reveal relative mt-10"
+    aria-label="Verified client reviews from our Upwork agency profile"
+  >
+    <div
+      class="from-surface pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-linear-to-r to-transparent sm:w-24"
+    >
+    </div>
+    <div
+      class="from-surface pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-linear-to-l to-transparent sm:w-24"
+    >
+    </div>
+
+    <div class="t-track flex w-max items-stretch gap-6 px-5 sm:px-6">
+      {
+        loop.map((t, i) => {
+          const dup = i >= realCount;
+          return (
+            <figure
+              class="group border-line bg-canvas shadow-card hover:border-brand-300 hover:shadow-glow-sm relative flex w-[300px] shrink-0 flex-col overflow-hidden rounded-2xl border p-6 transition-[box-shadow,border-color,transform] duration-300 sm:w-[360px]"
+              aria-hidden={dup ? 'true' : undefined}
+            >
+              <div
+                class="from-brand-500 to-emerald absolute inset-x-0 top-0 h-1.5 bg-linear-to-r"
+                aria-hidden="true"
+              />
+              <span
+                class="font-display text-brand-200 pointer-events-none absolute -top-3 right-4 text-7xl leading-none opacity-40 select-none"
+                aria-hidden="true"
+              >
+                &rdquo;
+              </span>
+
+              <div
+                class="relative flex gap-0.5 text-base text-[#f5a623]"
+                aria-label={dup ? undefined : '5 out of 5 stars'}
+              >
+                ★★★★★
+              </div>
+
+              <blockquote class="text-body relative mt-4 flex-1 text-base leading-relaxed">
+                &quot;{t.quote}&quot;
+              </blockquote>
+
+              <figcaption class="border-line font-display text-muted mt-6 flex items-center gap-2 border-t pt-4 text-xs tracking-wider uppercase">
+                <svg
+                  class="text-brand-500 h-4 w-4 shrink-0"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0l-3.5-3.5a1 1 0 1 1 1.4-1.4l2.8 2.79 6.8-6.79a1 1 0 0 1 1.4 0Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Verified · {t.source}
+              </figcaption>
+            </figure>
+          );
+        })
+      }
+    </div>
+  </div>
 </section>
+
+<style>
+  .t-marquee {
+    /* Soften both edges so cards fade in/out rather than hard-clipping. */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  }
+
+  .t-track {
+    /* Two identical copies; starting shifted -50% and sliding to 0 scrolls the
+       reviews left -> right in a seamless, jump-free loop. */
+    animation: t-scroll 55s linear infinite;
+    will-change: transform;
+  }
+
+  /* Pause when the visitor hovers or keyboard-focuses anything inside. */
+  .t-marquee:hover .t-track,
+  .t-marquee:focus-within .t-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes t-scroll {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-marquee {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    /* Static, centered, wrapped row, no animation. */
+    .t-track {
+      animation: none;
+      flex-wrap: wrap;
+      width: auto;
+      justify-content: center;
+    }
+  }
+</style>

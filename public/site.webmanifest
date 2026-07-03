@@ -1,0 +1,17 @@
+{
+  "name": "Agora Data Driven",
+  "short_name": "Agora",
+  "description": "Analytics-powered marketing for real results. We turn insights into sales.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f7f8",
+  "theme_color": "#f7f7f8",
+  "icons": [
+    {
+      "src": "/FAVI.png",
+      "type": "image/png",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}

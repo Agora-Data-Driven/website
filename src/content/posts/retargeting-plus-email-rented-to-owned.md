@@ -19,13 +19,13 @@ We've seen the impact of getting this handoff right. In a [full-funnel rebuild](
 
 It's worth being precise about what you control, because it shapes everything about your cost structure.
 
-|                         | **Rented attention (ads)**              | **Owned attention (email)**                              |
-| :---------------------- | :-------------------------------------- | :------------------------------------------------------- |
-| **Who controls access** | The platform                            | You                                                      |
-| **Cost to reach again** | Pay per impression, every time          | Near-zero marginal cost per message                      |
+|                         | **Rented attention (ads)**              | **Owned attention (email)**                               |
+| :---------------------- | :-------------------------------------- | :-------------------------------------------------------- |
+| **Who controls access** | The platform                            | You                                                       |
+| **Cost to reach again** | Pay per impression, every time          | Near-zero marginal cost per message                       |
 | **Vulnerable to**       | Auction prices, algorithm changes, bans | Deliverability and spam filters, but you control the list |
-| **Targeting**           | The platform's audience tools           | Your own data and behavior                               |
-| **Asset you build**     | None, it resets each campaign           | A growing, durable list                                  |
+| **Targeting**           | The platform's audience tools           | Your own data and behavior                                |
+| **Asset you build**     | None, it resets each campaign           | A growing, durable list                                   |
 
 The strategic problem with living entirely on rented attention is that you never stop paying rent, and the rent keeps rising. Every sale requires fresh spend. Owned channels break that cycle: once someone is on your list, every future message is essentially free, and the relationship compounds rather than resets.
 

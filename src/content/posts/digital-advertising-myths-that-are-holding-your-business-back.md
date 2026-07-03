@@ -1,7 +1,7 @@
 ---
 title: 'Digital Advertising Myths That Are Holding Your Business Back'
 publishDate: 2025-05-30
-excerpt: ‘Boosting posts, “set-and-forget” SEO, and spending more aren\’t strategies. We debunk the most common digital advertising myths, and show what actually works.’
+excerpt: 'Boosting posts, “set-and-forget” SEO, and spending more aren’t strategies. We debunk the most common digital advertising myths, and show what actually works.'
 heroImage: '/placeholders/cover-2.svg'
 heroAlt: 'Digital advertising dashboard with charts and metrics.'
 category: 'Paid Marketing'

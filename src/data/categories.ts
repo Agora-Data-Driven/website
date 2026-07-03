@@ -1,5 +1,5 @@
 /**
- * Blog silo taxonomy — the single source of truth for content categories.
+ * Blog silo taxonomy, the single source of truth for content categories.
  *
  * These are intent-distinct topic silos (an SEO "topic cluster" model): each one
  * is a crawlable hub page at /blog/category/<slug>/ that links to its posts and
@@ -32,7 +32,7 @@ export const silos = [
     audience: 'clients',
     tagline: 'Measurement, attribution, and turning data into decisions you can act on.',
     metaDescription:
-      'Marketing analytics insights from Agora Data Driven: measurement, attribution, dashboards, and turning data into decisions that grow your business.',
+      'Marketing analytics insights from Agora Data Driven, measurement, attribution, dashboards, and turning data into decisions that grow your business.',
   },
   {
     name: 'Paid Marketing',
@@ -40,7 +40,7 @@ export const silos = [
     audience: 'clients',
     tagline: 'Meta and Google ads, full-funnel paid media, and more from every dollar of spend.',
     metaDescription:
-      'Paid marketing insights from Agora Data Driven: Meta and Google ads, full-funnel paid media, and getting more results from every dollar of ad spend.',
+      'Paid marketing insights from Agora Data Driven, Meta and Google ads, full-funnel paid media, and getting more results from every dollar of ad spend.',
   },
   {
     name: 'Organic Growth',
@@ -48,7 +48,7 @@ export const silos = [
     audience: 'clients',
     tagline: 'SEO, content, social, and video that compound into durable, lower-cost growth.',
     metaDescription:
-      'Organic growth insights from Agora Data Driven: SEO, content, social, and video strategy that compounds into durable, lower-cost growth over time.',
+      'Organic growth insights from Agora Data Driven, SEO, content, social, and video strategy that compounds into durable, lower-cost growth over time.',
   },
   {
     name: 'Strategy & Growth',
@@ -56,7 +56,7 @@ export const silos = [
     audience: 'clients',
     tagline: 'Full-funnel strategy, positioning, and launches that move past the sales plateau.',
     metaDescription:
-      'Marketing strategy and growth insights from Agora Data Driven: full-funnel strategy, positioning, and product launches that break the sales plateau.',
+      'Marketing strategy and growth insights from Agora Data Driven, full-funnel strategy, positioning, and product launches that break the sales plateau.',
   },
   {
     name: 'Careers & Skill-Building',
@@ -64,7 +64,7 @@ export const silos = [
     audience: 'talent',
     tagline: 'Build data, analytics, and marketing skills, and a career with Agora.',
     metaDescription:
-      'Career and skill-building guides for aspiring data scientists, marketers, and virtual assistants: learn the skills Agora Data Driven hires and trains for.',
+      'Career and skill-building guides for aspiring data scientists, marketers, and virtual assistants, learn the skills Agora Data Driven hires and trains for.',
   },
 ] as const satisfies readonly Silo[];
 
@@ -81,5 +81,4 @@ export const siloNames = silos.map((s) => s.name) as [SiloName, ...SiloName[]];
 export const FALLBACK_CATEGORY: SiloName = 'Strategy & Growth';
 
 export const getSilo = (name: string): Silo | undefined => silos.find((s) => s.name === name);
-export const getSiloBySlug = (slug: string): Silo | undefined =>
-  silos.find((s) => s.slug === slug);
+export const getSiloBySlug = (slug: string): Silo | undefined => silos.find((s) => s.slug === slug);

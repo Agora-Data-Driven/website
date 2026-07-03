@@ -32,14 +32,14 @@ Several of these traps trace back to assumptions we unpack in [digital advertisi
 
 The plateau exists because bottom-funnel advertising is pure demand capture. It converts the demand that already exists but does nothing to create more of it. A full-funnel approach adds demand creation: helping future customers realize they have a problem, and that you are the one to solve it.
 
-| Dimension       | Demand Capture (bottom-funnel only)        | Demand Creation (full-funnel)                                  |
-| --------------- | ------------------------------------------ | -------------------------------------------------------------- |
-| Target audience | People with active, explicit buying intent | A broader audience with the problem, not yet solution-aware    |
+| Dimension       | Demand Capture (bottom-funnel only)        | Demand Creation (full-funnel)                                 |
+| --------------- | ------------------------------------------ | ------------------------------------------------------------- |
+| Target audience | People with active, explicit buying intent | A broader audience with the problem, not yet solution-aware   |
 | Primary goal    | Win an immediate conversion                | Educate, build trust, and create brand affinity               |
-| Key channels    | Google Search, Meta conversion ads         | Educational video and articles, social, PR, community          |
-| Measurement     | ROAS, CPA, CPL                             | Audience growth, view-through, email sign-ups, branded search  |
-| Main limitation | Finite scale, competitive and expensive    | Longer sales cycle, attribution is harder to pin down          |
-| Outcome         | Short-term revenue from a small audience   | Scalable growth by expanding the whole addressable market      |
+| Key channels    | Google Search, Meta conversion ads         | Educational video and articles, social, PR, community         |
+| Measurement     | ROAS, CPA, CPL                             | Audience growth, view-through, email sign-ups, branded search |
+| Main limitation | Finite scale, competitive and expensive    | Longer sales cycle, attribution is harder to pin down         |
+| Outcome         | Short-term revenue from a small audience   | Scalable growth by expanding the whole addressable market     |
 
 A business that only captures demand limits its growth to the small slice of the market already shopping. A business that also creates demand builds a pipeline of future customers who think of it first when they are finally ready to buy.
 

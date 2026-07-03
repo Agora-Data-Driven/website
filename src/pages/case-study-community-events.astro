@@ -10,7 +10,8 @@ const study = caseStudies.find((c) => c.slug === 'case-study-community-events')!
   eyebrow={study.tag}
   title={study.title}
   summary={study.summary}
-  heroImage={study.heroImage}
+  heroImage={study.image ?? study.heroImage}
+  heroAlt={`${study.cardTitle} campaign`}
   metrics={study.metrics}
 >
   {

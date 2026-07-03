@@ -1,11 +1,11 @@
 ---
 title: "MoviePass Had 3 Million Subscribers and Still Didn't Know What They Cost"
 publishDate: 2026-06-24
-excerpt: "MoviePass built its pricing model on an assumption about user behaviour that it never tested. The assumption was wrong, and the company burned through tens of millions of dollars per month before that became undeniable."
-category: "Marketing Analytics"
+excerpt: 'MoviePass built its pricing model on an assumption about user behaviour that it never tested. The assumption was wrong, and the company burned through tens of millions of dollars per month before that became undeniable.'
+category: 'Marketing Analytics'
 type: case-study
 draft: false
-industry: "SaaS"
+industry: 'SaaS'
 ---
 
 In August 2017, MoviePass dropped its price from $29.95 to $9.95 per month for unlimited cinema visits. Within weeks, subscriptions jumped from 20,000 to over 400,000. By the end of 2017, the service had passed 3 million subscribers.

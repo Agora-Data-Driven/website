@@ -7,7 +7,7 @@ export interface NavItem {
 }
 
 /**
- * AGORA Mastery Engine — a separate Cloud Run app (project `agora-data-driven`).
+ * AGORA Mastery Engine, a separate Cloud Run app (project `agora-data-driven`).
  * `skillMasteryUrl` is the live app origin; we embed it (iframe) on the internal
  * `skillMasteryPath` page rather than linking out, so nav points at the path.
  * TODO: swap the origin for https://mastery.agoradatadriven.com once a Cloud Run

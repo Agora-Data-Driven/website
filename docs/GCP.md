@@ -1,20 +1,20 @@
 # GCP Estate Guide — Agora Data Driven
 
 > **Audience:** Claude / any AI agent (and humans) operating on Agora's Google Cloud.
-> **Purpose:** Understand the structure *before* touching anything, and follow the safety rules.
+> **Purpose:** Understand the structure _before_ touching anything, and follow the safety rules.
 > **Last verified:** 2026-06-26 (account `info@agoradatadriven.com`). Re-verify live before destructive actions — cloud state drifts.
 
 ---
 
 ## 0. Read this first (orientation)
 
-| You want to… | Go to |
-|---|---|
-| The marketing **website**, **Skill Mastery**, **Atrium** | project `agora-data-driven` (Cloud Run) |
-| **Gemini / AI Studio API keys** | project `gen-lang-client-0941855890` ("AG Key") |
-| Client analytics data (Shopify/sales) | `contract-shop`, `honey-tribe`, `spotless-water-system`, `rooming-house-experts` → all in the **`Archive-Stale`** folder |
-| Server-side GTM container | `gtm-n65rwhzw-nmuwm` → in **`Archive-Stale`** |
-| Apps Script automations (ad scripts, reporting) | the **second org** `1075941031589` — see §8 |
+| You want to…                                             | Go to                                                                                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| The marketing **website**, **Skill Mastery**, **Atrium** | project `agora-data-driven` (Cloud Run)                                                                                  |
+| **Gemini / AI Studio API keys**                          | project `gen-lang-client-0941855890` ("AG Key")                                                                          |
+| Client analytics data (Shopify/sales)                    | `contract-shop`, `honey-tribe`, `spotless-water-system`, `rooming-house-experts` → all in the **`Archive-Stale`** folder |
+| Server-side GTM container                                | `gtm-n65rwhzw-nmuwm` → in **`Archive-Stale`**                                                                            |
+| Apps Script automations (ad scripts, reporting)          | the **second org** `1075941031589` — see §8                                                                              |
 
 **The single most important fact:** there are **TWO organizations**, and `info@agoradatadriven.com` only controls one of them. See §2.
 
@@ -34,12 +34,13 @@
 
 ## 2. Accounts & Organizations (the two-org reality)
 
-| Org ID | Domain | Our access | Notes |
-|---|---|---|---|
-| **`758813992383`** | **agoradatadriven.com** | `info@agoradatadriven.com` = **Owner + Org Admin** (full control) | The real business org. Everything we manage lives here. |
-| **`1075941031589`** | *separate* (likely a personal / 100.digital Workspace) | **view-only / inherited** — `info@` **cannot** delete or move anything here (verified, permission denied) | Holds ~24 misc projects **and all ~41 Apps Script `sys-*` projects**. To manage it: sign in as `ian@100.digital` (its likely admin) or have that org's owner grant `info@` rights. |
+| Org ID              | Domain                                                 | Our access                                                                                                | Notes                                                                                                                                                                              |
+| ------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`758813992383`**  | **agoradatadriven.com**                                | `info@agoradatadriven.com` = **Owner + Org Admin** (full control)                                         | The real business org. Everything we manage lives here.                                                                                                                            |
+| **`1075941031589`** | _separate_ (likely a personal / 100.digital Workspace) | **view-only / inherited** — `info@` **cannot** delete or move anything here (verified, permission denied) | Holds ~24 misc projects **and all ~41 Apps Script `sys-*` projects**. To manage it: sign in as `ian@100.digital` (its likely admin) or have that org's owner grant `info@` rights. |
 
 **Authenticated accounts in this machine's gcloud:**
+
 - `info@agoradatadriven.com` ← **active**, use this for org-758 work.
 - `ian@100.digital` ← present but **credentials expired**; needs `gcloud auth login ian@100.digital` to use.
 
@@ -70,7 +71,7 @@ agoradatadriven.com  (org 758813992383)
 └─ 📁 system-gsuite  (846640445498)   ← Google Workspace-managed; leave alone
 ```
 
-> ⚠️ **Console gotcha:** the project-picker's **"Recent"** tab shows a *flat* list and **ignores folders** — archived projects still appear there. To see the real tree, use the **"All"** tab or the [Manage Resources page](https://console.cloud.google.com/cloud-resource-manager?organizationId=758813992383).
+> ⚠️ **Console gotcha:** the project-picker's **"Recent"** tab shows a _flat_ list and **ignores folders** — archived projects still appear there. To see the real tree, use the **"All"** tab or the [Manage Resources page](https://console.cloud.google.com/cloud-resource-manager?organizationId=758813992383).
 
 ---
 
@@ -80,14 +81,15 @@ This one project hosts all three active products plus the central data warehouse
 
 **Cloud Run services** (verified 2026-06-26):
 
-| Service | Region | What it is |
-|---|---|---|
-| `agora-data-driven` | `australia-southeast1` | The marketing **website** (Astro SSR) |
-| `agora-data-driven` | `asia-southeast1` | **Duplicate** website deployment in a 2nd region — *candidate for consolidation* |
-| `mastery-engine` | `us-central1` | **Skill Mastery** |
-| `platform-dash` | `asia-southeast1` | **Atrium** (internal platform/dashboard) |
+| Service             | Region                 | What it is                                                                       |
+| ------------------- | ---------------------- | -------------------------------------------------------------------------------- |
+| `agora-data-driven` | `australia-southeast1` | The marketing **website** (Astro SSR)                                            |
+| `agora-data-driven` | `asia-southeast1`      | **Duplicate** website deployment in a 2nd region — _candidate for consolidation_ |
+| `mastery-engine`    | `us-central1`          | **Skill Mastery**                                                                |
+| `platform-dash`     | `asia-southeast1`      | **Atrium** (internal platform/dashboard)                                         |
 
 **Other resources in this project:**
+
 - **Firestore:** one Native DB (`(default)`, `us-central1`).
 - **BigQuery (~18 datasets):** the data warehouse — e.g. `mastery_analytics`, `upwork`, `jeff_nippard`, `popflex`, `iron_neck`, `edge_lifestyle`, `rooming_house_experts`, `RHE`, `wildapricot`, plus `clothing_store_*`, `ecom_*`, `sales_data_synthetic`, `DB_1`, `Classroom`.
 - **Secrets (Secret Manager):** `GEMINI_API_KEY`, `APP_PASSWORD`, `SESSION_SECRET`, `platform-dash-session-key`, `platform-sso-key`, `platform-super-admin-password`.
@@ -108,14 +110,17 @@ Auto-created by Google AI Studio; **holds 8 live Gemini API keys** used across a
 ## 6. The `Archive-Stale` folder (605415422721)
 
 A holding area created during the 2026-06-26 cleanup for projects that aren't part of the 3 active products but **hold real data, keys, OAuth clients, or a running service**. Policy:
+
 - Projects here are **fully intact** — nothing was deleted or stopped. (`gtm-n65rwhzw` sGTM still runs and still bills.)
 - It exists to keep the org root uncluttered (root = just the 2 active products).
 - **Before** deleting anything from here, confirm with a human — these touch clients (Honey Tribe, Contract Shop / TCS, ISCA, Spotless Water, Rooming House Experts) or integrations (n8n).
 
 To move a project **into** the archive:
+
 ```bash
 gcloud beta projects move <PROJECT_ID> --folder=605415422721 -q
 ```
+
 (Note: `gcloud projects move` is **not** GA — use `gcloud beta projects move`.)
 
 ---
@@ -133,16 +138,19 @@ On org `1075941031589`: **no write access.** Don't attempt deletes/moves there a
 ## 8. The second org `1075941031589` (NOT yet cleaned)
 
 `info@` can list but not modify these. Contents:
+
 - **~24 misc projects:** mostly auto-created Gemini key projects (`gen-lang-client-*`), plus `N8N Project` (`dynamic-chiller-461017-k3`), Google `Merchant Center`, `Dashboard`, `Cascade CRM`, `WRK Ops Brain GPT`, `Workspace CLI`, `Email Automation`, sandboxes (`voltaic-sandbox`, `solid-idiom`, etc.). Several hold **live API keys** (Replit, Creative Production, "Default Gemini") and service accounts.
 - **~41 Apps Script `sys-*` projects** in two managed folders (`442127466759`, `957128588745`): e.g. `Auto Negative Keywords`, `Northbeam Microsoft Ads Daily`, `Multi-Brand Report Card Dashboard`, `WebSavvy MCC pMax charts`, `TCS Contents`, `Sabbath Automation`, `Account Summary`. These back **live Google Ads / reporting automations** — assume in-use.
 
 **To manage it:**
+
 ```bash
 gcloud auth login ian@100.digital            # if that account admins org 1075
 # or, from an org-1075 owner:
 gcloud organizations add-iam-policy-binding 1075941031589 \
   --member="user:info@agoradatadriven.com" --role="roles/owner"
 ```
+
 Then apply the same **archive-don't-delete** discipline.
 
 ---

@@ -7,13 +7,13 @@ import { cta } from '@data/cta';
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-line bg-surface border-t">
+<footer class="surface-dark border-night-600 relative border-t">
   <Container class="py-14 lg:py-20">
     <!-- Final CTA band -->
     <div
-      class="surface-dark border-night-600 relative mb-14 flex flex-col items-start justify-between gap-6 overflow-hidden rounded-3xl border px-7 py-12 sm:px-10 lg:flex-row lg:items-center"
+      class="border-night-600 bg-night-400/20 relative mb-14 flex flex-col items-start justify-between gap-6 overflow-hidden rounded-3xl border px-7 py-12 backdrop-blur sm:px-10 lg:flex-row lg:items-center"
     >
-      <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-50" aria-hidden="true">
+      <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-30" aria-hidden="true">
       </div>
       <div class="relative">
         <h2 class="text-2xl font-bold sm:text-3xl">
@@ -23,30 +23,31 @@ const year = new Date().getFullYear();
           Working with us is not a cost. It's an investment. Let's turn your data into sales.
         </p>
       </div>
-      <Button href={cta.becomeClient.href} external variant="primary" size="lg" class="relative">
+      <Button href={cta.becomeClient.href} external variant="icon" size="lg" class="relative">
         {cta.becomeClient.label}
       </Button>
     </div>
 
+    <!-- Main footer grid -->
     <div class="flex flex-col gap-10 sm:flex-row sm:justify-between">
       <div class="max-w-sm">
-        <a href="/" class="flex items-center" aria-label="Agora Data Driven">
-          <img src="/agora-logo.png" alt="Agora Data Driven" class="h-9 w-auto" />
+        <a href="/" class="flex items-center" aria-label="Agora Data Driven, home">
+          <img src="/agora-logo.webp" alt="Agora Data Driven" class="h-9 w-auto invert" />
         </a>
-        <p class="text-muted mt-3 text-sm">
+        <p class="mt-3 text-sm text-white/60">
           Analytics-powered marketing for real results. We turn insights into sales.
         </p>
       </div>
 
       <nav aria-label="Footer">
-        <h3 class="text-ink text-sm font-semibold tracking-wide uppercase">Pages</h3>
+        <h3 class="text-sm font-semibold tracking-wide text-white uppercase">Pages</h3>
         <ul class="mt-3 space-y-2">
           {
             footerNav.map((item) => (
               <li>
                 <a
                   href={item.href}
-                  class="text-muted hover:text-brand-600 text-sm transition-colors"
+                  class="text-sm tracking-wide text-white/60 uppercase transition-colors hover:text-white"
                   rel={item.external ? 'noopener noreferrer' : undefined}
                   target={item.external ? '_blank' : undefined}
                 >
@@ -59,15 +60,16 @@ const year = new Date().getFullYear();
       </nav>
     </div>
 
+    <!-- Copyright + legal -->
     <div
-      class="border-line text-muted mt-12 flex flex-col gap-3 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between"
+      class="border-night-600 mt-12 flex flex-col gap-4 border-t pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between"
     >
       <p>© {year} Agora Data Driven. All rights reserved.</p>
       <ul class="flex gap-5">
         {
           legalNav.map((item) => (
             <li>
-              <a href={item.href} class="hover:text-brand-600 transition-colors">
+              <a href={item.href} class="text-white/60 transition-colors hover:text-white">
                 {item.label}
               </a>
             </li>
@@ -76,4 +78,58 @@ const year = new Date().getFullYear();
       </ul>
     </div>
   </Container>
+
+  <!-- Floating scroll-to-top: a big arrow-up button fixed to the side; fades in
+       once the visitor has scrolled past the fold. -->
+  <button
+    id="scrollToTop"
+    class="bg-brand-500 hover:bg-brand-600 shadow-glow invisible fixed right-5 bottom-5 z-50 grid h-14 w-14 translate-y-3 place-items-center rounded-full text-white opacity-0 transition-all duration-300 ease-out hover:-translate-y-0.5 sm:right-8 sm:bottom-8 sm:h-16 sm:w-16"
+    aria-label="Scroll to top"
+  >
+    <svg
+      class="h-7 w-7 sm:h-8 sm:w-8"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="6 11 12 5 18 11"></polyline>
+    </svg>
+  </button>
 </footer>
+
+<script>
+  const btn = document.getElementById('scrollToTop');
+  if (btn) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Show/hide button based on scroll position
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 300;
+      if (isScrolled) {
+        btn.classList.remove('opacity-0', 'invisible', 'translate-y-3');
+      } else {
+        btn.classList.add('opacity-0', 'invisible', 'translate-y-3');
+      }
+    };
+
+    // Smooth scroll to top
+    const scrollToTop = () => {
+      if (reduce) {
+        window.scrollTo(0, 0);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    btn.addEventListener('click', scrollToTop);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Initial state
+    handleScroll();
+  }
+</script>

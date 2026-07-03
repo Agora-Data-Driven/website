@@ -1,11 +1,11 @@
 ---
-title: "Blockbuster Had the Data. They Just Optimised the Wrong Thing."
+title: 'Blockbuster Had the Data. They Just Optimised the Wrong Thing.'
 publishDate: 2026-06-27
-excerpt: "At its peak, Blockbuster had 60 million customer transaction records and $800 million a year in late fee revenue. They used the data to protect the fees. Netflix used theirs to eliminate them."
-category: "Marketing Analytics"
+excerpt: 'At its peak, Blockbuster had 60 million customer transaction records and $800 million a year in late fee revenue. They used the data to protect the fees. Netflix used theirs to eliminate them.'
+category: 'Marketing Analytics'
 type: case-study
 draft: false
-industry: "Media & Entertainment"
+industry: 'Media & Entertainment'
 ---
 
 In 2000, Reed Hastings flew to Dallas and offered to sell Netflix to Blockbuster for $50 million. Blockbuster declined. At the time, Blockbuster had 9,000 stores globally, 60,000 employees, and revenues of approximately $6 billion. Netflix had a DVD-by-mail service, a few hundred thousand subscribers, and no path to profitability that Blockbuster could see.

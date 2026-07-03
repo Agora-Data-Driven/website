@@ -35,7 +35,12 @@ const organizationJsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#f7f7f8" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Favicons. Agora mark as the primary icon across browsers +
+         Apple touch icon; webmanifest for installable/PWA metadata. -->
+    <link rel="icon" href="/FAVI.png" type="image/png" sizes="any" />
+    <link rel="shortcut icon" href="/FAVI.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/FAVI.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="generator" content={Astro.generator} />
     <SEO
       title={title}

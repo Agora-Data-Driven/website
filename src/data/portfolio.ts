@@ -1,5 +1,5 @@
 /**
- * Portfolio content — real case studies and competition placements from the
+ * Portfolio content, real case studies and competition placements from the
  * live site (/agora-portfolio/ and the case-study-* / competition* pages).
  * Slugs preserved 1:1. Metrics are quoted only where the live site stated them;
  * where the live case study was qualitative, we do not invent numbers.
@@ -13,6 +13,13 @@ export interface CaseStudy {
   tag: string;
   summary: string;
   heroImage: string;
+  /** Optional cover photo for the case-study HERO page (in /public). When set,
+   *  it replaces the decorative placeholder on the article page. */
+  image?: string;
+  /** Optional separate cover photo for the portfolio CARDS (teaser + portfolio
+   *  page). Falls back to `image` when unset, so the card and the hero can show
+   *  different photos. */
+  cardImage?: string;
   sections: { heading: string; body: string[] }[];
   metrics?: { value: string; label: string }[];
 }
@@ -39,6 +46,7 @@ export const caseStudies: CaseStudy[] = [
     summary:
       'Content strategy, refined brand messaging, and geo-targeted ads turned an off-highway spa into a membership growth story.',
     heroImage: '/placeholders/cover-1.svg',
+    image: '/sabbath.webp',
     sections: [
       {
         heading: 'Background & Context',
@@ -80,6 +88,8 @@ export const caseStudies: CaseStudy[] = [
     summary:
       'Campaign materials and targeted social activity built awareness for a community-events initiative, with results showing within two weeks.',
     heroImage: '/placeholders/cover-2.svg',
+    image: '/DPTBYN.webp',
+    cardImage: '/dapatbayan.webp',
     sections: [
       {
         heading: 'Background & Context',
@@ -116,6 +126,7 @@ export const caseStudies: CaseStudy[] = [
     summary:
       'Full-funnel marketing and analytics for a digital-product business selling legal resources to entrepreneurs and small business owners.',
     heroImage: '/placeholders/cover-3.svg',
+    image: '/digitalservice.webp',
     sections: [
       {
         heading: 'Background & Context',
@@ -149,7 +160,7 @@ export const competitions: Competition[] = [
   {
     slug: 'competition1',
     cardTitle: 'Marketing Analytics',
-    title: 'Marketing Analytics: 2nd Place out of 2,459',
+    title: 'Marketing Analytics, 2nd Place out of 2,459',
     placement: '2nd Place / 2,459 participants',
     category: 'Marketing Analytics',
     event: 'Codebasics Resume Project Challenge #9',
@@ -164,10 +175,10 @@ export const competitions: Competition[] = [
   {
     slug: 'competition2',
     cardTitle: 'Operations Analytics',
-    title: 'Operations Analytics: 1st Place, Cash Prize',
+    title: 'Operations Analytics, 1st Place, Cash Prize',
     placement: '1st Place · Cash prize recipient',
     category: 'Operations Analytics',
-    event: 'DataCamp Datalab: Predicting Industrial Machine Downtime (Level 3)',
+    event: 'DataCamp Datalab, Predicting Industrial Machine Downtime (Level 3)',
     summary:
       'Cleaned and analyzed industrial operations data to surface bottlenecks and cost-optimization opportunities with Python.',
     heroImage: '/placeholders/cover-2.svg',

@@ -4,7 +4,7 @@ import SectionHeading from '@components/SectionHeading.astro';
 import { certifications } from '@data/certifications';
 
 // Render the list twice for a seamless marquee loop; the second copy is hidden
-// from assistive tech and keyboard focus.
+// from assistive tech and keyboard focus so the badges aren't announced twice.
 const loop = [...certifications, ...certifications];
 const realCount = certifications.length;
 ---
@@ -14,29 +14,31 @@ const realCount = certifications.length;
     <SectionHeading eyebrow="Certified expertise" title="Credentials you can verify" align="center">
       <p class="text-muted mt-3">
         Real, verifiable certifications in data science, analytics, and media buying, from IBM,
-        Google, Meta, and Intuit. Drag or scroll to browse.
+        Google, Meta, and Intuit.
       </p>
     </SectionHeading>
   </Container>
 
-  <div class="relative mt-12">
+  <!-- Marquee: slow, seamless, infinite. Pauses on hover/focus; falls back to a
+       static, wrapped row when the visitor prefers reduced motion. -->
+  <div class="marquee reveal relative mt-12" aria-label="Verifiable professional certifications">
     <div
-      class="from-surface pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-linear-to-r to-transparent sm:w-20"
+      class="from-surface pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-linear-to-r to-transparent sm:w-24"
     >
     </div>
     <div
-      class="from-surface pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-linear-to-l to-transparent sm:w-20"
+      class="from-surface pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-linear-to-l to-transparent sm:w-24"
     >
     </div>
 
-    <div id="cert-track" class="cert-track flex gap-4 overflow-x-auto px-5 sm:gap-6 sm:px-6">
+    <div class="marquee-track flex w-max gap-4 px-5 sm:gap-6 sm:px-6">
       {
         loop.map((c, i) => {
           const dup = i >= realCount;
           const Tag = c.url ? 'a' : 'div';
           return (
             <Tag
-              class="group border-line bg-surface hover:shadow-card flex w-40 shrink-0 flex-col items-center justify-center gap-3 rounded-2xl border p-5 text-center transition-shadow sm:w-44"
+              class="group border-line bg-surface hover:border-brand-300 hover:shadow-card flex w-40 shrink-0 flex-col items-center justify-center gap-3 rounded-2xl border p-5 text-center transition-[box-shadow,border-color] duration-300 sm:w-44"
               href={c.url}
               target={c.url ? '_blank' : undefined}
               rel={c.url ? 'noopener noreferrer' : undefined}
@@ -51,7 +53,7 @@ const realCount = certifications.length;
                 loading="lazy"
                 decoding="async"
                 draggable="false"
-                class="pointer-events-none h-24 w-auto object-contain transition-transform duration-200 group-hover:scale-105 sm:h-28"
+                class="pointer-events-none h-24 w-auto object-contain transition-transform duration-300 group-hover:scale-105 sm:h-28"
               />
               <span class="text-muted text-xs font-medium">{c.name}</span>
             </Tag>
@@ -63,138 +65,45 @@ const realCount = certifications.length;
 </section>
 
 <style>
-  .cert-track {
-    cursor: grab;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    scroll-behavior: auto;
-    /* let the browser own horizontal touch scrolling; vertical swipes still
-       scroll the page */
-    touch-action: pan-x;
+  .marquee {
+    /* Soften both edges so badges fade in/out rather than hard-clipping. */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
   }
-  .cert-track::-webkit-scrollbar {
-    display: none;
+
+  .marquee-track {
+    /* Track holds two identical copies, so translating by -50% lands exactly on
+       the start of the second copy, a seamless, jump-free loop. */
+    animation: marquee-scroll 60s linear infinite;
+    will-change: transform;
   }
-  .cert-track.is-grabbing {
-    cursor: grabbing;
+
+  /* Pause when the visitor hovers or keyboard-focuses anything inside. */
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    /* Static, centered, wrapped row, no animation. */
+    .marquee-track {
+      animation: none;
+      flex-wrap: wrap;
+      width: auto;
+      justify-content: center;
+    }
   }
 </style>
-
-<script>
-  const track = document.getElementById('cert-track');
-  if (track) {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const DRIFT = 0.35; // idle auto-scroll (px/frame)
-    const MAX_HOVER = 12; // top speed when the cursor sits at an edge
-    const DEAD = 0.06; // central neutral zone — cursor here ⇒ rest
-
-    const halfWidth = () => track.scrollWidth / 2;
-
-    // Assign scrollLeft, wrapping seamlessly within the first copy [0, half)
-    // so the marquee loops infinitely in either direction.
-    const setScroll = (v: number) => {
-      const h = halfWidth();
-      if (h > 0) v = ((v % h) + h) % h;
-      track.scrollLeft = v;
-    };
-
-    let hovering = false; // mouse/pen is inside the box
-    let hoverVel = 0; // px/frame derived from cursor position
-    let down = false; // an active click-drag
-    let moved = false;
-    let startX = 0;
-    let startScroll = 0;
-
-    // The "speed follows my mouse" mapping: cursor position across the box →
-    // signed velocity. Center = 0, edges = ±MAX_HOVER, eased for fine control.
-    const updateHoverVel = (clientX: number) => {
-      const rect = track.getBoundingClientRect();
-      if (rect.width === 0) {
-        hoverVel = 0;
-        return;
-      }
-      const ratio = (clientX - rect.left) / rect.width; // 0 (left) .. 1 (right)
-      const off = ratio * 2 - 1; // -1 (left) .. 1 (right)
-      const mag = Math.abs(off);
-      hoverVel =
-        mag < DEAD ? 0 : Math.sign(off) * Math.pow((mag - DEAD) / (1 - DEAD), 1.4) * MAX_HOVER;
-    };
-
-    track.addEventListener('pointerenter', (e) => {
-      if (e.pointerType === 'touch') return;
-      hovering = true;
-      updateHoverVel(e.clientX);
-    });
-    track.addEventListener('pointerleave', (e) => {
-      if (e.pointerType === 'touch') return;
-      hovering = false;
-      hoverVel = 0;
-    });
-
-    // click-drag (mouse / pen): direct 1:1 grab, overrides the hover scrub.
-    track.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'touch') return; // touch uses native scrolling
-      down = true;
-      moved = false;
-      startX = e.clientX;
-      startScroll = track.scrollLeft;
-      track.classList.add('is-grabbing');
-      try {
-        track.setPointerCapture(e.pointerId);
-      } catch {}
-    });
-    track.addEventListener('pointermove', (e) => {
-      if (e.pointerType === 'touch') return;
-      if (down) {
-        const dx = e.clientX - startX;
-        if (Math.abs(dx) > 5) moved = true;
-        setScroll(startScroll - dx);
-      } else {
-        // any mouse movement inside the box counts as hovering (also self-heals
-        // the hover state after a pointer-captured drag ends)
-        hovering = true;
-        updateHoverVel(e.clientX);
-      }
-    });
-    const endDrag = () => {
-      if (!down) return;
-      down = false;
-      track.classList.remove('is-grabbing');
-      // suppress the click that follows a real drag so links don't fire
-      if (moved) {
-        const block = (ev: Event) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-        };
-        track.addEventListener('click', block, { capture: true, once: true });
-        setTimeout(() => track.removeEventListener('click', block, true), 50);
-      }
-    };
-    track.addEventListener('pointerup', endDrag);
-    track.addEventListener('pointercancel', endDrag);
-
-    // keep native (touch / trackpad / wheel) scrolling seamless
-    track.addEventListener(
-      'scroll',
-      () => {
-        const h = halfWidth();
-        if (h > 0 && track.scrollLeft >= h) track.scrollLeft -= h;
-      },
-      { passive: true },
-    );
-
-    // single loop, priority: manual drag > hover scrub > idle drift
-    const frame = () => {
-      if (!down) {
-        if (hovering) {
-          if (hoverVel !== 0) setScroll(track.scrollLeft + hoverVel);
-        } else if (!reduce) {
-          setScroll(track.scrollLeft + DRIFT);
-        }
-      }
-      requestAnimationFrame(frame);
-    };
-    requestAnimationFrame(frame);
-  }
-</script>

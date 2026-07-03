@@ -8,15 +8,16 @@ const path = Astro.url.pathname;
 const isActive = (href: string) =>
   href === '/' ? path === '/' : path.startsWith(href.replace(/\/$/, ''));
 
-const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-brand-600';
+const linkBase =
+  'rounded-md px-3 py-2 text-sm font-medium uppercase tracking-wide transition-colors hover:text-brand-600';
 ---
 
 <header class="border-line bg-surface/90 sticky top-0 z-50 border-b backdrop-blur">
   <Container>
     <div class="flex h-16 items-center justify-between gap-4 lg:h-20">
       <!-- Wordmark (swap for brand SVG when supplied) -->
-      <a href="/" class="flex items-center" aria-label="Agora Data Driven">
-        <img src="/agora-logo.png" alt="Agora Data Driven" class="h-8 w-auto sm:h-9" />
+      <a href="/" class="flex items-center" aria-label="Agora Data Driven, home">
+        <img src="/agora-logo.webp" alt="Agora Data Driven" class="h-8 w-auto sm:h-9" />
       </a>
 
       <!-- Desktop nav -->
@@ -92,9 +93,9 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
         <Button href={cta.clientLogin.href} external variant="secondary"
           >{cta.clientLogin.label}</Button
         >
-        <Button href={cta.becomeClient.href} external variant="primary"
-          >{cta.becomeClient.label}</Button
-        >
+        <Button href={cta.becomeClient.href} external variant="icon">
+          {cta.becomeClient.label}
+        </Button>
       </div>
 
       <!-- Mobile toggle -->
@@ -128,13 +129,13 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
           mainNav.flatMap((item) =>
             item.children
               ? [
-                  <span class="text-ink block rounded-lg px-3 py-2.5 font-medium">
+                  <span class="text-ink block rounded-lg px-3 py-2.5 font-medium tracking-wide uppercase">
                     {item.label}
                   </span>,
                   ...item.children.map((child) => (
                     <a
                       href={child.href}
-                      class="text-body rounded-lg px-3 py-2.5 pl-6"
+                      class="text-body rounded-lg px-3 py-2.5 pl-6 tracking-wide uppercase"
                       rel={child.external ? 'noopener noreferrer' : undefined}
                       target={child.external ? '_blank' : undefined}
                     >
@@ -145,7 +146,7 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
               : [
                   <a
                     href={item.href}
-                    class="text-ink rounded-lg px-3 py-2.5 font-medium"
+                    class="text-ink rounded-lg px-3 py-2.5 font-medium tracking-wide uppercase"
                     rel={item.external ? 'noopener noreferrer' : undefined}
                     target={item.external ? '_blank' : undefined}
                   >
@@ -159,9 +160,9 @@ const linkBase = 'rounded-md px-3 py-2 text-sm font-medium transition-colors hov
         <Button href={cta.clientLogin.href} external variant="secondary" size="lg"
           >{cta.clientLogin.label}</Button
         >
-        <Button href={cta.becomeClient.href} external variant="primary" size="lg"
-          >{cta.becomeClient.label}</Button
-        >
+        <Button href={cta.becomeClient.href} external variant="icon" size="lg">
+          {cta.becomeClient.label}
+        </Button>
       </div>
     </Container>
   </div>

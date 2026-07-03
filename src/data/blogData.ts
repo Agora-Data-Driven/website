@@ -1,14 +1,14 @@
 /**
- * Blog landing page data — source of truth for what appears on /blog/.
+ * Blog landing page data, source of truth for what appears on /blog/.
  *
  * Posts that already have a real markdown file in src/content/posts/ carry their
  * canonical slug href so read-time is calculated from the body. Posts without a
  * real page yet link to the most relevant existing route (category hub or
- * portfolio) — no broken links.
+ * portfolio), no broken links.
  *
  * Adding a new post:
  *   1. Add an entry here with `section`, `thumbnailVariant`, `topic`, `industry`.
- *   2. Create the markdown file at src/content/posts/<slug>.md — it auto-appears.
+ *   2. Create the markdown file at src/content/posts/<slug>.md, it auto-appears.
  *   3. Update `href` from the placeholder to `/<slug>/`.
  */
 
@@ -21,7 +21,7 @@ export interface BlogPost {
   section: 'data-driven-marketing' | 'case-studies';
   /** Display category label shown on the card badge. */
   category: string;
-  /** Used for topic filter — maps to the topic-filter dropdown values. */
+  /** Used for topic filter, maps to the topic-filter dropdown values. */
   topic: string;
   /** Used for industry filter. Use 'All industries' when not industry-specific. */
   industry: string;
@@ -225,7 +225,7 @@ export const blogPosts: BlogPost[] = [
   {
     id: 'cs-bed-bath-beyond-ltv',
     slug: 'cs-bed-bath-beyond-ltv',
-    title: 'The Coupon That Ate Bed Bath & Beyond\'s Best Customers',
+    title: "The Coupon That Ate Bed Bath & Beyond's Best Customers",
     excerpt:
       'Bed Bath & Beyond mailed hundreds of millions of coupons a year with no segmentation. When they finally tried to stop, they had already trained their highest-value customers to wait.',
     section: 'case-studies',
@@ -241,7 +241,7 @@ export const blogPosts: BlogPost[] = [
   {
     id: 'cs-moviepass-unit-economics',
     slug: 'cs-moviepass-unit-economics',
-    title: 'MoviePass Had 3 Million Subscribers and Still Didn\'t Know What They Cost',
+    title: "MoviePass Had 3 Million Subscribers and Still Didn't Know What They Cost",
     excerpt:
       'MoviePass built its pricing model on an assumption about user behaviour that it never tested. The assumption was wrong, and the company burned through tens of millions of dollars per month.',
     section: 'case-studies',
@@ -257,7 +257,7 @@ export const blogPosts: BlogPost[] = [
   {
     id: 'cs-blockbuster-data-blindspot',
     slug: 'cs-blockbuster-data-blindspot',
-    title: "Blockbuster Had the Data. They Just Optimised the Wrong Thing.",
+    title: 'Blockbuster Had the Data. They Just Optimised the Wrong Thing.',
     excerpt:
       'At its peak, Blockbuster had 60 million customer transaction records and $800 million a year in late fee revenue. They used the data to protect the fees. Netflix used theirs to eliminate them.',
     section: 'case-studies',

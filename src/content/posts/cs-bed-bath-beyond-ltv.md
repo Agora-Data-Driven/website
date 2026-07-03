@@ -1,11 +1,11 @@
 ---
 title: "The Coupon That Ate Bed Bath & Beyond's Best Customers"
 publishDate: 2026-06-27
-excerpt: "Bed Bath & Beyond mailed hundreds of millions of coupons a year with no segmentation. When they finally tried to stop, they had already taught their highest-value customers to wait, and trained their data to lie."
-category: "Marketing Analytics"
+excerpt: 'Bed Bath & Beyond mailed hundreds of millions of coupons a year with no segmentation. When they finally tried to stop, they had already taught their highest-value customers to wait, and trained their data to lie.'
+category: 'Marketing Analytics'
 type: case-study
 draft: false
-industry: "Ecommerce"
+industry: 'Ecommerce'
 ---
 
 Bed Bath & Beyond's blue 20%-off coupon became one of the most recognisable marketing assets in American retail. It also became the thing that made their customer data useless.

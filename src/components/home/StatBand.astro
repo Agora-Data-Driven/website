@@ -1,96 +1,43 @@
 ---
 import Container from '@components/Container.astro';
 
-// Real, source-attributed proof points — no invented metrics.
-// Upwork track record + agency experience across industries and borders.
-interface Stat {
-  target?: number;
-  text?: string; // non-numeric value (e.g. a badge) — skips the count-up
-  prefix?: string;
-  suffix?: string;
-  format?: 'comma';
-  label: string;
-  sub: string;
-}
-
-const stats: Stat[] = [
-  {
-    target: 100,
-    suffix: '%',
-    label: 'Job Success Score',
-    sub: 'Upwork',
-  },
-  {
-    target: 10,
-    label: 'Years in the industry',
-    sub: 'Hands-on experience',
-  },
-  {
-    target: 7,
-    label: 'Countries served',
-    sub: 'Across time zones',
-  },
-  {
-    target: 5,
-    label: 'Industries served',
-    sub: 'Diverse verticals',
-  },
+// "Proof, not promises." stat band. Numbers count up every time the section
+// scrolls into view (from either direction). Edit values here.
+const stats = [
+  { value: 100, suffix: '%', label: 'Job Success Score', sub: 'Upwork' },
+  { value: 10, suffix: '', label: 'Years in the industry', sub: 'Hands-on experience' },
+  { value: 7, suffix: '', label: 'Countries served', sub: 'Across time zones' },
+  { value: 5, suffix: '', label: 'Industries served', sub: 'Diverse verticals' },
 ];
-
-// Pre-formatted final value so the section reads correctly with JS disabled
-// and never flashes "0"; the count-up script resets to 0 on load when JS runs.
-const display = (s: Stat) =>
-  s.text ??
-  (s.prefix ?? '') +
-    (s.format === 'comma' ? (s.target ?? 0).toLocaleString('en-US') : String(s.target ?? '')) +
-    (s.suffix ?? '');
 ---
 
-<section class="surface-dark border-night-600 relative overflow-hidden border-y">
-  <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-60"></div>
-  <div
-    class="glow-pulse bg-brand-500/20 pointer-events-none absolute top-1/2 left-1/2 h-72 w-[40rem] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px]"
-  >
+<section class="surface-dark border-night-600 relative overflow-hidden border-b py-20 lg:py-28">
+  <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-30" aria-hidden="true">
   </div>
 
-  <Container class="relative py-16 lg:py-24">
-    <div class="reveal max-w-2xl">
-      <p class="eyebrow text-brand-300">By the numbers</p>
-      <h2 class="mt-4 text-3xl font-bold sm:text-[2.6rem] sm:leading-[1.05]">
-        Proof, not promises.
-      </h2>
-      <p class="mt-3 text-base text-white/65">
-        A Top Rated, 100% Job Success track record on Upwork, built over a decade of work spanning
-        industries and borders. We measure what we ship.
-      </p>
-    </div>
+  <Container class="relative">
+    <p class="reveal text-brand-400 text-xs font-semibold tracking-[0.22em] uppercase">
+      By the numbers
+    </p>
+    <h2 class="reveal mt-4 text-4xl font-bold text-white sm:text-5xl">Proof, not promises.</h2>
+    <p class="reveal mt-4 max-w-2xl text-white/65">
+      A Top Rated, 100% Job Success track record on Upwork, built over a decade of work spanning
+      industries and borders. We measure what we ship.
+    </p>
 
-    <dl class="mt-12 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+    <dl class="mt-16 grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-4">
       {
         stats.map((s, i) => (
           <div class="reveal" style={`--reveal-delay: ${i * 90}ms`}>
-            <dt class="sr-only">{s.label}</dt>
-            <dd>
-              <div class="flex min-h-[3.25rem] items-end sm:min-h-[3.75rem] lg:min-h-[4.25rem]">
-                {s.text ? (
-                  <span class="font-display text-gradient-bright text-3xl font-bold whitespace-nowrap sm:text-4xl lg:text-[2.75rem] lg:leading-none">
-                    {s.text}
-                  </span>
-                ) : (
-                  <span
-                    class="stat-num font-display text-gradient-bright text-4xl font-bold tracking-tight tabular-nums sm:text-5xl lg:text-6xl"
-                    data-target={s.target}
-                    data-prefix={s.prefix ?? ''}
-                    data-suffix={s.suffix ?? ''}
-                    data-format={s.format ?? ''}
-                  >
-                    {display(s)}
-                  </span>
-                )}
-              </div>
-              <p class="font-display mt-3 text-sm font-semibold text-white">{s.label}</p>
-              <p class="mt-1 text-xs text-white/55">{s.sub}</p>
+            <dd
+              class="font-display text-brand-400 text-5xl font-bold tabular-nums sm:text-6xl"
+              data-count={s.value}
+              data-suffix={s.suffix}
+            >
+              0{s.suffix}
             </dd>
+            <dt class="mt-3 text-base font-semibold text-white">{s.label}</dt>
+            <p class="mt-1 text-sm text-white/55">{s.sub}</p>
           </div>
         ))
       }
@@ -99,54 +46,44 @@ const display = (s: Stat) =>
 </section>
 
 <script>
-  // Count-up the stat numbers when the band scrolls into view (once).
-  const nums = document.querySelectorAll<HTMLElement>('.stat-num');
+  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const fmt = (n: number, useComma: boolean) =>
-    useComma ? Math.round(n).toLocaleString('en-US') : String(Math.round(n));
-
-  const render = (el: HTMLElement, value: number) => {
-    const prefix = el.dataset.prefix || '';
+  function animate(el: HTMLElement) {
+    const target = parseFloat(el.dataset.count || '0');
     const suffix = el.dataset.suffix || '';
-    el.textContent = prefix + fmt(value, el.dataset.format === 'comma') + suffix;
-  };
-
-  const run = (el: HTMLElement) => {
-    const target = Number(el.dataset.target || '0');
     if (reduce) {
-      render(el, target);
+      el.textContent = target + suffix;
       return;
     }
-    const duration = 1500;
-    let startTs = 0;
-    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
-    const step = (ts: number) => {
-      if (!startTs) startTs = ts;
-      const p = Math.min((ts - startTs) / duration, 1);
-      render(el, target * ease(p));
-      if (p < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  };
+    const duration = 1400;
+    const start = performance.now();
+    function tick(now: number) {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+      el.textContent = Math.round(target * eased) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
 
-  if (reduce || !('IntersectionObserver' in window)) {
-    nums.forEach((el) => render(el, Number(el.dataset.target || '0')));
-  } else {
-    // JS is running: reset to 0 so the count-up has somewhere to climb from.
-    // (No-JS visitors keep the real server-rendered values.)
-    nums.forEach((el) => render(el, 0));
+  if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
+          const el = e.target as HTMLElement;
           if (e.isIntersecting) {
-            run(e.target as HTMLElement);
-            io.unobserve(e.target);
+            animate(el);
+          } else {
+            // Reset so it re-counts next time it scrolls back into view.
+            el.textContent = '0' + (el.dataset.suffix || '');
           }
         }
       },
       { threshold: 0.4 },
     );
-    nums.forEach((el) => io.observe(el));
+    counters.forEach((c) => io.observe(c));
+  } else {
+    counters.forEach((c) => animate(c));
   }
 </script>

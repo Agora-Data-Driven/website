@@ -24,7 +24,7 @@ function isAdminSso(cookieHeader: string | null): boolean {
       cookieHeader.split(';').map((c) => {
         const [k, ...v] = c.trim().split('=');
         return [k.trim(), v.join('=')];
-      })
+      }),
     );
     const raw = cookies['ag_sso'];
     if (!raw) return false;
@@ -46,19 +46,27 @@ function isAdminSso(cookieHeader: string | null): boolean {
 }
 
 async function ghGet(path: string): Promise<{ sha?: string } | null> {
-  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`, {
-    headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
+  const res = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
+    {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
     },
-  });
+  );
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GitHub GET ${path} → ${res.status}`);
   return res.json();
 }
 
-async function ghPut(path: string, contentB64: string, message: string, sha?: string): Promise<void> {
+async function ghPut(
+  path: string,
+  contentB64: string,
+  message: string,
+  sha?: string,
+): Promise<void> {
   const body: Record<string, string> = { message, content: contentB64, branch: GITHUB_BRANCH };
   if (sha) body.sha = sha;
   const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
@@ -98,12 +106,16 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: 'Invalid form data' }, 400);
   }
 
-  const slug = String(formData.get('slug') ?? '').trim().replace(/[^a-z0-9-]/g, '');
+  const slug = String(formData.get('slug') ?? '')
+    .trim()
+    .replace(/[^a-z0-9-]/g, '');
   const imageFile = formData.get('image') as File | null;
 
   if (!slug) return json({ ok: false, error: 'slug is required' }, 400);
-  if (!imageFile || imageFile.size === 0) return json({ ok: false, error: 'image is required' }, 400);
-  if (imageFile.size > 5 * 1024 * 1024) return json({ ok: false, error: 'Image must be under 5 MB' }, 400);
+  if (!imageFile || imageFile.size === 0)
+    return json({ ok: false, error: 'image is required' }, 400);
+  if (imageFile.size > 5 * 1024 * 1024)
+    return json({ ok: false, error: 'Image must be under 5 MB' }, 400);
 
   try {
     // 1. Commit the image to public/blog-images/{slug}.png
@@ -121,12 +133,15 @@ export const POST: APIRoute = async ({ request }) => {
       const mdText = Buffer.from(rawB64, 'base64').toString('utf8');
       let patched: string;
       if (/^heroImage:/m.test(mdText)) {
-        patched = mdText.replace(/^heroImage:.*$/m, `heroImage: "/${imgPath.replace('public/', '')}"`);
+        patched = mdText.replace(
+          /^heroImage:.*$/m,
+          `heroImage: "/${imgPath.replace('public/', '')}"`,
+        );
       } else {
         // Insert after publishDate line (or after first --- block opening)
         patched = mdText.replace(
           /^(publishDate:.*$)/m,
-          `$1\nheroImage: "/blog-images/${slug}.png"\nheroAlt: "${slug.replace(/-/g, ' ')}"`
+          `$1\nheroImage: "/blog-images/${slug}.png"\nheroAlt: "${slug.replace(/-/g, ' ')}"`,
         );
       }
       if (patched !== mdText) {

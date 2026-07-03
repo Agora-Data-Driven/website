@@ -1,5 +1,5 @@
 /**
- * Client testimonials — sourced from the Upwork agency profile.
+ * Client testimonials, sourced from the Upwork agency profile.
  * Verbatim from the live site. These are anonymous on Upwork; do NOT invent
  * names, companies, or avatars.
  */

@@ -1,8 +1,8 @@
 ---
 title: "How We Helped More Than Double Our Client's Weekly Sales Through Full-Funnel Marketing"
 publishDate: 2026-06-13
-excerpt: ‘More sales rarely come from changing everything. By stabilizing Meta ads, reinforcing the message with email and SMS, and improving the mobile checkout, we more than doubled a client’s weekly sales, from roughly $1.7K to $4.2K.’
-heroImage: '/placeholders/cover-1.svg'
+excerpt: 'More sales rarely come from changing everything. By stabilizing Meta ads, reinforcing the message with email and SMS, and improving the mobile checkout, we more than doubled a client’s weekly sales, from roughly $1.7K to $4.2K.'
+heroImage: '/weeklysales.webp'
 heroAlt: 'Full-funnel marketing performance chart trending upward.'
 category: 'Strategy & Growth'
 type: 'case-study'

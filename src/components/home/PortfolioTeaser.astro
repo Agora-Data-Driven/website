@@ -5,13 +5,23 @@ import Button from '@components/Button.astro';
 import { caseStudies, competitions } from '@data/portfolio';
 
 const medals = ['🥈', '🥇'];
+
+// A small decorative glyph per case study, keyed by tag, so each card header has
+// a subtle watermark without needing real cover images.
+const glyphs: Record<string, string> = {
+  'Spa & Wellness': '<path d="M12 3c2 3 5 4 5 8a5 5 0 0 1-10 0c0-4 3-5 5-8Z"/>',
+  'Events & Civic':
+    '<path d="M4 21V5l8-2 8 2v16"/><path d="M9 9h.01M15 9h.01M9 13h.01M15 13h.01"/>',
+  'Digital Products':
+    '<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 18v2M16 18v2"/>',
+};
 ---
 
 <section class="border-line border-b py-16 lg:py-24">
   <Container>
     <div class="reveal flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
       <SectionHeading eyebrow="Portfolio" title="Real-life results, not just a list of projects">
-        <p class="text-muted mt-3">
+        <p class="text-muted mt-3 max-w-xl">
           Every campaign reflects a challenge we tackled, a strategy we shaped, and the results we
           delivered.
         </p>
@@ -19,57 +29,93 @@ const medals = ['🥈', '🥇'];
       <Button href="/agora-portfolio/" variant="secondary">Explore the portfolio</Button>
     </div>
 
-    <div class="mt-10 grid gap-6 md:grid-cols-3">
+    <!-- Case study cards: gradient header + watermark glyph, clean body, metrics. -->
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
       {
         caseStudies.map((c, i) => (
           <article
-            class="card-hover reveal group border-line bg-surface flex flex-col rounded-2xl border p-6"
+            class="reveal group border-line bg-surface shadow-card hover:border-brand-300 hover:shadow-glow-sm relative flex flex-col overflow-hidden rounded-3xl border transition-all duration-300 hover:-translate-y-1.5"
             style={`--reveal-delay: ${i * 90}ms`}
           >
-            <span class="bg-tint text-brand-700 w-fit rounded-full px-3 py-1 text-xs font-semibold">
-              {c.tag}
-            </span>
-            <h3 class="text-ink mt-4 text-xl font-semibold">{c.cardTitle}</h3>
-            <p class="text-muted mt-2 flex-1 text-sm">{c.summary}</p>
-            {c.metrics && (
-              <div class="border-line mt-5 flex flex-wrap gap-x-5 gap-y-2 border-t pt-4">
-                {c.metrics.slice(0, 2).map((m) => (
-                  <div>
-                    <div class="font-display text-brand-600 text-lg font-bold tabular-nums">
-                      {m.value}
-                    </div>
-                    <div class="text-muted text-[0.7rem] leading-tight">{m.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <a
-              href={`/${c.slug}/`}
-              class="text-brand-600 hover:text-brand-700 mt-5 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
-            >
-              Learn more
-              <span
-                class="transition-transform duration-200 group-hover:translate-x-1"
-                aria-hidden="true"
-              >
-                &rarr;
+            <div class="from-brand-500 to-emerald relative h-28 overflow-hidden bg-linear-to-br p-5">
+              {(c.cardImage ?? c.image) ? (
+                <>
+                  <img
+                    src={c.cardImage ?? c.image}
+                    alt={`${c.cardTitle} cover`}
+                    loading="lazy"
+                    decoding="async"
+                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    class="from-night-700/70 absolute inset-0 bg-linear-to-t to-transparent"
+                    aria-hidden="true"
+                  />
+                </>
+              ) : (
+                <svg
+                  class="absolute -right-4 -bottom-6 h-32 w-32 text-white/15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  set:html={glyphs[c.tag] ?? '<circle cx="12" cy="12" r="9"/>'}
+                />
+              )}
+              <span class="relative inline-flex rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
+                {c.tag}
               </span>
-            </a>
+            </div>
+
+            <div class="flex flex-1 flex-col p-6">
+              <h3 class="text-ink text-xl font-semibold">{c.cardTitle}</h3>
+              <p class="text-muted mt-2 flex-1 text-sm leading-relaxed">{c.summary}</p>
+
+              {c.metrics && (
+                <div class="border-line mt-5 flex flex-wrap gap-x-6 gap-y-3 border-t pt-5">
+                  {c.metrics.slice(0, 2).map((m) => (
+                    <div>
+                      <div class="font-display text-brand-600 text-2xl font-bold tabular-nums">
+                        {m.value}
+                      </div>
+                      <div class="text-muted mt-0.5 text-[0.7rem] leading-tight">{m.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <a
+                href={`/${c.slug}/`}
+                class="text-brand-600 hover:text-brand-700 mt-6 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
+              >
+                Learn more
+                <span
+                  class="transition-transform duration-200 group-hover:translate-x-1"
+                  aria-hidden="true"
+                >
+                  &rarr;
+                </span>
+              </a>
+            </div>
           </article>
         ))
       }
     </div>
 
+    <!-- Competition wins: polished pill cards with medal, placement, and event. -->
     <div class="mt-6 grid gap-6 sm:grid-cols-2">
       {
         competitions.map((c, i) => (
           <a
             href={`/${c.slug}/`}
-            class="card-hover reveal group border-line bg-surface flex items-center gap-4 rounded-2xl border p-6"
-            style={`--reveal-delay: ${i * 90}ms`}
+            class="reveal group border-line bg-surface shadow-card hover:border-brand-300 flex items-center gap-4 rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1"
+            style={`--reveal-delay: ${(caseStudies.length + i) * 90}ms`}
           >
             <span
-              class="bg-tint grid h-12 w-12 shrink-0 place-items-center rounded-xl text-2xl"
+              class="from-brand-50 to-tint ring-line grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-linear-to-br text-3xl ring-1 transition-transform duration-300 group-hover:scale-105"
               aria-hidden="true"
             >
               {medals[i] ?? '🏅'}

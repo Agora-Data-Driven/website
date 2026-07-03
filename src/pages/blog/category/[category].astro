@@ -10,7 +10,7 @@ import { skillMasteryUrl } from '@data/nav';
 
 export const prerender = true;
 
-// One crawlable hub page per silo that actually has published posts — empty
+// One crawlable hub page per silo that actually has published posts, empty
 // silos are intentionally not rendered (no thin/empty category pages).
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft && data.type === 'post');
@@ -34,7 +34,7 @@ const posts = allPosts
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-// Sibling silos that have content — for cross-linking ("link like clusters").
+// Sibling silos that have content, for cross-linking ("link like clusters").
 const populated = new Set(allPosts.map((p) => p.data.category));
 const siblings = silos.filter((s) => s.slug !== silo.slug && populated.has(s.name));
 
@@ -45,7 +45,11 @@ const isTalent = silo.audience === 'talent';
   <section class="border-line from-tint/40 to-canvas border-b bg-linear-to-b">
     <Container class="py-12 lg:py-16">
       <Breadcrumb
-        items={[{ label: 'Home', href: '/' }, { label: 'Blog', href: '/blog/' }, { label: silo.name }]}
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Blog', href: '/blog/' },
+          { label: silo.name },
+        ]}
       />
       <p class="eyebrow mt-6">Blog topic</p>
       <h1 class="text-ink mt-2 text-4xl font-bold sm:text-5xl">{silo.name}</h1>
@@ -98,7 +102,7 @@ const isTalent = silo.audience === 'talent';
               We turn analytics into growth. Let's talk about where you want to go.
             </p>
             <div class="mt-5 flex justify-center">
-              <Button href={cta.becomeClient.href} external size="lg">
+              <Button href={cta.becomeClient.href} external variant="icon" size="lg">
                 {cta.becomeClient.label}
               </Button>
             </div>

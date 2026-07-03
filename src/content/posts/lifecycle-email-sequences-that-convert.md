@@ -31,9 +31,9 @@ This is arguably the highest-leverage sequence you'll build, because a new subsc
 
 A welcome sequence has a clear job: build enough trust to earn the first purchase. That means it should deliver value before it asks for anything.
 
-- **Email 1: Deliver and orient.** Give them whatever they signed up for, and set expectations for what's coming.
-- **Email 2: Build trust.** Deliver one concretely useful thing; the format depends on your business. A SaaS tool might send a short setup checklist, an apparel brand a styling guide, a service business a relevant case study or a straight answer to the objection prospects raise most. No pitch yet.
-- **Email 3: Make the case and the offer.** Now introduce the product as the solution to the problem they care about, with a clear call to action.
+- **Email 1, Deliver and orient.** Give them whatever they signed up for, and set expectations for what's coming.
+- **Email 2, Build trust.** Deliver one concretely useful thing; the format depends on your business. A SaaS tool might send a short setup checklist, an apparel brand a styling guide, a service business a relevant case study or a straight answer to the objection prospects raise most. No pitch yet.
+- **Email 3, Make the case and the offer.** Now introduce the product as the solution to the problem they care about, with a clear call to action.
 
 The sequence between trust and ask is what makes it work. By the time the offer arrives, you've already been useful, so the pitch reads as a logical next step rather than an interruption.
 

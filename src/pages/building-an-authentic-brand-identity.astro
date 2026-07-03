@@ -1,13 +1,13 @@
 ---
 /**
- * Bespoke landing page for the flagship "LED Wall" story — light / white
+ * Bespoke landing page for the flagship "LED Wall" story, light / white
  * minimalist treatment (bold black type, generous white space, green reserved
  * for CTAs and small accents, per the brand kit). No dark surfaces.
  *
  * The Markdown file stays the single source of truth for the blog listing card
  * + SEO frontmatter; this page reads that frontmatter via getEntry, and
  * [slug].astro excludes the slug so there's no duplicate-route collision. All
- * copy is drawn from the real article — no invented metrics ("6 industries" is
+ * copy is drawn from the real article, no invented metrics ("6 industries" is
  * the count of verticals named in the Results section).
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
@@ -204,33 +204,37 @@ const breadcrumbLd = {
             >
             </div>
 
-            <div class="led-frame">
-              <div class="led-screen">
-                <div class="led-grid"></div>
-                <div class="led-sweep"></div>
-                <div class="led-content">
-                  <span class="led-eyebrow">NOW SHOWING</span>
-                  <span class="led-headline">YOUR AD<br />HERE</span>
-                  <span class="led-cta">
-                    <span class="led-dot"></span> MESSAGE US TO BOOK YOUR SLOT
-                  </span>
+            <div class="relative mx-auto max-w-[340px]">
+              <div class="led-frame">
+                <div class="led-screen">
+                  <video
+                    class="led-video"
+                    src="/LED.mp4"
+                    autoplay
+                    loop
+                    muted
+                    playsinline
+                    preload="auto"
+                  >
+                  </video>
+                  <div class="led-sweep"></div>
                 </div>
+                <div class="led-stand"></div>
               </div>
-              <div class="led-stand"></div>
-            </div>
 
-            <!-- Floating proof chips -->
-            <div
-              class="border-line bg-surface shadow-pop absolute -bottom-5 -left-3 hidden rounded-xl border px-4 py-3 sm:block"
-            >
-              <div class="font-display text-brand-600 text-sm font-bold">6 industries</div>
-              <div class="text-muted text-[0.7rem]">Booked in month one</div>
-            </div>
-            <div
-              class="border-line bg-surface shadow-pop absolute -top-5 -right-3 hidden rounded-xl border px-4 py-3 md:block"
-            >
-              <div class="font-display text-accent-600 text-sm font-bold">Live ↗</div>
-              <div class="text-muted text-[0.7rem]">Real paying advertisers</div>
+              <!-- Floating proof chips -->
+              <div
+                class="border-line bg-surface shadow-pop absolute -bottom-5 -left-3 hidden rounded-xl border px-4 py-3 sm:block"
+              >
+                <div class="font-display text-brand-600 text-sm font-bold">6 industries</div>
+                <div class="text-muted text-[0.7rem]">Booked in month one</div>
+              </div>
+              <div
+                class="border-line bg-surface shadow-pop absolute -top-5 -right-3 hidden rounded-xl border px-4 py-3 md:block"
+              >
+                <div class="font-display text-accent-600 text-sm font-bold">Live ↗</div>
+                <div class="text-muted text-[0.7rem]">Real paying advertisers</div>
+              </div>
             </div>
           </div>
         </div>
@@ -302,13 +306,13 @@ const breadcrumbLd = {
               </p>
               <ul class="text-muted mt-4 space-y-3 text-sm">
                 <li class="flex gap-2">
-                  <span aria-hidden="true">—</span> Pay, post, and hope
+                  <span aria-hidden="true">-</span> Pay, post, and hope
                 </li>
                 <li class="flex gap-2">
-                  <span aria-hidden="true">—</span> No feedback loop
+                  <span aria-hidden="true">-</span> No feedback loop
                 </li>
                 <li class="flex gap-2">
-                  <span aria-hidden="true">—</span> Static, set-and-forget
+                  <span aria-hidden="true">-</span> Static, set-and-forget
                 </li>
               </ul>
             </div>
@@ -483,12 +487,24 @@ const breadcrumbLd = {
             </h2>
             <p class="text-muted mx-auto mt-4 max-w-xl">
               Whether it's our LED wall or your next campaign, we bring the same data-informed
-              playbook. Message us to book a slot or get a custom quote.
+              playbook. Message us to book a slot.
             </p>
             <div class="mt-8 flex flex-wrap justify-center gap-4">
-              <Button href={cta.becomeClient.href} external size="lg">Book a slot</Button>
-              <Button href={cta.customQuote.href} external variant="secondary" size="lg">
-                Get a custom quote
+              <Button href={cta.becomeClient.href} external variant="icon" size="lg">
+                Become a client
+              </Button>
+              <Button href={cta.facebook.href} external variant="secondary" size="lg">
+                <svg
+                  class="h-5 w-5 shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6.02 4.39 11.01 10.13 11.93v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8v8.44C19.61 23.08 24 18.09 24 12.07Z"
+                  ></path>
+                </svg>
+                Follow on Facebook
               </Button>
             </div>
             <p class="text-muted mt-6 text-xs font-medium tracking-wide uppercase">
@@ -511,10 +527,12 @@ const breadcrumbLd = {
 </BaseLayout>
 
 <style>
-  /* ---- Simulated LED wall — light, minimal (decorative, pure CSS) ------- */
+  /* ---- Simulated LED wall, light, minimal (decorative, pure CSS) ------- */
   .led-frame {
     position: relative;
     width: 100%;
+    max-width: 340px;
+    margin-inline: auto;
     border-radius: var(--radius-xl);
     background: var(--color-surface);
     border: 1px solid var(--color-line);
@@ -523,20 +541,21 @@ const breadcrumbLd = {
   }
   .led-screen {
     position: relative;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 9 / 16; /* matches LED.mp4 (1080x1920) exactly: no crop, no bars */
     border-radius: var(--radius-lg);
     overflow: hidden;
-    background: linear-gradient(165deg, #ffffff 0%, var(--color-tint) 100%);
+    background: #000;
     border: 1px solid var(--color-line);
+    line-height: 0;
   }
-  /* Faint pixel grid of the panel */
-  .led-grid {
+  /* Looping LED-wall video, fills the panel at its native 9:16 ratio (never cropped) */
+  .led-video {
     position: absolute;
     inset: 0;
-    background-image:
-      linear-gradient(rgba(18, 18, 18, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(18, 18, 18, 0.05) 1px, transparent 1px);
-    background-size: 12px 12px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   /* Soft sheen sweeping across, like a refresh pass */
   .led-sweep {
@@ -560,53 +579,6 @@ const breadcrumbLd = {
       transform: translateX(35%);
     }
   }
-  .led-content {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.7rem;
-    text-align: center;
-    padding: 1rem;
-  }
-  .led-eyebrow {
-    font-family: var(--font-display);
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    font-weight: 700;
-    color: var(--color-brand-600);
-  }
-  .led-headline {
-    font-family: var(--font-display);
-    font-weight: 700;
-    line-height: 0.96;
-    font-size: clamp(2.4rem, 6vw, 3.5rem);
-    letter-spacing: 0.01em;
-    color: var(--color-ink);
-  }
-  .led-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-display);
-    font-size: 0.62rem;
-    letter-spacing: 0.18em;
-    font-weight: 700;
-    color: #fff;
-    background: var(--color-brand-500);
-    padding: 0.45rem 0.9rem;
-    border-radius: 9999px;
-    box-shadow: var(--shadow-glow-sm);
-  }
-  .led-dot {
-    width: 0.4rem;
-    height: 0.4rem;
-    border-radius: 9999px;
-    background: #fff;
-    animation: led-blink 1.4s step-end infinite;
-  }
   .led-stand {
     margin: 0.75rem auto 0;
     width: 14%;
@@ -625,19 +597,8 @@ const breadcrumbLd = {
     background: var(--color-line);
   }
 
-  @keyframes led-blink {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.2;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .led-sweep,
-    .led-dot {
+    .led-sweep {
       animation: none;
     }
   }

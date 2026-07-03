@@ -15,9 +15,7 @@ const markdownPosts = await getCollection('posts', ({ data }) => !data.draft);
 markdownPosts.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
 
 // Body map for accurate read-time calculation.
-const bodyBySlug = new Map<string, string>(
-  markdownPosts.map((p) => [p.id, p.body ?? '']),
-);
+const bodyBySlug = new Map<string, string>(markdownPosts.map((p) => [p.id, p.body ?? '']));
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -41,10 +39,10 @@ const thumbByCategory: Record<string, string> = {
   'Careers & Skill-Building': 'course-review',
 };
 
-// Posts with bespoke custom landing pages — exclude from the carousel.
+// Posts with bespoke custom landing pages, exclude from the carousel.
 const BESPOKE_SLUGS = new Set(['building-an-authentic-brand-identity']);
 
-// Slugs already curated in blogData.ts — don't double-render.
+// Slugs already curated in blogData.ts, don't double-render.
 const curatedSlugs = new Set(blogPosts.map((p) => p.slug));
 
 // Convert any markdown post not already in blogData.ts into a BlogPost card.
@@ -86,35 +84,37 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
   description="Read data-driven marketing insights, practical guides, course reviews, and real business case studies from Agora Data Driven."
 >
   <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
-  <section class="hero-section relative overflow-hidden border-b border-line bg-surface">
+  <section class="hero-section border-line bg-surface relative overflow-hidden border-b">
     <div class="bg-grid pointer-events-none absolute inset-0 opacity-40" aria-hidden="true"></div>
     <div
       class="pointer-events-none absolute inset-0"
       style="background: radial-gradient(800px 500px at 110% -10%, rgba(79,168,74,0.08) 0%, transparent 60%), linear-gradient(150deg, rgba(238,246,237,0.55) 0%, transparent 45%);"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
     <div
-      class="border-brand-200/25 pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full border"
+      class="border-brand-200/25 pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full border"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
     <div
-      class="border-brand-200/15 pointer-events-none absolute -right-6 -top-6 h-44 w-44 rounded-full border"
+      class="border-brand-200/15 pointer-events-none absolute -top-6 -right-6 h-44 w-44 rounded-full border"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
 
     <Container class="relative py-14 lg:py-20">
       <div class="hero-grid">
         <!-- Left: copy -->
         <div class="hero-left">
           <p
-            class="eyebrow text-brand-600 mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em]"
+            class="eyebrow text-brand-600 mb-3 inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] uppercase"
           >
-            <span
-              class="bg-brand-500/10 border-brand-200 rounded-full border px-2.5 py-0.5"
+            <span class="bg-brand-500/10 border-brand-200 rounded-full border px-2.5 py-0.5"
               >Blog</span
             >
           </p>
-          <h1 class="text-ink font-display text-4xl font-bold leading-[1.12] sm:text-5xl">
+          <h1 class="text-ink font-display text-4xl leading-[1.12] font-bold sm:text-5xl">
             Insights that<br /><span class="text-gradient">drive growth.</span>
           </h1>
           <p class="text-muted mt-4 max-w-md text-base leading-relaxed sm:text-[1.0625rem]">
@@ -156,22 +156,22 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
           featuredPost && (
             <div class="hero-right">
               <a href={featuredPost.href} class="featured-card group block">
-                <article class="overflow-hidden rounded-2xl border border-line bg-surface shadow-pop">
+                <article class="border-line bg-surface shadow-pop overflow-hidden rounded-2xl border">
                   {/* Thumbnail */}
-                  <div class="featured-thumb overflow-hidden bg-tint">
+                  <div class="featured-thumb bg-tint overflow-hidden">
                     <BlogThumbnail variant={featuredPost.thumbnailVariant} />
                   </div>
                   <div class="p-5">
                     {/* Badges */}
                     <div class="mb-3 flex flex-wrap items-center gap-2.5">
-                      <span class="bg-brand-500 rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white">
+                      <span class="bg-brand-500 rounded-full px-3 py-0.5 text-[10px] font-bold tracking-widest text-white uppercase">
                         Featured
                       </span>
-                      <span class="text-brand-600 text-[10px] font-bold uppercase tracking-widest">
+                      <span class="text-brand-600 text-[10px] font-bold tracking-widest uppercase">
                         {featuredPost.category}
                       </span>
                     </div>
-                    <h2 class="text-ink text-[0.9375rem] font-bold leading-snug transition-colors group-hover:text-brand-700 sm:text-base">
+                    <h2 class="text-ink group-hover:text-brand-700 text-[0.9375rem] leading-snug font-bold transition-colors sm:text-base">
                       {featuredPost.title}
                     </h2>
                     <p class="text-muted mt-2 line-clamp-2 text-sm leading-relaxed">
@@ -179,9 +179,10 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
                     </p>
                     <div class="mt-4 flex items-center justify-between">
                       <span class="text-muted text-xs">
-                        {featuredPost.date} · {getReadTime(featuredPost.slug, featuredPost.readTimeFallback)}
+                        {featuredPost.date} ·{' '}
+                        {getReadTime(featuredPost.slug, featuredPost.readTimeFallback)}
                       </span>
-                      <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 transition-all group-hover:gap-2.5 group-hover:text-brand-700">
+                      <span class="text-brand-600 group-hover:text-brand-700 inline-flex items-center gap-1.5 text-xs font-semibold transition-all group-hover:gap-2.5">
                         Read article
                         <svg
                           class="h-3.5 w-3.5 shrink-0"
@@ -214,7 +215,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
       <!-- Search -->
       <div class="relative flex-1 sm:max-w-xs">
         <svg
-          class="text-muted pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2"
+          class="text-muted pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2"
           viewBox="0 0 16 16"
           fill="none"
           stroke="currentColor"
@@ -230,7 +231,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
           type="search"
           placeholder="Search articles…"
           autocomplete="off"
-          class="border-line bg-surface text-ink placeholder:text-muted focus:border-brand-400 w-full rounded-full border py-2.5 pl-10 pr-4 text-sm shadow-sm outline-none transition-colors"
+          class="border-line bg-surface text-ink placeholder:text-muted focus:border-brand-400 w-full rounded-full border py-2.5 pr-4 pl-10 text-sm shadow-sm transition-colors outline-none"
         />
       </div>
 
@@ -264,11 +265,11 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
               stroke-linejoin="round"
               aria-hidden="true"
             >
-              <path d="M2 14l4-5 3.5 2.5 3.5-7L17 7" />
+              <path d="M2 14l4-5 3.5 2.5 3.5-7L17 7"></path>
             </svg>
           </div>
           <div>
-            <h2 class="text-ink text-xl font-bold leading-tight">Data Driven Marketing</h2>
+            <h2 class="text-ink text-xl leading-tight font-bold">Data Driven Marketing</h2>
             <p class="text-muted mt-1 text-sm leading-relaxed">
               Actionable blogs, course reviews, guides, and how-tos to help you grow smarter with
               data.
@@ -293,7 +294,11 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
               aria-hidden="true"><path d="M10 4L6 8l4 4"></path></svg
             >
           </button>
-          <button id="ddm-right" class="carousel-btn" aria-label="Scroll Data Driven Marketing articles right">
+          <button
+            id="ddm-right"
+            class="carousel-btn"
+            aria-label="Scroll Data Driven Marketing articles right"
+          >
             <svg
               class="h-4 w-4"
               viewBox="0 0 16 16"
@@ -341,10 +346,10 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
                     <BlogThumbnail variant={post.thumbnailVariant} class="ddm-thumb-svg" />
                   </div>
                   <div class="ddm-body flex flex-col">
-                    <span class="text-brand-600 text-[10px] font-bold uppercase tracking-[0.16em]">
+                    <span class="text-brand-600 text-[10px] font-bold tracking-[0.16em] uppercase">
                       {post.category}
                     </span>
-                    <h3 class="text-ink mt-2 flex-1 text-[0.875rem] font-semibold leading-snug transition-colors group-hover:text-brand-700 line-clamp-2">
+                    <h3 class="text-ink group-hover:text-brand-700 mt-2 line-clamp-2 flex-1 text-[0.875rem] leading-snug font-semibold transition-colors">
                       {post.title}
                     </h3>
                     <p class="text-muted mt-2 line-clamp-2 text-xs leading-relaxed">
@@ -395,19 +400,14 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
             </svg>
           </div>
           <div>
-            <h2 class="text-ink text-xl font-bold leading-tight">Case Studies</h2>
+            <h2 class="text-ink text-xl leading-tight font-bold">Case Studies</h2>
             <p class="text-muted mt-1 text-sm leading-relaxed">
               Real business stories dissected through the lens of marketing, data, and growth.
             </p>
           </div>
         </div>
         <div class="flex shrink-0 items-center gap-1">
-          <button
-            id="cs-left"
-            class="carousel-btn"
-            aria-label="Scroll Case Studies left"
-            disabled
-          >
+          <button id="cs-left" class="carousel-btn" aria-label="Scroll Case Studies left" disabled>
             <svg
               class="h-4 w-4"
               viewBox="0 0 16 16"
@@ -468,16 +468,16 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
                   </div>
                   <div class="flex flex-1 flex-col p-5">
                     <div class="mb-2 flex flex-wrap items-center gap-2">
-                      <span class="text-brand-600 text-[10px] font-bold uppercase tracking-[0.16em]">
+                      <span class="text-brand-600 text-[10px] font-bold tracking-[0.16em] uppercase">
                         {post.category}
                       </span>
                       {post.sourceLabel && (
-                        <span class="text-muted rounded-full bg-canvas px-2 py-0.5 text-[10px] font-medium">
+                        <span class="text-muted bg-canvas rounded-full px-2 py-0.5 text-[10px] font-medium">
                           {post.sourceLabel}
                         </span>
                       )}
                     </div>
-                    <h3 class="text-ink flex-1 text-[0.875rem] font-semibold leading-snug transition-colors group-hover:text-brand-700 line-clamp-2">
+                    <h3 class="text-ink group-hover:text-brand-700 line-clamp-2 flex-1 text-[0.875rem] leading-snug font-semibold transition-colors">
                       {post.title}
                     </h3>
                     <p class="text-muted mt-2 line-clamp-2 text-xs leading-relaxed">
@@ -526,13 +526,20 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
   <!-- ── CTA BANNER ────────────────────────────────────────────────────────── -->
   <section class="cta-banner-section py-8 pb-16 lg:py-12 lg:pb-20">
     <Container>
-      <div class="cta-banner relative overflow-hidden rounded-2xl px-8 py-12 text-center lg:px-16 lg:py-16">
-        <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-30" aria-hidden="true"></div>
+      <div
+        class="cta-banner relative overflow-hidden rounded-2xl px-8 py-12 text-center lg:px-16 lg:py-16"
+      >
+        <div
+          class="dot-grid-dark pointer-events-none absolute inset-0 opacity-30"
+          aria-hidden="true"
+        >
+        </div>
         <div
           class="pointer-events-none absolute inset-0"
           style="background: radial-gradient(600px 400px at 50% 120%, rgba(79,168,74,0.22) 0%, transparent 70%);"
           aria-hidden="true"
-        ></div>
+        >
+        </div>
         <div class="relative">
           <h2 class="font-display text-2xl font-bold text-white sm:text-3xl lg:text-[2rem]">
             Need help finding growth opportunities<br class="hidden sm:block" /> in your business?
@@ -544,7 +551,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
             href={cta.becomeClient.href}
             target="_blank"
             rel="noopener noreferrer"
-            class="mt-8 inline-flex items-center gap-2 rounded-full bg-brand-500 px-7 py-3.5 text-sm font-bold text-white shadow-glow-sm transition-all hover:bg-brand-600 hover:shadow-glow"
+            class="bg-brand-500 shadow-glow-sm hover:bg-brand-600 hover:shadow-glow mt-8 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-all"
           >
             Let's talk growth
             <svg
@@ -818,11 +825,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
   let activeIndustry = 'all';
   let query = '';
 
-  function filterSection(
-    cards: HTMLElement[],
-    trackId: string,
-    emptyId: string,
-  ): number {
+  function filterSection(cards: HTMLElement[], trackId: string, emptyId: string): number {
     const track = document.getElementById(trackId);
     const empty = document.getElementById(emptyId);
     let shown = 0;
@@ -877,7 +880,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
     applyFilters();
   });
 
-  // Clear filters — handles both the single clear button (future global) and
+  // Clear filters, handles both the single clear button (future global) and
   // the per-section clear buttons inside the empty states.
   function clearAll() {
     activeTopic = 'all';

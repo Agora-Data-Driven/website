@@ -1,7 +1,5 @@
 ---
-import Container from '@components/Container.astro';
 import Button from '@components/Button.astro';
-import HeroViz from '@components/home/HeroViz.astro';
 import { cta } from '@data/cta';
 ---
 
@@ -10,6 +8,12 @@ import { cta } from '@data/cta';
     class="bg-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_72%)] opacity-60"
   >
   </div>
+  <!-- Ambient "data stream" backdrop: slow, faint drifting code/hex behind the
+       display. Pure Canvas2D, masked to fade at the edges, off for reduced-motion. -->
+  <canvas
+    id="hero-code"
+    class="hero-code pointer-events-none absolute inset-0 hidden lg:block"
+    aria-hidden="true"></canvas>
   <div
     class="glow-pulse bg-brand-300/30 pointer-events-none absolute -top-40 -right-32 h-[34rem] w-[34rem] rounded-full blur-[130px]"
   >
@@ -20,85 +24,95 @@ import { cta } from '@data/cta';
   >
   </div>
 
-  <Container class="relative py-20 lg:py-28">
-    <div class="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
-      <!-- Copy -->
-      <div>
-        <p
-          class="reveal border-brand-200 bg-tint/70 text-brand-700 inline-flex items-center gap-2 rounded-full border py-1.5 pr-4 pl-2.5 text-xs font-semibold tracking-wide uppercase backdrop-blur"
-        >
-          <span
-            class="bg-brand-500 grid h-4 w-4 place-items-center rounded-full"
-            aria-hidden="true"
-          >
-            <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
-          </span>
-          Data-driven marketing &amp; analytics
-        </p>
-        <h1
-          class="reveal text-ink mt-6 text-4xl leading-[1.04] font-bold sm:text-5xl lg:text-[4rem]"
-          style="--reveal-delay: 80ms"
-        >
-          Analytics powered marketing for
-          <span class="sr-only">real results.</span>
-          <span class="mt-2 block" aria-hidden="true">
-            <span id="hero-rotator" class="text-gradient">real results</span><span
-              class="hero-caret"></span>
-          </span>
-        </h1>
-        <p class="reveal text-muted mt-6 max-w-xl text-lg" style="--reveal-delay: 160ms">
-          We turn insights into sales. From strategy to execution, we help you scale, optimize, and
-          make smarter decisions, faster. Working with us isn't a cost; it's an investment.
-        </p>
+  <!-- Wide, centred split: balanced margins on both sides (lightly boxed), the
+       text capped on the left and the video taking the larger right share at its
+       natural 16:9 so it stays big but is never cropped or distorted. -->
+  <div
+    class="relative z-10 mx-auto grid w-full max-w-[100rem] items-center gap-10 px-5 py-8 sm:px-6 lg:grid-cols-[minmax(0,33rem)_minmax(0,52rem)] lg:justify-center lg:gap-14 lg:px-10 lg:py-12"
+  >
+    <!-- Copy -->
+    <div>
+      <p
+        class="reveal border-brand-200 bg-tint/70 text-brand-700 inline-flex items-center gap-2 rounded-full border py-1.5 pr-4 pl-2.5 text-xs font-semibold tracking-wide uppercase backdrop-blur"
+      >
+        <span class="bg-brand-500 grid h-4 w-4 place-items-center rounded-full" aria-hidden="true">
+          <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
+        </span>
+        Data-driven marketing &amp; analytics
+      </p>
+      <h1
+        class="reveal text-ink mt-6 text-4xl leading-[1.04] font-bold sm:text-5xl lg:text-[4rem]"
+        style="--reveal-delay: 80ms"
+      >
+        Analytics powered marketing for
+        <span class="sr-only">real results.</span>
+        <span class="mt-2 block whitespace-nowrap" aria-hidden="true">
+          <span id="hero-rotator" class="text-gradient">real results</span><span class="hero-caret"
+          ></span>
+        </span>
+      </h1>
+      <p class="reveal text-muted mt-6 max-w-xl text-lg" style="--reveal-delay: 160ms">
+        We turn insights into sales. From strategy to execution, we help you scale, optimize, and
+        make smarter decisions, faster. Working with us isn't a cost; it's an investment.
+      </p>
 
-        <div class="reveal mt-8 flex flex-wrap gap-4" style="--reveal-delay: 240ms">
-          <Button href={cta.becomeClient.href} external size="lg">{cta.becomeClient.label}</Button>
-          <Button href={cta.customQuote.href} external variant="secondary" size="lg">
-            {cta.customQuote.label}
-          </Button>
-        </div>
-
-        <div
-          class="reveal text-muted mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
-          style="--reveal-delay: 320ms"
+      <div class="reveal mt-8 flex flex-wrap gap-4" style="--reveal-delay: 240ms">
+        <Button href={cta.becomeClient.href} external variant="icon" size="lg">
+          {cta.becomeClient.label}
+        </Button>
+        <Button
+          href={cta.customQuote.href}
+          external={cta.customQuote.external}
+          variant="secondary"
+          size="lg"
         >
-          <span class="flex items-center gap-2">
-            <span class="text-brand-500 tracking-tight" aria-hidden="true">★★★★★</span>
-            <span><span class="text-ink font-semibold">Top Rated</span> on Upwork</span>
-          </span>
-          <span class="bg-line hidden h-4 w-px sm:block" aria-hidden="true"></span>
-          <span class="flex items-center gap-2">
-            <span class="font-display text-ink font-bold">9</span> verifiable certifications
-          </span>
-          <span class="bg-line hidden h-4 w-px sm:block" aria-hidden="true"></span>
-          <span class="flex items-center gap-2">
-            <span class="font-display text-ink font-bold">2×</span> award-winning analytics
-          </span>
-        </div>
+          {cta.customQuote.label}
+        </Button>
       </div>
 
-      <!-- Live ML showcase -->
-      <div class="reveal relative" style="--reveal-delay: 200ms">
-        <div
-          class="glow-pulse bg-brand-300/25 pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] blur-3xl"
-        >
-        </div>
-        <HeroViz />
-        <div
-          class="border-line bg-surface shadow-pop absolute -bottom-5 -left-4 hidden rounded-xl border px-4 py-3 sm:block"
-        >
-          <div class="font-display text-brand-600 text-sm font-bold">2nd / 2,459</div>
-          <div class="text-muted text-[0.7rem]">Marketing analytics comp.</div>
-        </div>
-        <div
-          class="border-line bg-surface shadow-pop absolute -top-5 -right-3 hidden rounded-xl border px-4 py-3 md:block"
-        >
-          <div class="font-display text-accent-600 text-sm font-bold">1st place 🏆</div>
-          <div class="text-muted text-[0.7rem]">Operations analytics</div>
-        </div>
+      <div
+        class="reveal text-muted mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
+        style="--reveal-delay: 320ms"
+      >
+        <span class="flex items-center gap-2">
+          <span class="tracking-tight text-[#f5a623]" aria-hidden="true">★★★★★</span>
+          <span><span class="text-ink font-semibold">Top Rated</span> on Upwork</span>
+        </span>
+        <span class="bg-line hidden h-4 w-px sm:block" aria-hidden="true"></span>
+        <span class="flex items-center gap-2">
+          <span class="font-display text-ink font-bold">9</span> verifiable certifications
+        </span>
+        <span class="bg-line hidden h-4 w-px sm:block" aria-hidden="true"></span>
+        <span class="flex items-center gap-2">
+          <span class="font-display text-ink font-bold">2×</span> award-winning analytics
+        </span>
       </div>
     </div>
-  </Container>
+
+    <!-- Brand video showcase -->
+    <div class="reveal relative w-full" style="--reveal-delay: 200ms">
+      <div
+        class="glow-pulse bg-brand-300/25 pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] blur-3xl"
+      >
+      </div>
+      <div
+        class="group border-line bg-surface shadow-pop relative w-full overflow-hidden rounded-2xl border"
+      >
+        <video
+          class="bg-surface aspect-video w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+          autoplay
+          loop
+          muted
+          playsinline
+          preload="auto"
+          aria-label="A short look at how Agora Data Driven works with clients"
+        >
+          <source src="/Agora-Website-Video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
 </section>
 
 <style>
@@ -123,6 +137,19 @@ import { cta } from '@data/cta';
   @media (prefers-reduced-motion: reduce) {
     .hero-caret {
       animation: none;
+    }
+  }
+
+  /* Animated data network: confined to the video/display side (right) and faded
+     out before the headline, so the text area stays completely clean. */
+  .hero-code {
+    opacity: 0.6;
+    -webkit-mask-image: radial-gradient(ellipse 54% 92% at 80% 50%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(ellipse 54% 92% at 80% 50%, #000 30%, transparent 78%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-code {
+      opacity: 0.32;
     }
   }
 </style>
@@ -163,5 +190,155 @@ import { cta } from '@data/cta';
       };
       setTimeout(tick, 1600);
     }
+  }
+</script>
+
+<script>
+  // Animated "data network" canvas behind the hero display: drifting nodes wired
+  // into a live constellation, with pulsing glow, a few accent nodes, faint code
+  // streaks for texture, and travelling data packets. Pure Canvas2D, no deps.
+  const cv = document.getElementById('hero-code') as HTMLCanvasElement | null;
+  const ctx = cv?.getContext('2d');
+  if (cv && ctx) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const GREEN = '79,168,74';
+    const ACCENT = '106,106,234'; // subtle purple accent for a few nodes
+    const LINK = 135; // px distance to draw a connection
+
+    type Node = { x: number; y: number; vx: number; vy: number; r: number; ph: number; a: boolean };
+    type Packet = { i: number; j: number; t: number; sp: number };
+    let w = 0;
+    let h = 0;
+    let nodes: Node[] = [];
+    let packets: Packet[] = [];
+
+    function rand(min: number, max: number) {
+      return min + Math.random() * (max - min);
+    }
+
+    function resize() {
+      const r = cv!.getBoundingClientRect();
+      w = r.width;
+      h = r.height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cv!.width = Math.max(1, Math.round(w * dpr));
+      cv!.height = Math.max(1, Math.round(h * dpr));
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.max(20, Math.min(54, Math.round((w * h) / 22000)));
+      nodes = [];
+      for (let i = 0; i < count; i++) {
+        nodes.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: rand(-0.2, 0.2),
+          vy: rand(-0.2, 0.2),
+          r: rand(1.1, 2.4),
+          ph: Math.random() * Math.PI * 2,
+          a: Math.random() < 0.12,
+        });
+      }
+      packets = [];
+      const pc = Math.max(2, Math.round(count / 14));
+      for (let k = 0; k < pc; k++) {
+        packets.push({ i: 0, j: 1, t: Math.random(), sp: rand(0.003, 0.007) });
+      }
+    }
+
+    resize();
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(cv);
+    else window.addEventListener('resize', resize);
+
+    function draw(now: number) {
+      ctx!.clearRect(0, 0, w, h);
+
+      // 1) connections (constellation)
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < LINK * LINK) {
+            const al = (1 - Math.sqrt(d2) / LINK) * 0.22;
+            ctx!.strokeStyle = `rgba(${GREEN},${al.toFixed(3)})`;
+            ctx!.lineWidth = 1;
+            ctx!.beginPath();
+            ctx!.moveTo(a.x, a.y);
+            ctx!.lineTo(b.x, b.y);
+            ctx!.stroke();
+          }
+        }
+      }
+
+      // 2) travelling data packets ride between two moving nodes
+      for (const p of packets) {
+        const a = nodes[p.i % nodes.length];
+        const b = nodes[p.j % nodes.length];
+        p.t += p.sp;
+        if (p.t >= 1) {
+          p.t = 0;
+          p.i = (Math.random() * nodes.length) | 0;
+          p.j = (Math.random() * nodes.length) | 0;
+        }
+        const px = a.x + (b.x - a.x) * p.t;
+        const py = a.y + (b.y - a.y) * p.t;
+        ctx!.fillStyle = `rgba(${GREEN},0.85)`;
+        ctx!.beginPath();
+        ctx!.arc(px, py, 1.8, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+
+      // 3) nodes with a soft pulsing glow
+      for (const p of nodes) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < -12) p.x = w + 12;
+        else if (p.x > w + 12) p.x = -12;
+        if (p.y < -12) p.y = h + 12;
+        else if (p.y > h + 12) p.y = -12;
+        const pulse = 0.5 + 0.5 * Math.sin(now / 1100 + p.ph);
+        const col = p.a ? ACCENT : GREEN;
+        ctx!.fillStyle = `rgba(${col},${(0.07 + 0.08 * pulse).toFixed(3)})`;
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+        ctx!.fill();
+        ctx!.fillStyle = `rgba(${col},${(0.42 + 0.26 * pulse).toFixed(3)})`;
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    function drawStatic() {
+      ctx!.clearRect(0, 0, w, h);
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < LINK * LINK) {
+            ctx!.strokeStyle = `rgba(${GREEN},${((1 - Math.sqrt(d2) / LINK) * 0.22).toFixed(3)})`;
+            ctx!.beginPath();
+            ctx!.moveTo(a.x, a.y);
+            ctx!.lineTo(b.x, b.y);
+            ctx!.stroke();
+          }
+        }
+      }
+      for (const p of nodes) {
+        ctx!.fillStyle = `rgba(${p.a ? ACCENT : GREEN},0.5)`;
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+    }
+
+    if (reduceMotion) drawStatic();
+    else requestAnimationFrame(draw);
   }
 </script>

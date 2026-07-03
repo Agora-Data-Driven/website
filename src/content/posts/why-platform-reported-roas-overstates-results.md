@@ -42,13 +42,13 @@ Now multiply that across thousands of orders and several channels. The overlap i
 
 ## Platform ROAS vs. Real Revenue: What Each Actually Tells You
 
-| **Question**                         | **Platform ROAS answers**       | **Real revenue measurement answers**              |
-| :----------------------------------- | :------------------------------ | :------------------------------------------------ |
-| Who gets the credit?                 | This platform, by its own rules | The business, across all channels                 |
-| Is double-counting possible?         | Yes, freely                     | No, reconciled to one source of truth             |
-| Does it include modeled conversions? | Often, undisclosed              | Only confirmed orders                             |
+| **Question**                         | **Platform ROAS answers**       | **Real revenue measurement answers**               |
+| :----------------------------------- | :------------------------------ | :------------------------------------------------- |
+| Who gets the credit?                 | This platform, by its own rules | The business, across all channels                  |
+| Is double-counting possible?         | Yes, freely                     | No, reconciled to one source of truth              |
+| Does it include modeled conversions? | Often, undisclosed              | Only confirmed orders                              |
 | Can it guide budget shifts?          | Per-platform optimization only  | Yes, where incremental revenue actually comes from |
-| Whose interest does it serve?        | The platform's                  | Yours                                             |
+| Whose interest does it serve?        | The platform's                  | Yours                                              |
 
 Platform ROAS is not useless. It's a fine signal for optimizing _within_ a platform, comparing two Meta campaigns against each other, where the self-attribution bias is roughly constant. It becomes dangerous the moment you use it to compare _across_ platforms or to judge whether your total marketing investment is paying off.
 

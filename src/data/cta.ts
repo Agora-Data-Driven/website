@@ -29,10 +29,16 @@ export const cta = {
     href: 'https://portal.agoradatadriven.com/login',
     external: true,
   },
-  /** Replaces the old fake pricing tiers — routes to Upwork for a custom quote. */
+  /** Custom-quote CTA: opens the visitor's mail client to email Agora directly. */
   customQuote: {
     label: 'Get a custom quote',
-    href: UPWORK_AGENCY,
+    href: 'mailto:info@agoradatadriven.com?subject=Custom%20Quote%20Request',
+    external: false,
+  },
+  /** Social: official Facebook page. */
+  facebook: {
+    label: 'Follow on Facebook',
+    href: 'https://www.facebook.com/datadriven.agora',
     external: true,
   },
 } satisfies Record<string, Cta>;

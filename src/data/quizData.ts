@@ -273,7 +273,10 @@ const dataScience: QuizTopic = {
         { label: "We aren't aware of data quality issues", score: 0 },
         { label: 'We notice problems but do not fix them systematically', score: 1 },
         { label: 'We clean data occasionally when critical issues arise', score: 2 },
-        { label: 'Data quality checks are built into our collection and reporting process', score: 3 },
+        {
+          label: 'Data quality checks are built into our collection and reporting process',
+          score: 3,
+        },
       ],
     },
     {
@@ -370,7 +373,7 @@ const aiIntegration: QuizTopic = {
       min: 80,
       max: 100,
       summary:
-        "AI is genuinely differentiating your business. Your focus now is scaling these advantages and staying ahead of the next automation wave.",
+        'AI is genuinely differentiating your business. Your focus now is scaling these advantages and staying ahead of the next automation wave.',
       recommendations: [
         'Explore AI agents for autonomous reporting, scheduling, and campaign management tasks',
         'Build feedback loops to continuously improve your AI models and prompt performance',
@@ -487,7 +490,10 @@ const aiIntegration: QuizTopic = {
         { label: "We don't track AI developments", score: 0 },
         { label: 'Occasionally read articles when something makes headlines', score: 1 },
         { label: 'Regular team discussions about new and updated tools', score: 2 },
-        { label: 'Dedicated person or formal process for AI tool research and evaluation', score: 3 },
+        {
+          label: 'Dedicated person or formal process for AI tool research and evaluation',
+          score: 3,
+        },
       ],
     },
     {
@@ -577,7 +583,10 @@ const aiIntegration: QuizTopic = {
         { label: 'No', score: 0 },
         { label: 'Marginally — small improvements in speed or content quality', score: 1 },
         { label: 'Noticeably — faster responses, more relevant content', score: 2 },
-        { label: 'Significantly — AI is a core differentiator in our customer experience', score: 3 },
+        {
+          label: 'Significantly — AI is a core differentiator in our customer experience',
+          score: 3,
+        },
       ],
     },
   ],
@@ -644,7 +653,7 @@ const organicContent: QuizTopic = {
       min: 80,
       max: 100,
       summary:
-        "Your content is a compounding growth asset. The challenge now is protecting quality at scale and ensuring the full funnel is converting.",
+        'Your content is a compounding growth asset. The challenge now is protecting quality at scale and ensuring the full funnel is converting.',
       recommendations: [
         'Build persona-specific content streams with dedicated nurture paths for each segment',
         'Invest in original research or proprietary data as link-magnet and authority content',
@@ -658,7 +667,7 @@ const organicContent: QuizTopic = {
       id: 'oc-1',
       question: 'Do you have a documented SEO and content strategy?',
       options: [
-        { label: "No strategy — we write what feels right at the time", score: 0 },
+        { label: 'No strategy — we write what feels right at the time', score: 0 },
         { label: 'Informal ideas but nothing documented', score: 1 },
         { label: 'A basic content calendar with SEO in mind', score: 2 },
         { label: 'Full documented strategy with review cycles and ownership', score: 3 },
@@ -671,7 +680,11 @@ const organicContent: QuizTopic = {
         { label: 'No — we write what the team thinks is interesting', score: 0 },
         { label: 'Occasionally check what is ranking on the first page', score: 1 },
         { label: 'Research intent for most pieces before writing', score: 2 },
-        { label: "Search intent is the starting point for every piece — it shapes structure, tone, and CTA", score: 3 },
+        {
+          label:
+            'Search intent is the starting point for every piece — it shapes structure, tone, and CTA',
+          score: 3,
+        },
       ],
     },
     {
@@ -691,17 +704,23 @@ const organicContent: QuizTopic = {
         { label: "No — we haven't structured content this way", score: 0 },
         { label: 'We have categories but no deliberate cluster structure', score: 1 },
         { label: 'Some clusters built around key service themes', score: 2 },
-        { label: 'Full topic cluster architecture covering each service or audience silo', score: 3 },
+        {
+          label: 'Full topic cluster architecture covering each service or audience silo',
+          score: 3,
+        },
       ],
     },
     {
       id: 'oc-5',
       question: 'How do you distribute content after publishing?',
       options: [
-        { label: "We publish and hope — no distribution strategy", score: 0 },
+        { label: 'We publish and hope — no distribution strategy', score: 0 },
         { label: 'Share once on one social channel', score: 1 },
         { label: 'Multi-channel distribution checklist for each piece', score: 2 },
-        { label: 'Full repurposing strategy: clips, email, social, outreach, syndication', score: 3 },
+        {
+          label: 'Full repurposing strategy: clips, email, social, outreach, syndication',
+          score: 3,
+        },
       ],
     },
     {
@@ -801,12 +820,15 @@ const organicContent: QuizTopic = {
         { label: 'No — writers are given a topic and told to go', score: 0 },
         { label: 'We brief writers verbally', score: 1 },
         { label: 'Basic brief template covering topic and key points', score: 2 },
-        { label: 'Detailed briefs with keyword mapping, search intent, structure, and CTAs', score: 3 },
+        {
+          label: 'Detailed briefs with keyword mapping, search intent, structure, and CTAs',
+          score: 3,
+        },
       ],
     },
     {
       id: 'oc-16',
-      question: 'Do you track your content\'s backlink profile over time?',
+      question: "Do you track your content's backlink profile over time?",
       options: [
         { label: 'No', score: 0 },
         { label: 'Check occasionally when there is an obvious change', score: 1 },
@@ -828,7 +850,7 @@ const organicContent: QuizTopic = {
       id: 'oc-18',
       question: 'Do you repurpose content across different formats and channels?',
       options: [
-        { label: "No — each piece stays in its original format", score: 0 },
+        { label: 'No — each piece stays in its original format', score: 0 },
         { label: 'Occasionally copy paste into a social post', score: 1 },
         { label: 'Some repurposing into emails or social clips', score: 2 },
         { label: 'Systematic repurposing plan for every major piece', score: 3 },
@@ -841,7 +863,10 @@ const organicContent: QuizTopic = {
         { label: 'No', score: 0 },
         { label: 'Views and social shares only', score: 1 },
         { label: 'Organic traffic, time on page, and rough lead count', score: 2 },
-        { label: 'Full funnel attribution: content → organic traffic → lead → client → revenue', score: 3 },
+        {
+          label: 'Full funnel attribution: content → organic traffic → lead → client → revenue',
+          score: 3,
+        },
       ],
     },
     {
@@ -955,7 +980,10 @@ const mediaBuying: QuizTopic = {
         { label: 'We run one creative until it stops delivering', score: 0 },
         { label: 'Occasional creative swaps when performance drops', score: 1 },
         { label: 'Planned creative rotation and A/B testing per campaign', score: 2 },
-        { label: 'Structured creative testing with controlled variables and learnings log', score: 3 },
+        {
+          label: 'Structured creative testing with controlled variables and learnings log',
+          score: 3,
+        },
       ],
     },
     {
@@ -985,7 +1013,10 @@ const mediaBuying: QuizTopic = {
         { label: 'Ads route to the homepage — no specific landing pages', score: 0 },
         { label: 'Loosely aligned — similar product, different messaging', score: 1 },
         { label: 'Generally aligned with consistent offer and messaging', score: 2 },
-        { label: 'Dedicated landing pages per campaign and audience with full message match', score: 3 },
+        {
+          label: 'Dedicated landing pages per campaign and audience with full message match',
+          score: 3,
+        },
       ],
     },
     {
@@ -1002,10 +1033,13 @@ const mediaBuying: QuizTopic = {
       id: 'mb-8',
       question: 'Do you have defined rules for when and how to scale campaigns?',
       options: [
-        { label: "No rules — we scale when budget allows", score: 0 },
+        { label: 'No rules — we scale when budget allows', score: 0 },
         { label: 'Scale based on gut feel when things are performing', score: 1 },
         { label: 'Scale when ROAS hits a target threshold', score: 2 },
-        { label: 'Documented scaling rules tied to multiple KPIs with review checkpoints', score: 3 },
+        {
+          label: 'Documented scaling rules tied to multiple KPIs with review checkpoints',
+          score: 3,
+        },
       ],
     },
     {
@@ -1015,7 +1049,10 @@ const mediaBuying: QuizTopic = {
         { label: 'We reuse ads indefinitely', score: 0 },
         { label: 'Replace when CTR drops noticeably', score: 1 },
         { label: 'Frequency-based rotation with defined fatigue thresholds', score: 2 },
-        { label: 'Proactive creative refresh cycle with frequency caps and creative scoring', score: 3 },
+        {
+          label: 'Proactive creative refresh cycle with frequency caps and creative scoring',
+          score: 3,
+        },
       ],
     },
     {
@@ -1033,7 +1070,7 @@ const mediaBuying: QuizTopic = {
       question: 'How do you allocate budget across channels?',
       options: [
         { label: 'Based on gut feel or default setup', score: 0 },
-        { label: 'Based on last year\'s allocations', score: 1 },
+        { label: "Based on last year's allocations", score: 1 },
         { label: 'Data-informed allocation reviewed monthly', score: 2 },
         { label: 'Performance-threshold-based allocation with weekly rebalancing', score: 3 },
       ],
@@ -1045,7 +1082,11 @@ const mediaBuying: QuizTopic = {
         { label: 'Ads run 24/7 with no scheduling', score: 0 },
         { label: 'Occasionally pause underperforming time slots', score: 1 },
         { label: 'Scheduled based on when conversions typically occur', score: 2 },
-        { label: 'Fully optimized schedule based on hour-of-day and day-of-week conversion analysis', score: 3 },
+        {
+          label:
+            'Fully optimized schedule based on hour-of-day and day-of-week conversion analysis',
+          score: 3,
+        },
       ],
     },
     {
@@ -1055,7 +1096,10 @@ const mediaBuying: QuizTopic = {
         { label: 'No plan — campaigns are created as needed', score: 0 },
         { label: 'General channel overview', score: 1 },
         { label: 'Detailed calendar with budgets and campaign objectives', score: 2 },
-        { label: 'Full media plan linked to business targets and creative production schedule', score: 3 },
+        {
+          label: 'Full media plan linked to business targets and creative production schedule',
+          score: 3,
+        },
       ],
     },
     {
@@ -1065,7 +1109,11 @@ const mediaBuying: QuizTopic = {
         { label: 'Rarely test new channels', score: 0 },
         { label: 'Try a channel if someone suggests it', score: 1 },
         { label: 'Occasional structured test with a dedicated budget', score: 2 },
-        { label: 'Formal new-channel testing protocol with defined success criteria and review date', score: 3 },
+        {
+          label:
+            'Formal new-channel testing protocol with defined success criteria and review date',
+          score: 3,
+        },
       ],
     },
     {
@@ -1075,7 +1123,10 @@ const mediaBuying: QuizTopic = {
         { label: 'No', score: 0 },
         { label: 'Upload customer lists occasionally', score: 1 },
         { label: 'Regular list uploads and exclusion audiences', score: 2 },
-        { label: 'First-party data integrated across all targeting layers with regular syncing', score: 3 },
+        {
+          label: 'First-party data integrated across all targeting layers with regular syncing',
+          score: 3,
+        },
       ],
     },
     {
@@ -1085,7 +1136,10 @@ const mediaBuying: QuizTopic = {
         { label: "We don't actively manage wasted spend", score: 0 },
         { label: 'Pause underperforming ads when noticed', score: 1 },
         { label: 'Regular negative keyword and audience exclusion reviews', score: 2 },
-        { label: 'Systematic waste audit with automated rules and monthly optimization sprint', score: 3 },
+        {
+          label: 'Systematic waste audit with automated rules and monthly optimization sprint',
+          score: 3,
+        },
       ],
     },
     {
@@ -1095,7 +1149,10 @@ const mediaBuying: QuizTopic = {
         { label: 'No adjustments — flat budget all year', score: 0 },
         { label: 'Ad hoc budget increases during obviously busy periods', score: 1 },
         { label: 'Seasonal plan based on past performance', score: 2 },
-        { label: 'Detailed seasonal budget model with historical benchmarks and scenario planning', score: 3 },
+        {
+          label: 'Detailed seasonal budget model with historical benchmarks and scenario planning',
+          score: 3,
+        },
       ],
     },
     {
@@ -1105,7 +1162,10 @@ const mediaBuying: QuizTopic = {
         { label: 'No documentation', score: 0 },
         { label: 'Basic notes or a setup checklist', score: 1 },
         { label: 'Campaign setup and optimization checklist', score: 2 },
-        { label: 'Full SOPs for setup, audience testing, creative rotation, scaling, and reporting', score: 3 },
+        {
+          label: 'Full SOPs for setup, audience testing, creative rotation, scaling, and reporting',
+          score: 3,
+        },
       ],
     },
     {
@@ -1125,7 +1185,10 @@ const mediaBuying: QuizTopic = {
         { label: 'We do not report formally', score: 0 },
         { label: 'Basic metrics email with spend and ROAS', score: 1 },
         { label: 'Monthly dashboard report with key metrics', score: 2 },
-        { label: 'Live dashboard with narrative context, benchmarks, and recommendations', score: 3 },
+        {
+          label: 'Live dashboard with narrative context, benchmarks, and recommendations',
+          score: 3,
+        },
       ],
     },
   ],
@@ -1149,9 +1212,9 @@ const websiteConversion: QuizTopic = {
       min: 0,
       max: 39,
       summary:
-        "Your website is likely losing visitors before they convert. Small, targeted improvements can have a big impact on conversion rates right away.",
+        'Your website is likely losing visitors before they convert. Small, targeted improvements can have a big impact on conversion rates right away.',
       recommendations: [
-        "Rewrite your homepage headline to make your offer and its benefit unmistakably clear in one sentence",
+        'Rewrite your homepage headline to make your offer and its benefit unmistakably clear in one sentence',
         'Add at least one strong CTA above the fold — tell visitors exactly what to do next',
         'Install Google Analytics 4 and check your current bounce rate by page',
         'Add two or three testimonials or case study references near your primary CTA',
@@ -1192,7 +1255,7 @@ const websiteConversion: QuizTopic = {
       min: 80,
       max: 100,
       summary:
-        "Your site is a high-performing conversion asset. The focus now is personalization, advanced testing, and protecting performance as the site grows.",
+        'Your site is a high-performing conversion asset. The focus now is personalization, advanced testing, and protecting performance as the site grows.',
       recommendations: [
         'Explore dynamic personalization based on traffic source, returning visitor status, and industry',
         'Build an incrementality testing program to measure true CRO impact versus external factors',
@@ -1209,7 +1272,10 @@ const websiteConversion: QuizTopic = {
         { label: "No — it's not immediately obvious what you do or who it is for", score: 0 },
         { label: 'Somewhat — visitors who read carefully will understand', score: 1 },
         { label: 'Usually — most visitors get it quickly', score: 2 },
-        { label: 'Yes — tested and confirmed through user research or session recordings', score: 3 },
+        {
+          label: 'Yes — tested and confirmed through user research or session recordings',
+          score: 3,
+        },
       ],
     },
     {
@@ -1219,7 +1285,10 @@ const websiteConversion: QuizTopic = {
         { label: 'Generic headline with no clear value proposition', score: 0 },
         { label: 'Decent headline but weak supporting copy', score: 1 },
         { label: 'Clear headline and supporting subtext aligned to your offer', score: 2 },
-        { label: 'Benefit-led headline, supporting copy, and visual all tested and aligned', score: 3 },
+        {
+          label: 'Benefit-led headline, supporting copy, and visual all tested and aligned',
+          score: 3,
+        },
       ],
     },
     {
@@ -1259,7 +1328,10 @@ const websiteConversion: QuizTopic = {
         { label: 'Long forms with many required fields', score: 0 },
         { label: 'Forms exist but have not been optimized', score: 1 },
         { label: 'Shortened forms with friction points reduced', score: 2 },
-        { label: 'Tested forms with minimal required fields and clear benefit copy above them', score: 3 },
+        {
+          label: 'Tested forms with minimal required fields and clear benefit copy above them',
+          score: 3,
+        },
       ],
     },
     {
@@ -1309,7 +1381,10 @@ const websiteConversion: QuizTopic = {
         { label: 'It does not communicate a clear USP', score: 0 },
         { label: 'Somewhat — but it is generic enough to apply to many businesses', score: 1 },
         { label: 'Clearly stated USP', score: 2 },
-        { label: 'Differentiated USP validated through customer research and competitive analysis', score: 3 },
+        {
+          label: 'Differentiated USP validated through customer research and competitive analysis',
+          score: 3,
+        },
       ],
     },
     {
@@ -1339,7 +1414,10 @@ const websiteConversion: QuizTopic = {
         { label: 'Not mobile-optimized', score: 0 },
         { label: 'Responsive but not designed for mobile-first', score: 1 },
         { label: 'Good mobile experience with clear usability', score: 2 },
-        { label: 'Mobile-first design with tested flows and minimal friction on small screens', score: 3 },
+        {
+          label: 'Mobile-first design with tested flows and minimal friction on small screens',
+          score: 3,
+        },
       ],
     },
     {
@@ -1369,7 +1447,10 @@ const websiteConversion: QuizTopic = {
         { label: 'No follow-up process', score: 0 },
         { label: 'Basic thank-you page only', score: 1 },
         { label: 'Thank-you email and a short follow-up sequence', score: 2 },
-        { label: 'Automated onboarding sequence designed for activation and early retention', score: 3 },
+        {
+          label: 'Automated onboarding sequence designed for activation and early retention',
+          score: 3,
+        },
       ],
     },
     {
@@ -1429,7 +1510,7 @@ const retentionCrm: QuizTopic = {
         'Implement a CRM (HubSpot free, Notion, or a spreadsheet with discipline) so contacts are tracked',
         'Create a simple post-purchase follow-up email 7 days after first purchase',
         'Define your customer lifecycle stages — at minimum: lead, new customer, active, lapsed',
-        "Identify your top 20 customers and ensure they are being looked after personally",
+        'Identify your top 20 customers and ensure they are being looked after personally',
       ],
     },
     {
@@ -1466,7 +1547,7 @@ const retentionCrm: QuizTopic = {
       min: 80,
       max: 100,
       summary:
-        "Your retention and CRM are operating at a high level. The next frontier is predictive retention and using customer data as a full-loop growth engine.",
+        'Your retention and CRM are operating at a high level. The next frontier is predictive retention and using customer data as a full-loop growth engine.',
       recommendations: [
         'Explore predictive churn modelling — intervene before customers disengage',
         'Build a full-loop data strategy where retention insights power acquisition targeting',
@@ -1480,7 +1561,7 @@ const retentionCrm: QuizTopic = {
       id: 'rc-1',
       question: 'Do you have email automation set up for your customer journey?',
       options: [
-        { label: "No — we send emails manually only when we remember", score: 0 },
+        { label: 'No — we send emails manually only when we remember', score: 0 },
         { label: 'One or two basic automations (welcome email only)', score: 1 },
         { label: 'Several key sequences: welcome, purchase confirmation, follow-up', score: 2 },
         { label: 'Full lifecycle automation mapped to each customer journey stage', score: 3 },
@@ -1493,7 +1574,10 @@ const retentionCrm: QuizTopic = {
         { label: "We don't — unconverted leads are dropped", score: 0 },
         { label: 'Occasional manual follow-up email', score: 1 },
         { label: 'A basic nurture sequence (3–5 emails)', score: 2 },
-        { label: 'Multi-touch nurture with segmented content based on behavior and intent', score: 3 },
+        {
+          label: 'Multi-touch nurture with segmented content based on behavior and intent',
+          score: 3,
+        },
       ],
     },
     {
@@ -1503,7 +1587,10 @@ const retentionCrm: QuizTopic = {
         { label: 'No', score: 0 },
         { label: 'Occasionally and manually', score: 1 },
         { label: 'Basic automated post-purchase email', score: 2 },
-        { label: "Structured post-purchase journey: onboarding, upsell, cross-sell, review request", score: 3 },
+        {
+          label: 'Structured post-purchase journey: onboarding, upsell, cross-sell, review request',
+          score: 3,
+        },
       ],
     },
     {
@@ -1513,17 +1600,23 @@ const retentionCrm: QuizTopic = {
         { label: 'No segmentation — everyone gets the same emails', score: 0 },
         { label: 'Basic segmentation by product purchased or source', score: 1 },
         { label: 'Behavioral and demographic segments used for most campaigns', score: 2 },
-        { label: 'Dynamic multi-variable segmentation driving all campaigns automatically', score: 3 },
+        {
+          label: 'Dynamic multi-variable segmentation driving all campaigns automatically',
+          score: 3,
+        },
       ],
     },
     {
       id: 'rc-5',
       question: 'Are you actively using a CRM?',
       options: [
-        { label: "No CRM — everything lives in emails and spreadsheets", score: 0 },
+        { label: 'No CRM — everything lives in emails and spreadsheets', score: 0 },
         { label: 'CRM exists but is barely used or out of date', score: 1 },
         { label: 'CRM used actively for key contacts and pipeline', score: 2 },
-        { label: 'CRM fully adopted, driving all sales and marketing activity with clean data', score: 3 },
+        {
+          label: 'CRM fully adopted, driving all sales and marketing activity with clean data',
+          score: 3,
+        },
       ],
     },
     {
@@ -1543,7 +1636,11 @@ const retentionCrm: QuizTopic = {
         { label: 'No', score: 0 },
         { label: 'Informally — we notice if complaints increase', score: 1 },
         { label: 'Periodic NPS survey or post-purchase feedback', score: 2 },
-        { label: 'Continuous NPS tracking integrated with lifecycle campaigns and improvement loops', score: 3 },
+        {
+          label:
+            'Continuous NPS tracking integrated with lifecycle campaigns and improvement loops',
+          score: 3,
+        },
       ],
     },
     {
@@ -1553,7 +1650,10 @@ const retentionCrm: QuizTopic = {
         { label: 'No referral program', score: 0 },
         { label: 'Informal — we occasionally ask satisfied customers to refer', score: 1 },
         { label: 'Basic referral incentive or affiliate offer', score: 2 },
-        { label: 'Documented referral program with tracking, automation, and incentive tiers', score: 3 },
+        {
+          label: 'Documented referral program with tracking, automation, and incentive tiers',
+          score: 3,
+        },
       ],
     },
     {
@@ -1563,7 +1663,10 @@ const retentionCrm: QuizTopic = {
         { label: "We don't formally collect feedback", score: 0 },
         { label: 'Occasional manual surveys when we think of it', score: 1 },
         { label: 'Post-purchase survey or NPS sent to all customers', score: 2 },
-        { label: 'Systematic feedback loop feeding back into product and marketing improvements', score: 3 },
+        {
+          label: 'Systematic feedback loop feeding back into product and marketing improvements',
+          score: 3,
+        },
       ],
     },
     {
@@ -1573,7 +1676,11 @@ const retentionCrm: QuizTopic = {
         { label: 'No', score: 0 },
         { label: "We notice when important customers leave but don't track it", score: 1 },
         { label: 'Basic churn tracking reviewed quarterly', score: 2 },
-        { label: 'Real-time churn monitoring with early-warning triggers and intervention workflows', score: 3 },
+        {
+          label:
+            'Real-time churn monitoring with early-warning triggers and intervention workflows',
+          score: 3,
+        },
       ],
     },
     {
@@ -1583,7 +1690,10 @@ const retentionCrm: QuizTopic = {
         { label: "CRM data isn't used for campaigns", score: 0 },
         { label: 'Occasionally for segmented promotional blasts', score: 1 },
         { label: 'Regularly used for campaign targeting and personalization', score: 2 },
-        { label: 'CRM drives all campaign targeting, personalization, and automation triggers', score: 3 },
+        {
+          label: 'CRM drives all campaign targeting, personalization, and automation triggers',
+          score: 3,
+        },
       ],
     },
     {
@@ -1593,7 +1703,10 @@ const retentionCrm: QuizTopic = {
         { label: 'No triggers — everything is time-based (day 1, day 3, day 7)', score: 0 },
         { label: 'One or two behavioral triggers (e.g., cart abandonment)', score: 1 },
         { label: 'Behavioral triggers for key sequences like post-purchase and winback', score: 2 },
-        { label: 'Behavior-first automation across the entire lifecycle — actions, not clocks', score: 3 },
+        {
+          label: 'Behavior-first automation across the entire lifecycle — actions, not clocks',
+          score: 3,
+        },
       ],
     },
     {
@@ -1610,10 +1723,13 @@ const retentionCrm: QuizTopic = {
       id: 'rc-14',
       question: 'Do you personalize your email content beyond first name?',
       options: [
-        { label: "No — same content goes to everyone", score: 0 },
+        { label: 'No — same content goes to everyone', score: 0 },
         { label: 'Name personalization only', score: 1 },
         { label: 'Content varies by segment or product interest', score: 2 },
-        { label: 'Dynamic content personalized by lifecycle stage, behavior, and customer value', score: 3 },
+        {
+          label: 'Dynamic content personalized by lifecycle stage, behavior, and customer value',
+          score: 3,
+        },
       ],
     },
     {
@@ -1623,7 +1739,11 @@ const retentionCrm: QuizTopic = {
         { label: 'No', score: 0 },
         { label: 'Basic welcome email only', score: 1 },
         { label: 'Welcome series of 2–4 emails', score: 2 },
-        { label: 'Full onboarding journey designed for activation, habit formation, and early retention', score: 3 },
+        {
+          label:
+            'Full onboarding journey designed for activation, habit formation, and early retention',
+          score: 3,
+        },
       ],
     },
     {
@@ -1633,7 +1753,10 @@ const retentionCrm: QuizTopic = {
         { label: 'No strategy', score: 0 },
         { label: 'Occasional promotional email', score: 1 },
         { label: 'Upsell and cross-sell emails in some sequences', score: 2 },
-        { label: 'Systematic repeat-purchase strategy with LTV goals and automated triggers', score: 3 },
+        {
+          label: 'Systematic repeat-purchase strategy with LTV goals and automated triggers',
+          score: 3,
+        },
       ],
     },
     {
@@ -1643,7 +1766,11 @@ const retentionCrm: QuizTopic = {
         { label: "We don't monitor list health", score: 0 },
         { label: 'Comply with unsubscribes but do not proactively clean the list', score: 1 },
         { label: 'Periodic list cleaning every 6–12 months', score: 2 },
-        { label: 'Proactive deliverability management with regular list health audits and re-engagement campaigns', score: 3 },
+        {
+          label:
+            'Proactive deliverability management with regular list health audits and re-engagement campaigns',
+          score: 3,
+        },
       ],
     },
     {
@@ -1653,7 +1780,10 @@ const retentionCrm: QuizTopic = {
         { label: 'No strategy to increase AOV', score: 0 },
         { label: 'Occasionally mention upsells in conversation', score: 1 },
         { label: 'Upsell and cross-sell offers in post-purchase emails', score: 2 },
-        { label: 'Systematic AOV strategy embedded across the entire post-purchase experience', score: 3 },
+        {
+          label: 'Systematic AOV strategy embedded across the entire post-purchase experience',
+          score: 3,
+        },
       ],
     },
     {
@@ -1663,7 +1793,10 @@ const retentionCrm: QuizTopic = {
         { label: "We don't map lifecycle stages", score: 0 },
         { label: 'Broad categories only: prospect and customer', score: 1 },
         { label: 'Defined stages with some automation triggers per stage', score: 2 },
-        { label: 'Full lifecycle map with stage-specific content, scoring, and handoff rules', score: 3 },
+        {
+          label: 'Full lifecycle map with stage-specific content, scoring, and handoff rules',
+          score: 3,
+        },
       ],
     },
     {
@@ -1673,7 +1806,11 @@ const retentionCrm: QuizTopic = {
         { label: 'No connection between retention and acquisition data', score: 0 },
         { label: "Rarely — different teams or tools that don't communicate", score: 1 },
         { label: 'Some sharing of retention insights with the acquisition team', score: 2 },
-        { label: 'Full loop: best-retained customers inform lookalike targeting and acquisition messaging', score: 3 },
+        {
+          label:
+            'Full loop: best-retained customers inform lookalike targeting and acquisition messaging',
+          score: 3,
+        },
       ],
     },
   ],
