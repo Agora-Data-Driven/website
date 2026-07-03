@@ -9,7 +9,7 @@ const isActive = (href: string) =>
   href === '/' ? path === '/' : path.startsWith(href.replace(/\/$/, ''));
 
 const linkBase =
-  'rounded-md px-3 py-2 text-sm font-medium uppercase tracking-wide transition-colors hover:text-brand-600';
+  'rounded-md px-3 py-2 text-sm font-medium tracking-wide transition-colors hover:text-brand-600';
 ---
 
 <header class="border-line bg-surface/90 sticky top-0 z-50 border-b backdrop-blur">
@@ -129,13 +129,13 @@ const linkBase =
           mainNav.flatMap((item) =>
             item.children
               ? [
-                  <span class="text-ink block rounded-lg px-3 py-2.5 font-medium tracking-wide uppercase">
+                  <span class="text-ink block rounded-lg px-3 py-2.5 font-medium tracking-wide">
                     {item.label}
                   </span>,
                   ...item.children.map((child) => (
                     <a
                       href={child.href}
-                      class="text-body rounded-lg px-3 py-2.5 pl-6 tracking-wide uppercase"
+                      class="text-body rounded-lg px-3 py-2.5 pl-6 tracking-wide"
                       rel={child.external ? 'noopener noreferrer' : undefined}
                       target={child.external ? '_blank' : undefined}
                     >
@@ -146,7 +146,7 @@ const linkBase =
               : [
                   <a
                     href={item.href}
-                    class="text-ink rounded-lg px-3 py-2.5 font-medium tracking-wide uppercase"
+                    class="text-ink rounded-lg px-3 py-2.5 font-medium tracking-wide"
                     rel={item.external ? 'noopener noreferrer' : undefined}
                     target={item.external ? '_blank' : undefined}
                   >

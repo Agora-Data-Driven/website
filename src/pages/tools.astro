@@ -55,18 +55,28 @@ const steps = [
         aria-hidden="true"
       >
       </div>
+      <div
+        class="border-brand-200/25 pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full border"
+        aria-hidden="true"
+      >
+      </div>
+      <div
+        class="border-brand-200/15 pointer-events-none absolute -top-6 -right-6 h-44 w-44 rounded-full border"
+        aria-hidden="true"
+      >
+      </div>
 
       <Container>
-        <div class="grid gap-12 py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
+        <div class="relative grid gap-12 py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
           <!-- Left -->
           <div class="flex flex-col justify-center">
-            <div class="mb-5 inline-flex">
-              <span
-                class="bg-brand-100 text-brand-700 rounded-full px-4 py-1.5 text-xs font-semibold tracking-widest uppercase"
+            <p
+              class="eyebrow text-brand-600 mb-3 inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] uppercase"
+            >
+              <span class="bg-brand-500/10 border-brand-200 rounded-full border px-2.5 py-0.5"
+                >Free Tests</span
               >
-                Free Tests
-              </span>
-            </div>
+            </p>
 
             <h1
               class="font-display text-ink mb-5 text-4xl leading-tight font-bold tracking-tight lg:text-5xl"
@@ -80,23 +90,23 @@ const steps = [
               AI, and data.
             </p>
 
-            <ul class="mb-9 space-y-2.5">
+            <ul class="hero-values mb-9 grid grid-cols-2 gap-x-6 gap-y-3">
               {
                 checklistItems.map((item) => (
-                  <li class="text-body flex items-center gap-2.5">
+                  <li class="text-muted flex items-center gap-2 text-sm">
                     <svg
-                      class="text-brand-500 h-4 w-4 flex-shrink-0"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
+                      class="text-brand-500 h-3.5 w-3.5 shrink-0"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
                       aria-hidden="true"
                     >
-                      <path
-                        fill-rule="evenodd"
-                        d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-                        clip-rule="evenodd"
-                      />
+                      <path d="M2 7l3.5 3.5L12 3" />
                     </svg>
-                    <span>{item}</span>
+                    {item}
                   </li>
                 ))
               }
