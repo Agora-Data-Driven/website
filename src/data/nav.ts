@@ -28,6 +28,7 @@ export const mainNav: NavItem[] = [
     ],
   },
   { label: 'Blog', href: '/blog/' },
+  { label: 'Tools & Insights', href: '/tools/' },
   // "LED Wall" points to the real flagship article slug (preserved for SEO).
   { label: 'LED Wall', href: '/building-an-authentic-brand-identity/' },
 ];
@@ -36,6 +37,7 @@ export const footerNav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Portfolio', href: '/agora-portfolio/' },
   { label: 'Blog', href: '/blog/' },
+  { label: 'Tools & Insights', href: '/tools/' },
   { label: 'LED Wall', href: '/building-an-authentic-brand-identity/' },
   { label: 'Skill Mastery', href: skillMasteryPath },
 ];

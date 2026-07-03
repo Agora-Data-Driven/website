@@ -25,7 +25,7 @@ export const cta = {
   },
   /** Existing-client sign-in to the Agora portal. */
   clientLogin: {
-    label: 'Client Log in',
+    label: 'Login',
     href: 'https://portal.agoradatadriven.com/login',
     external: true,
   },

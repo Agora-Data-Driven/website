@@ -1,7 +1,7 @@
 ---
 title: 'How Video Marketing Boosts Engagement and Sales'
 publishDate: 2025-05-30
-excerpt: 'Placeholder — the live page for this post currently shows duplicated content. Awaiting the real article copy before publishing.'
+excerpt: 'Placeholder, the live page for this post currently shows duplicated content. Awaiting the real article copy before publishing.'
 heroImage: '/placeholders/cover-3.svg'
 heroAlt: 'Video marketing concept.'
 category: 'Organic Growth'

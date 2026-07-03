@@ -1,7 +1,7 @@
 ---
 title: "How We Helped More Than Double Our Client's Weekly Sales Through Full-Funnel Marketing"
 publishDate: 2026-06-13
-excerpt: 'More sales rarely come from changing everything. By stabilizing Meta ads, reinforcing the message with email and SMS, and improving the mobile checkout, we more than doubled a client’s weekly sales—from roughly $1.7K to $4.2K.'
+excerpt: ‘More sales rarely come from changing everything. By stabilizing Meta ads, reinforcing the message with email and SMS, and improving the mobile checkout, we more than doubled a client’s weekly sales, from roughly $1.7K to $4.2K.’
 heroImage: '/placeholders/cover-1.svg'
 heroAlt: 'Full-funnel marketing performance chart trending upward.'
 category: 'Strategy & Growth'
@@ -16,7 +16,7 @@ For one ecommerce campaign we worked on, the issue was not that the Meta ads had
 
 So instead of constantly changing the campaign, we focused on strengthening the full funnel. We gave the Meta ads more time to learn, supported the ad message through email and SMS, improved the landing page experience, optimized checkout, and made the buying journey more mobile-friendly.
 
-The result was a stronger customer journey and a major lift in performance. Weekly sales reached roughly **$4.2K** compared to an estimated benchmark of around **$1.7K**—meaning sales more than doubled during the reporting period. Here's how we did it.
+The result was a stronger customer journey and a major lift in performance. Weekly sales reached roughly **$4.2K** compared to an estimated benchmark of around **$1.7K**, meaning sales more than doubled during the reporting period. Here's how we did it.
 
 ## 1. We Gave the Meta Ads Room to Learn
 
@@ -35,11 +35,11 @@ The goal was not to ignore the campaign. The goal was to stop disrupting the lea
 
 ## 2. We Optimized the Algorithm Instead of Restarting the Campaign
 
-Once the campaign had more stability, we focused on improving the quality of traffic. The goal was not just to reach more people—it was to help the algorithm find better buyers.
+Once the campaign had more stability, we focused on improving the quality of traffic. The goal was not just to reach more people, it was to help the algorithm find better buyers.
 
 This meant looking beyond surface-level numbers like impressions and clicks. We looked at the full performance picture: CTR, link clicks, conversion rate, ROAS, checkout activity, orders, and sales.
 
-The data showed that the campaign was becoming more efficient. Instead of relying on more reach alone, the ads started attracting higher-quality traffic. In one reporting period, sales reached around $4.2K compared to an estimated average benchmark of around $1.7K—more than double the benchmark.
+The data showed that the campaign was becoming more efficient. Instead of relying on more reach alone, the ads started attracting higher-quality traffic. In one reporting period, sales reached around $4.2K compared to an estimated average benchmark of around $1.7K, more than double the benchmark.
 
 That is where many brands get paid ads wrong. More traffic does not always mean more revenue. Better traffic, paired with the right funnel, is what creates growth.
 
@@ -92,9 +92,9 @@ That was the key. Not every result means the campaign needs to be restarted. Som
 
 ## Final Thoughts: More Than Double Sales Came From a Connected Funnel
 
-This client did not need constant campaign changes—they needed a smarter system. By keeping the Meta ads stable, giving the algorithm time to learn, supporting the ad angle with email and SMS, matching the landing page with the funnel, and improving the mobile checkout experience, we helped create a smoother path from awareness to purchase.
+This client did not need constant campaign changes, they needed a smarter system. By keeping the Meta ads stable, giving the algorithm time to learn, supporting the ad angle with email and SMS, matching the landing page with the funnel, and improving the mobile checkout experience, we helped create a smoother path from awareness to purchase.
 
-The result was a major lift in performance, with weekly sales reaching roughly $4.2K compared to an estimated benchmark of around $1.7K—more than double.
+The result was a major lift in performance, with weekly sales reaching roughly $4.2K compared to an estimated benchmark of around $1.7K, more than double.
 
 The biggest lesson is simple: profitable marketing does not come from changing everything every week. It comes from understanding what is already working, optimizing the right parts of the funnel, and making every customer touchpoint work together.
 

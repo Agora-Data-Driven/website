@@ -20,7 +20,7 @@
     "check": "astro check",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "deploy": "gcloud run deploy agora-data-driven --source . --project agora-data-driven --region asia-southeast1 --allow-unauthenticated --quiet"
+    "deploy": "gcloud run deploy agora-data-driven --source . --project agora-data-driven --region asia-southeast1 --allow-unauthenticated --update-secrets=SSO_SECRET=platform-sso-key:latest,GITHUB_TOKEN=SEO_GITHUB_TOKEN:latest --quiet"
   },
   "dependencies": {
     "@astrojs/mdx": "^4",

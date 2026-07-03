@@ -3,6 +3,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import Container from '@components/Container.astro';
 import Button from '@components/Button.astro';
 import { cta } from '@data/cta';
+import { createHmac } from 'crypto';
 
 interface Props {
   eyebrow?: string;
@@ -11,8 +12,37 @@ interface Props {
   heroImage?: string;
   heroAlt?: string;
   metrics?: { value: string; label: string }[];
+  slug?: string;
 }
-const { eyebrow, title, summary, heroImage, heroAlt, metrics } = Astro.props;
+const { eyebrow, title, summary, heroImage, heroAlt, metrics, slug } = Astro.props;
+
+// Admin detection via the ag_sso cookie (same HMAC logic as the portal).
+function isSsoAdmin(cookieHeader: string | null, secret: string): boolean {
+  if (!secret || !cookieHeader) return false;
+  try {
+    const cookies = Object.fromEntries(
+      cookieHeader.split(';').map((c) => {
+        const [k, ...v] = c.trim().split('=');
+        return [k.trim(), v.join('=')];
+      })
+    );
+    const raw = cookies['ag_sso'];
+    if (!raw) return false;
+    const dot = raw.lastIndexOf('.');
+    if (dot < 1) return false;
+    const payloadB64 = raw.slice(0, dot);
+    const sig = raw.slice(dot + 1);
+    const expected = createHmac('sha256', secret).update(payloadB64, 'ascii').digest('base64url');
+    if (sig !== expected) return false;
+    const pad = '='.repeat((4 - (payloadB64.length % 4)) % 4);
+    const payload = JSON.parse(Buffer.from(payloadB64 + pad, 'base64').toString('utf8'));
+    if (!payload.exp || Date.now() / 1000 > payload.exp) return false;
+    return Array.isArray(payload.clients) && payload.clients.includes('*');
+  } catch { return false; }
+}
+const ssoSecret = import.meta.env.SSO_SECRET ?? '';
+const isAdmin = isSsoAdmin(Astro.request.headers.get('cookie'), ssoSecret);
+const postSlug = slug ?? Astro.url.pathname.replace(/^\/|\/$/g, '');
 ---
 
 <BaseLayout title={title} description={summary} ogImage={heroImage}>
@@ -31,18 +61,75 @@ const { eyebrow, title, summary, heroImage, heroAlt, metrics } = Astro.props;
     </Container>
   </section>
 
-  {
-    heroImage && (
-      <Container size="narrow" class="pt-10">
-        <img
-          src={heroImage}
-          alt={heroAlt ?? ''}
-          class="border-line bg-canvas aspect-[16/9] w-full rounded-2xl border object-cover"
-          loading="eager"
-        />
-      </Container>
-    )
-  }
+  <Container size="narrow" class="pt-10">
+    <div class="relative">
+      {heroImage
+        ? <img src={heroImage} alt={heroAlt ?? ''} class="border-line bg-canvas aspect-[16/9] w-full rounded-2xl border object-cover" loading="eager" />
+        : isAdmin && <div class="border-line bg-canvas aspect-[16/9] w-full rounded-2xl border flex items-center justify-center text-muted text-sm">No hero image yet</div>
+      }
+      {isAdmin && (
+        <button
+          type="button"
+          id="admin-hero-btn"
+          class="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-semibold text-ink shadow backdrop-blur-sm hover:bg-white"
+          title="Change hero image"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Change photo
+        </button>
+      )}
+    </div>
+  </Container>
+
+  {isAdmin && (
+    <div id="admin-hero-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:16px;padding:28px;width:min(420px,90vw);box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;">Change hero photo</h3>
+        <p style="margin:0 0 18px;font-size:13px;color:#6B7280;">Upload a new image for <strong>{postSlug}</strong>. PNG or JPG, under 5 MB.</p>
+        <form id="admin-hero-form">
+          <input type="hidden" name="slug" value={postSlug} />
+          <input type="file" name="image" accept="image/png,image/jpeg,image/webp" required
+            style="display:block;width:100%;margin-bottom:14px;font-size:13px;" />
+          <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button type="button" id="admin-hero-cancel"
+              style="padding:9px 18px;border-radius:8px;border:1px solid #E7E8EE;font-size:13px;font-weight:600;cursor:pointer;background:#fff;">
+              Cancel
+            </button>
+            <button type="submit" id="admin-hero-submit"
+              style="padding:9px 18px;border-radius:8px;border:0;background:#4FAB4A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">
+              Upload
+            </button>
+          </div>
+          <p id="admin-hero-status" style="margin:12px 0 0;font-size:12px;color:#6B7280;"></p>
+        </form>
+      </div>
+    </div>
+    <script>
+      (() => {
+        const btn = document.getElementById('admin-hero-btn');
+        const modal = document.getElementById('admin-hero-modal') as HTMLElement | null;
+        const cancel = document.getElementById('admin-hero-cancel') as HTMLElement | null;
+        const form = document.getElementById('admin-hero-form') as HTMLFormElement | null;
+        const submit = document.getElementById('admin-hero-submit') as HTMLButtonElement | null;
+        const status = document.getElementById('admin-hero-status') as HTMLElement | null;
+        if (!btn || !modal || !cancel || !form || !submit || !status) return;
+        btn.addEventListener('click', () => { modal.style.display = 'flex'; });
+        cancel.addEventListener('click', () => { modal.style.display = 'none'; });
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          submit.disabled = true; submit.textContent = 'Uploading...'; status.textContent = '';
+          fetch('/api/update-hero', { method: 'POST', body: new FormData(form) })
+            .then((r) => r.json())
+            .then((res) => {
+              if (res.ok) { status.style.color = '#347A30'; status.textContent = 'Saved. Page will reload...'; setTimeout(() => window.location.reload(), 1500); }
+              else { status.style.color = '#E5413E'; status.textContent = 'Error: ' + (res.error || 'Upload failed'); submit.disabled = false; submit.textContent = 'Upload'; }
+            })
+            .catch(() => { status.style.color = '#E5413E'; status.textContent = 'Network error.'; submit.disabled = false; submit.textContent = 'Upload'; });
+        });
+      })();
+    </script>
+  )}
 
   {
     metrics && metrics.length > 0 && (

@@ -132,7 +132,7 @@ export const caseStudies: CaseStudy[] = [
       {
         heading: 'The Solution',
         body: [
-          'We applied full-funnel marketing and analytics—sharpening positioning, supporting the funnel across channels, and tracking performance to guide decisions.',
+          'We applied full-funnel marketing and analytics, sharpening positioning, supporting the funnel across channels, and tracking performance to guide decisions.',
         ],
       },
       {
@@ -149,7 +149,7 @@ export const competitions: Competition[] = [
   {
     slug: 'competition1',
     cardTitle: 'Marketing Analytics',
-    title: 'Marketing Analytics — 2nd Place out of 2,459',
+    title: 'Marketing Analytics: 2nd Place out of 2,459',
     placement: '2nd Place / 2,459 participants',
     category: 'Marketing Analytics',
     event: 'Codebasics Resume Project Challenge #9',
@@ -158,16 +158,16 @@ export const competitions: Competition[] = [
     heroImage: '/placeholders/cover-3.svg',
     body: [
       'In the Codebasics Resume Project Challenge #9, we placed 2nd out of 2,459 participants in the Marketing Analytics category.',
-      'The brief: analyze 10,000 survey responses for the beverage brand CodeX and turn them into clear marketing insights. We focused on translating the raw survey data into findings a marketing team could actually act on—segments, preferences, and the messaging implications behind them.',
+      'The brief: analyze 10,000 survey responses for the beverage brand CodeX and turn them into clear marketing insights. We focused on translating the raw survey data into findings a marketing team could actually act on, segments, preferences, and the messaging implications behind them.',
     ],
   },
   {
     slug: 'competition2',
     cardTitle: 'Operations Analytics',
-    title: 'Operations Analytics — 1st Place, Cash Prize',
+    title: 'Operations Analytics: 1st Place, Cash Prize',
     placement: '1st Place · Cash prize recipient',
     category: 'Operations Analytics',
-    event: 'DataCamp Datalab — Predicting Industrial Machine Downtime (Level 3)',
+    event: 'DataCamp Datalab: Predicting Industrial Machine Downtime (Level 3)',
     summary:
       'Cleaned and analyzed industrial operations data to surface bottlenecks and cost-optimization opportunities with Python.',
     heroImage: '/placeholders/cover-2.svg',

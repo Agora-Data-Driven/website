@@ -41,7 +41,7 @@ const siblings = silos.filter((s) => s.slug !== silo.slug && populated.has(s.nam
 const isTalent = silo.audience === 'talent';
 ---
 
-<BaseLayout title={`${silo.name} — Blog`} description={silo.metaDescription}>
+<BaseLayout title={`${silo.name} | Blog`} description={silo.metaDescription}>
   <section class="border-line from-tint/40 to-canvas border-b bg-linear-to-b">
     <Container class="py-12 lg:py-16">
       <Breadcrumb

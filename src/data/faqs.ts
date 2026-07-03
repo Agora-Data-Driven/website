@@ -18,7 +18,7 @@ export const faqs: Faq[] = [
   {
     question: 'How are we different from other agencies?',
     answer:
-      "We don't just deliver reports—we deliver actionable insights. We combine technical expertise in data, social media, and eCommerce analytics with a deep understanding of marketing performance. We also pride ourselves on clear communication, fast turnaround, and solutions tailored to your business goals.",
+      "We don't just deliver reports, we deliver actionable insights. We combine technical expertise in data, social media, and eCommerce analytics with a deep understanding of marketing performance. We also pride ourselves on clear communication, fast turnaround, and solutions tailored to your business goals.",
   },
   {
     question: 'Can I see examples of your past work?',
@@ -28,6 +28,6 @@ export const faqs: Faq[] = [
   {
     question: 'How do I start a project with your agency?',
     answer:
-      "Getting started is easy. Just send us a message with a brief description of your project or needs. We'll schedule a discovery call to align on goals, timelines, and deliverables—then we get to work.",
+      "Getting started is easy. Just send us a message with a brief description of your project or needs. We'll schedule a discovery call to align on goals, timelines, and deliverables, then we get to work.",
   },
 ];

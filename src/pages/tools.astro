@@ -1,0 +1,1117 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Container from '@components/Container.astro';
+import { quizTopics } from '@data/quizData';
+import type { QuizTopic } from '@data/quizData';
+import { cta } from '@data/cta';
+
+const checklistItems = [
+  'Data science readiness',
+  'AI integration',
+  'Organic content',
+  'Media buying',
+  'Website conversion',
+  'Retention & CRM',
+];
+
+const steps = [
+  {
+    number: '01',
+    title: 'Choose your topic',
+    text: 'Pick the area you want to assess.',
+  },
+  {
+    number: '02',
+    title: 'Select your depth',
+    text: 'Choose 5, 10, or 20 questions.',
+  },
+  {
+    number: '03',
+    title: 'Take the test',
+    text: 'Answer quick multiple-choice questions.',
+  },
+  {
+    number: '04',
+    title: 'Get your results',
+    text: 'Enter your email to unlock your score and recommendations.',
+  },
+];
+
+---
+
+<BaseLayout
+  title="Future-Proof Business Tests | Free Marketing & AI Diagnostics | Agora Data Driven"
+  description="Take a free 3-minute test to see how your business stacks up on data science, AI, organic content, media buying, website conversion, or retention."
+>
+  <!-- ── HUB VIEW ──────────────────────────────────────────────────────────── -->
+  <div id="hub">
+    <!-- ── HERO ────────────────────────────────────────────────────────────── -->
+    <section class="relative overflow-hidden border-b border-line bg-surface">
+      <div class="bg-grid pointer-events-none absolute inset-0 opacity-40" aria-hidden="true"></div>
+      <div
+        class="pointer-events-none absolute inset-0"
+        style="background: radial-gradient(900px 600px at 110% -10%, rgba(79,168,74,0.07) 0%, transparent 60%), linear-gradient(150deg, rgba(238,246,237,0.5) 0%, transparent 45%);"
+        aria-hidden="true"
+      ></div>
+
+      <Container>
+        <div class="grid gap-12 py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
+          <!-- Left -->
+          <div class="flex flex-col justify-center">
+            <div class="mb-5 inline-flex">
+              <span
+                class="rounded-full bg-brand-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand-700"
+              >
+                Free Tests
+              </span>
+            </div>
+
+            <h1
+              class="font-display mb-5 text-4xl font-bold leading-tight tracking-tight text-ink lg:text-5xl"
+            >
+              Is Your Business<br />
+              <span class="text-gradient">Future-Proof?</span>
+            </h1>
+
+            <p class="mb-7 text-lg leading-relaxed text-body">
+              Choose a 3-minute test to see if your business is keeping up with modern marketing, AI,
+              and data.
+            </p>
+
+            <ul class="mb-9 space-y-2.5">
+              {
+                checklistItems.map((item) => (
+                  <li class="flex items-center gap-2.5 text-body">
+                    <svg
+                      class="h-4 w-4 flex-shrink-0 text-brand-500"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <div class="flex flex-wrap gap-3">
+              <button
+                id="hero-choose-btn"
+                class="inline-flex items-center rounded-lg bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              >
+                Choose a Test
+              </button>
+              <button
+                id="hero-sample-btn"
+                class="inline-flex items-center gap-1 rounded-lg px-4 py-3 text-sm font-medium text-brand-600 transition-colors hover:text-brand-700"
+              >
+                See sample results →
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Preview card -->
+          <div class="flex items-center justify-center lg:justify-end">
+            <div
+              class="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 shadow-pop"
+              id="hero-card"
+            >
+              <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-muted">
+                Choose your test
+              </p>
+
+              <!-- Topic tiles -->
+              <div
+                id="hero-tiles"
+                class="mb-5 grid grid-cols-2 gap-2"
+                role="listbox"
+                aria-label="Select a test topic"
+              >
+                {
+                  quizTopics.map((topic: QuizTopic, i: number) => (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={i === 0 ? 'true' : 'false'}
+                      data-topic-id={topic.id}
+                      class:list={[
+                        'hero-tile rounded-lg border px-3 py-2 text-left text-xs font-medium transition-all',
+                        i === 0
+                          ? 'border-brand-400 bg-brand-50 text-brand-700'
+                          : 'border-line text-body hover:border-brand-300 hover:bg-brand-50',
+                      ]}
+                    >
+                      {topic.shortTitle}
+                    </button>
+                  ))
+                }
+              </div>
+
+              <!-- Dynamic info -->
+              <div id="hero-info" class="mb-5">
+                <p id="hero-topic-title" class="mb-1 text-sm font-semibold text-ink">
+                  {quizTopics[0].title}
+                </p>
+                <p id="hero-topic-desc" class="text-xs leading-relaxed text-muted">
+                  {quizTopics[0].description}
+                </p>
+              </div>
+
+              <!-- Question count -->
+              <div class="mb-5">
+                <p class="mb-2 text-xs font-medium text-muted">Number of questions</p>
+                <div class="flex gap-2" id="hero-count-btns" role="group" aria-label="Number of questions">
+                  {
+                    [5, 10, 20].map((n) => (
+                      <button
+                        type="button"
+                        data-count={n}
+                        class:list={[
+                          'hero-count-btn flex-1 rounded-lg border py-2 text-sm font-medium transition-all',
+                          n === 10
+                            ? 'border-brand-400 bg-brand-50 text-brand-700'
+                            : 'border-line text-body hover:border-brand-300 hover:bg-brand-50',
+                        ]}
+                        aria-pressed={n === 10 ? 'true' : 'false'}
+                      >
+                        {n}
+                      </button>
+                    ))
+                  }
+                </div>
+              </div>
+
+              <button
+                id="hero-start-btn"
+                type="button"
+                class="mb-3 w-full rounded-lg bg-brand-500 py-3 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              >
+                Start Test
+              </button>
+              <p id="hero-time-estimate" class="text-center text-xs text-muted">
+                Estimated time: ~2–3 min
+              </p>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+
+    <!-- ── FILTER BAR + TEST GRID ────────────────────────────────────────── -->
+    <section id="test-section" class="py-16 lg:py-20">
+      <Container>
+        <!-- Filter row -->
+        <div
+          class="mb-10 flex flex-col gap-3 rounded-xl border border-line bg-surface p-4 shadow-card sm:flex-row sm:items-center"
+        >
+          <div class="relative flex-1">
+            <svg
+              class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <input
+              id="test-search"
+              type="search"
+              placeholder="Search tests..."
+              class="w-full rounded-lg border border-line bg-canvas py-2.5 pr-4 pl-9 text-sm text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400"
+              aria-label="Search tests"
+            />
+          </div>
+          <select
+            id="filter-type"
+            class="rounded-lg border border-line bg-canvas px-3 py-2.5 text-sm text-body focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400"
+            aria-label="Filter by business type"
+          >
+            <option value="">All business types</option>
+            <option value="ecommerce">E-commerce</option>
+            <option value="saas">SaaS / Software</option>
+            <option value="agency">Agency / Services</option>
+            <option value="local">Local Business</option>
+          </select>
+          <select
+            id="filter-topic"
+            class="rounded-lg border border-line bg-canvas px-3 py-2.5 text-sm text-body focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400"
+            aria-label="Filter by topic"
+          >
+            <option value="">All topics</option>
+            {quizTopics.map((t: QuizTopic) => <option value={t.id}>{t.shortTitle}</option>)}
+          </select>
+        </div>
+
+        <!-- Heading -->
+        <div class="mb-10 max-w-2xl">
+          <h2 class="font-display mb-3 text-3xl font-bold tracking-tight text-ink lg:text-4xl">
+            Choose your test
+          </h2>
+          <p class="text-lg text-muted">
+            Each test focuses on one area of marketing, AI, or data so you get a more relevant
+            score.
+          </p>
+        </div>
+
+        <!-- Test grid -->
+        <div
+          id="test-grid"
+          class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          role="list"
+          aria-label="Available tests"
+        >
+          {
+            quizTopics.map((topic: QuizTopic) => (
+              <article
+                class="test-card group flex flex-col rounded-2xl border border-line bg-surface p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-pop"
+                data-topic-id={topic.id}
+                data-title={topic.shortTitle.toLowerCase()}
+                role="listitem"
+              >
+                <!-- Icon -->
+                <div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-tint">
+                  <svg
+                    class="h-5 w-5 text-brand-600"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.75"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d={topic.iconPath} />
+                  </svg>
+                </div>
+
+                <h3 class="font-display mb-2 text-lg font-bold text-ink">{topic.shortTitle}</h3>
+                <p class="mb-4 flex-1 text-sm leading-relaxed text-muted">{topic.description}</p>
+
+                <div class="mb-5 flex items-center gap-2">
+                  {topic.availableQuestionCounts.map((n: number) => (
+                    <span class="rounded-md bg-canvas px-2.5 py-1 text-xs font-medium text-muted">
+                      {n} Q
+                    </span>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  data-topic-id={topic.id}
+                  class="start-test-btn inline-flex items-center justify-center gap-1.5 rounded-lg border border-brand-300 px-4 py-2.5 text-sm font-semibold text-brand-700 transition-all hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 group-hover:border-brand-500 group-hover:bg-brand-500 group-hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+                  aria-label={`Start ${topic.shortTitle} test`}
+                >
+                  Start Test
+                  <svg
+                    class="h-3.5 w-3.5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </article>
+            ))
+          }
+        </div>
+
+        <!-- Empty state -->
+        <div
+          id="test-empty"
+          class="hidden py-16 text-center"
+          role="status"
+          aria-live="polite"
+        >
+          <p class="text-lg font-medium text-ink">No tests match your search.</p>
+          <p class="mt-1 text-sm text-muted">Try a different search term or clear the filters.</p>
+          <button
+            id="clear-filters-btn"
+            type="button"
+            class="mt-4 text-sm font-medium text-brand-600 hover:text-brand-700 hover:underline"
+          >
+            Clear filters
+          </button>
+        </div>
+      </Container>
+    </section>
+
+    <!-- ── HOW IT WORKS ───────────────────────────────────────────────────── -->
+    <section class="border-y border-line bg-canvas py-16 lg:py-20">
+      <Container>
+        <div class="mb-10 text-center">
+          <h2 class="font-display text-3xl font-bold tracking-tight text-ink lg:text-4xl">
+            How it works
+          </h2>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {
+            steps.map((step) => (
+              <div class="reveal flex flex-col rounded-2xl border border-line bg-surface p-6 shadow-card">
+                <span class="font-display mb-3 text-3xl font-bold text-brand-200">
+                  {step.number}
+                </span>
+                <h3 class="font-display mb-2 text-base font-bold text-ink">{step.title}</h3>
+                <p class="text-sm leading-relaxed text-muted">{step.text}</p>
+              </div>
+            ))
+          }
+        </div>
+      </Container>
+    </section>
+
+    <!-- ── FINAL CTA BANNER ──────────────────────────────────────────────── -->
+    <section class="surface-dark py-20 lg:py-24">
+      <Container>
+        <div class="mx-auto max-w-2xl text-center">
+          <h2
+            class="font-display mb-4 text-3xl font-bold tracking-tight lg:text-4xl"
+            style="color:#fff"
+          >
+            Get your business score in minutes
+          </h2>
+          <p class="mb-8 text-lg" style="color:rgba(215,227,218,0.85)">
+            Free, fast, and tailored to the area you want to improve.
+          </p>
+          <button
+            id="cta-start-btn"
+            type="button"
+            class="inline-flex items-center rounded-lg bg-brand-500 px-8 py-3.5 text-sm font-semibold text-white shadow-glow transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+          >
+            Start Free Test
+          </button>
+        </div>
+      </Container>
+    </section>
+  </div>
+  <!-- /#hub -->
+
+  <!-- ── QUIZ OVERLAY ──────────────────────────────────────────────────────── -->
+  <div
+    id="quiz-overlay"
+    class="fixed inset-0 z-[100] hidden overflow-y-auto bg-canvas"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="quiz-overlay-title"
+  >
+    <!-- Overlay header -->
+    <div
+      id="quiz-overlay-header"
+      class="sticky top-0 z-10 border-b border-line bg-surface/95 backdrop-blur"
+    >
+      <div class="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4">
+        <button
+          id="quiz-back-btn"
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-body transition-colors hover:bg-canvas hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+          aria-label="Go back"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Back
+        </button>
+
+        <span
+          id="quiz-overlay-title"
+          class="font-display text-sm font-semibold text-ink"
+          aria-live="polite"
+        ></span>
+
+        <span
+          id="quiz-progress-label"
+          class="text-sm text-muted"
+          aria-live="polite"
+          aria-atomic="true"
+        ></span>
+      </div>
+
+      <!-- Progress bar (shown only during questions) -->
+      <div
+        id="quiz-progress-bar-wrap"
+        class="hidden h-1 bg-brand-100"
+        role="progressbar"
+        aria-valuenow={0}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <div
+          id="quiz-progress-bar-fill"
+          class="h-full bg-brand-500 transition-all duration-300"
+          style="width:0%"
+        >
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic content area -->
+    <div id="quiz-content" class="mx-auto max-w-3xl px-4 py-10 pb-20"></div>
+  </div>
+  <!-- /#quiz-overlay -->
+</BaseLayout>
+
+<script is:inline define:vars={{ quizTopicsData: quizTopics, upworkCta: cta.becomeClient.href }}>
+  // ---------------------------------------------------------------------------
+  // State
+  // ---------------------------------------------------------------------------
+  const state = {
+    topicId: quizTopicsData[0].id,
+    questionCount: 10,
+    sessionQuestions: [],
+    currentIndex: 0,
+    answers: [], // array of number (score per question answered)
+    phase: 'hub', // 'hub' | 'setup' | 'questions' | 'email' | 'results'
+    submitting: false,
+  };
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+  function getTopic(id) {
+    return quizTopicsData.find((t) => t.id === id);
+  }
+
+  function getEstimatedTime(count) {
+    if (count === 5) return '~1 min';
+    if (count === 10) return '~2–3 min';
+    return '~5–6 min';
+  }
+
+  function calculateScore() {
+    if (state.answers.length === 0) return 0;
+    const total = state.answers.reduce((a, b) => a + b, 0);
+    const max = state.sessionQuestions.length * 3;
+    return Math.round((total / max) * 100);
+  }
+
+  function getBand(topic, score) {
+    return topic.scoreBands.find((b) => score >= b.min && score <= b.max) ?? topic.scoreBands[0];
+  }
+
+  function bandColorClass(bandId) {
+    const map = {
+      behind: { bg: '#fff3e0', text: '#b45309', border: '#fcd34d' },
+      developing: { bg: '#fef9c3', text: '#a16207', border: '#fde047' },
+      competitive: { bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
+      'future-ready': { bg: '#dcfce7', text: '#15803d', border: '#86efac' },
+    };
+    return map[bandId] ?? map['developing'];
+  }
+
+  // ---------------------------------------------------------------------------
+  // Lead storage  (swap submitQuizLead body for CRM/API integration)
+  // ---------------------------------------------------------------------------
+  function submitQuizLead(data) {
+    try {
+      const existing = JSON.parse(localStorage.getItem('agora-quiz-leads') || '[]');
+      existing.push({ ...data, timestamp: new Date().toISOString() });
+      localStorage.setItem('agora-quiz-leads', JSON.stringify(existing));
+    } catch {
+      // localStorage unavailable — fail silently, still show results
+    }
+    // TODO: Replace or augment with API call, e.g.:
+    // fetch('/api/quiz-lead', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) })
+    //   .catch(err => console.error('Lead submission error:', err));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Overlay open / close
+  // ---------------------------------------------------------------------------
+  function openOverlay() {
+    const overlay = document.getElementById('quiz-overlay');
+    const hub = document.getElementById('hub');
+    overlay.classList.remove('hidden');
+    hub.classList.add('hidden');
+    document.body.style.overflow = 'hidden';
+    overlay.scrollTop = 0;
+    overlay.focus?.();
+  }
+
+  function closeOverlay() {
+    const overlay = document.getElementById('quiz-overlay');
+    const hub = document.getElementById('hub');
+    overlay.classList.add('hidden');
+    hub.classList.remove('hidden');
+    document.body.style.overflow = '';
+    state.phase = 'hub';
+  }
+
+  function setOverlayTitle(text) {
+    document.getElementById('quiz-overlay-title').textContent = text;
+  }
+
+  function setProgressLabel(text) {
+    document.getElementById('quiz-progress-label').textContent = text;
+  }
+
+  function setProgressBar(fraction) {
+    const wrap = document.getElementById('quiz-progress-bar-wrap');
+    const fill = document.getElementById('quiz-progress-bar-fill');
+    if (fraction === null) {
+      wrap.classList.add('hidden');
+    } else {
+      wrap.classList.remove('hidden');
+      const pct = Math.round(fraction * 100);
+      fill.style.width = pct + '%';
+      wrap.setAttribute('aria-valuenow', pct);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Screen: Setup
+  // ---------------------------------------------------------------------------
+  function showSetupScreen(topicId) {
+    const topic = getTopic(topicId);
+    if (!topic) return;
+    state.topicId = topicId;
+    state.phase = 'setup';
+    openOverlay();
+    setOverlayTitle(topic.shortTitle);
+    setProgressLabel('');
+    setProgressBar(null);
+
+    const content = document.getElementById('quiz-content');
+    content.innerHTML = `
+      <div class="mx-auto max-w-xl text-center">
+        <div class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-tint">
+          <svg class="h-8 w-8 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="${topic.iconPath}" />
+          </svg>
+        </div>
+        <h2 class="font-display mb-3 text-2xl font-bold tracking-tight text-ink lg:text-3xl">${topic.title}</h2>
+        <p class="mb-10 text-base leading-relaxed text-muted">${topic.description}</p>
+
+        <div class="mb-8">
+          <p class="mb-3 text-sm font-semibold text-ink">How many questions?</p>
+          <div class="flex justify-center gap-3" id="setup-count-group" role="group" aria-label="Number of questions">
+            ${topic.availableQuestionCounts
+              .map(
+                (n) => `
+              <button type="button" data-count="${n}"
+                class="setup-count-btn w-24 rounded-xl border-2 py-3 text-sm font-semibold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500
+                  ${n === state.questionCount ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-line text-body hover:border-brand-300 hover:bg-brand-50'}"
+                aria-pressed="${n === state.questionCount}">
+                <span class="block text-xl font-bold">${n}</span>
+                <span class="block text-xs font-normal text-muted">${getEstimatedTime(n)}</span>
+              </button>`,
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <button id="setup-start-btn" type="button"
+          class="inline-flex w-full max-w-xs items-center justify-center rounded-xl bg-brand-500 py-3.5 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+          Start Test
+        </button>
+        <p class="mt-3 text-xs text-muted">Free · No credit card required</p>
+      </div>
+    `;
+
+    // Setup count buttons
+    content.querySelectorAll('.setup-count-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const n = parseInt(btn.dataset.count, 10);
+        state.questionCount = n;
+        content.querySelectorAll('.setup-count-btn').forEach((b) => {
+          const active = parseInt(b.dataset.count, 10) === n;
+          b.className = b.className
+            .replace(/border-brand-500 bg-brand-50 text-brand-700|border-line text-body hover:border-brand-300 hover:bg-brand-50/g, '')
+            .trim();
+          b.classList.add(
+            ...(active
+              ? ['border-brand-500', 'bg-brand-50', 'text-brand-700']
+              : ['border-line', 'text-body', 'hover:border-brand-300', 'hover:bg-brand-50']),
+          );
+          b.setAttribute('aria-pressed', String(active));
+        });
+      });
+    });
+
+    document.getElementById('setup-start-btn').addEventListener('click', () => {
+      startQuiz(state.topicId, state.questionCount);
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Screen: Questions
+  // ---------------------------------------------------------------------------
+  function startQuiz(topicId, count) {
+    const topic = getTopic(topicId);
+    if (!topic) return;
+    state.topicId = topicId;
+    state.questionCount = count;
+    state.sessionQuestions = topic.questions.slice(0, count);
+    state.currentIndex = 0;
+    state.answers = [];
+    state.phase = 'questions';
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const topic = getTopic(state.topicId);
+    const q = state.sessionQuestions[state.currentIndex];
+    const total = state.sessionQuestions.length;
+    const idx = state.currentIndex;
+
+    setOverlayTitle(topic.shortTitle);
+    setProgressLabel(`Question ${idx + 1} of ${total}`);
+    setProgressBar((idx) / total);
+
+    const content = document.getElementById('quiz-content');
+    content.innerHTML = `
+      <div class="mx-auto max-w-2xl">
+        <p class="mb-3 text-sm font-medium text-muted">Question ${idx + 1} of ${total}</p>
+        <h2 class="font-display mb-8 text-xl font-bold leading-snug text-ink lg:text-2xl">${q.question}</h2>
+
+        <div class="mb-8 space-y-3" id="options-list" role="listbox" aria-label="Answer options">
+          ${q.options
+            .map(
+              (opt, i) => `
+            <button type="button" data-index="${i}" data-score="${opt.score}"
+              role="option" aria-selected="false"
+              class="option-btn w-full rounded-xl border-2 border-line bg-surface px-5 py-4 text-left text-sm leading-relaxed text-body transition-all hover:border-brand-300 hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+              <span class="flex items-start gap-3">
+                <span class="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 border-current text-xs font-bold option-indicator">
+                  ${String.fromCharCode(65 + i)}
+                </span>
+                <span>${opt.label}</span>
+              </span>
+            </button>`,
+            )
+            .join('')}
+        </div>
+
+        <div class="flex items-center justify-between">
+          ${idx > 0 ? `<button id="quiz-prev-btn" type="button" class="rounded-lg px-4 py-2.5 text-sm font-medium text-body hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">← Previous</button>` : '<span></span>'}
+          <button id="quiz-next-btn" type="button" disabled
+            class="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white shadow-glow-sm transition-all hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+            ${idx === total - 1 ? 'Finish Test' : 'Next Question'} →
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Restore previously selected answer if going back
+    const prevScore = state.answers[idx] ?? null;
+    if (prevScore !== null) {
+      content.querySelectorAll('.option-btn').forEach((btn) => {
+        if (parseInt(btn.dataset.score, 10) === prevScore) {
+          markOptionSelected(btn);
+          document.getElementById('quiz-next-btn').disabled = false;
+        }
+      });
+    }
+
+    // Option selection
+    content.querySelectorAll('.option-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        content.querySelectorAll('.option-btn').forEach(clearOptionSelected);
+        markOptionSelected(btn);
+        state.answers[idx] = parseInt(btn.dataset.score, 10);
+        document.getElementById('quiz-next-btn').disabled = false;
+      });
+    });
+
+    // Next
+    document.getElementById('quiz-next-btn').addEventListener('click', () => {
+      if (state.answers[idx] === undefined) return;
+      if (state.currentIndex < state.sessionQuestions.length - 1) {
+        state.currentIndex++;
+        document.getElementById('quiz-overlay').scrollTop = 0;
+        renderQuestion();
+      } else {
+        showEmailGate();
+      }
+    });
+
+    // Prev
+    document.getElementById('quiz-prev-btn')?.addEventListener('click', () => {
+      if (state.currentIndex > 0) {
+        state.currentIndex--;
+        document.getElementById('quiz-overlay').scrollTop = 0;
+        renderQuestion();
+      }
+    });
+  }
+
+  function markOptionSelected(btn) {
+    btn.classList.remove('border-line', 'bg-surface', 'hover:border-brand-300', 'hover:bg-brand-50');
+    btn.classList.add('border-brand-500', 'bg-brand-50', 'text-brand-700');
+    btn.setAttribute('aria-selected', 'true');
+    const ind = btn.querySelector('.option-indicator');
+    if (ind) {
+      ind.classList.add('bg-brand-500', 'border-brand-500', 'text-white');
+    }
+  }
+
+  function clearOptionSelected(btn) {
+    btn.classList.remove('border-brand-500', 'bg-brand-50', 'text-brand-700');
+    btn.classList.add('border-line', 'bg-surface', 'hover:border-brand-300', 'hover:bg-brand-50');
+    btn.removeAttribute('aria-selected');
+    const ind = btn.querySelector('.option-indicator');
+    if (ind) {
+      ind.classList.remove('bg-brand-500', 'border-brand-500', 'text-white');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Screen: Email gate
+  // ---------------------------------------------------------------------------
+  function showEmailGate() {
+    const topic = getTopic(state.topicId);
+    state.phase = 'email';
+    setOverlayTitle(topic.shortTitle);
+    setProgressLabel('Almost done');
+    setProgressBar(1);
+
+    const content = document.getElementById('quiz-content');
+    content.innerHTML = `
+      <div class="mx-auto max-w-lg">
+        <div class="mb-8 text-center">
+          <div class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand-100">
+            <svg class="h-6 w-6 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 1 0-2.636 6.364M16.5 12V8.25" />
+            </svg>
+          </div>
+          <h2 class="font-display mb-2 text-2xl font-bold tracking-tight text-ink">Get your full ${topic.shortTitle} score</h2>
+          <p class="text-base text-muted">Enter your email to unlock your score, benchmark, and recommendations.</p>
+        </div>
+
+        <form id="email-gate-form" novalidate class="space-y-4">
+          <div>
+            <label for="gate-email" class="mb-1.5 block text-sm font-medium text-ink">Email address <span class="text-red-500" aria-hidden="true">*</span></label>
+            <input type="email" id="gate-email" name="email" required autocomplete="email"
+              placeholder="you@company.com"
+              class="w-full rounded-lg border border-line bg-surface px-4 py-3 text-sm text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              aria-required="true" />
+            <p id="gate-email-error" class="mt-1 hidden text-xs text-red-600" role="alert">Please enter a valid email address.</p>
+          </div>
+
+          <div>
+            <label for="gate-business" class="mb-1.5 block text-sm font-medium text-ink">Business name <span class="text-muted">(optional)</span></label>
+            <input type="text" id="gate-business" name="businessName" autocomplete="organization"
+              placeholder="Your company"
+              class="w-full rounded-lg border border-line bg-surface px-4 py-3 text-sm text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          </div>
+
+          <div>
+            <label for="gate-industry" class="mb-1.5 block text-sm font-medium text-ink">Industry <span class="text-muted">(optional)</span></label>
+            <select id="gate-industry" name="industry"
+              class="w-full rounded-lg border border-line bg-surface px-4 py-3 text-sm text-body focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100">
+              <option value="">Select your industry</option>
+              <option value="ecommerce">E-commerce / Retail</option>
+              <option value="saas">SaaS / Software</option>
+              <option value="agency">Marketing / Agency</option>
+              <option value="finance">Finance / Fintech</option>
+              <option value="health">Health / Wellness</option>
+              <option value="hospitality">Hospitality / Events</option>
+              <option value="real-estate">Real Estate</option>
+              <option value="education">Education / Training</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <button type="submit" id="gate-submit-btn"
+            class="mt-2 w-full rounded-xl bg-brand-500 py-3.5 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+            Show My Results
+          </button>
+
+          <p class="text-center text-xs text-muted">No spam. Unsubscribe any time.</p>
+        </form>
+      </div>
+    `;
+
+    document.getElementById('email-gate-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleEmailSubmit(e.target);
+    });
+  }
+
+  function handleEmailSubmit(form) {
+    const emailEl = form.querySelector('#gate-email');
+    const emailError = form.querySelector('#gate-email-error');
+    const email = emailEl.value.trim();
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!isValidEmail) {
+      emailEl.classList.add('border-red-400');
+      emailError.classList.remove('hidden');
+      emailEl.focus();
+      return;
+    }
+
+    emailEl.classList.remove('border-red-400');
+    emailError.classList.add('hidden');
+
+    const formData = {
+      email,
+      businessName: form.querySelector('#gate-business').value.trim(),
+      industry: form.querySelector('#gate-industry').value,
+      topicId: state.topicId,
+      topicTitle: getTopic(state.topicId)?.title ?? '',
+      questionCount: state.questionCount,
+      score: calculateScore(),
+    };
+
+    const submitBtn = form.querySelector('#gate-submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Loading…';
+
+    try {
+      submitQuizLead(formData);
+    } catch {
+      // fail silently — still show results
+    } finally {
+      showResults(formData);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Screen: Results
+  // ---------------------------------------------------------------------------
+  function showResults(formData) {
+    const topic = getTopic(state.topicId ?? formData?.topicId);
+    const score = formData?.score ?? calculateScore();
+    const band = getBand(topic, score);
+    const colors = bandColorClass(band.id);
+    const circumference = 2 * Math.PI * 40;
+    const offset = circumference * (1 - score / 100);
+    state.phase = 'results';
+
+    setOverlayTitle(topic.shortTitle);
+    setProgressLabel('Your results');
+    setProgressBar(null);
+
+    const content = document.getElementById('quiz-content');
+    content.innerHTML = `
+      <div class="mx-auto max-w-2xl">
+        <!-- Score card -->
+        <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-surface shadow-pop">
+          <div class="flex flex-col items-center gap-6 p-8 sm:flex-row">
+            <!-- Score ring -->
+            <div class="flex-shrink-0">
+              <svg width="100" height="100" viewBox="0 0 100 100" aria-label="${score} out of 100" role="img">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#e6e6e9" stroke-width="8"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#4fa84a" stroke-width="8"
+                  stroke-dasharray="${circumference}"
+                  stroke-dashoffset="${offset}"
+                  stroke-linecap="round"
+                  transform="rotate(-90 50 50)"
+                  style="transition:stroke-dashoffset 0.8s cubic-bezier(.22,1,.36,1)"/>
+                <text x="50" y="54" text-anchor="middle" font-family="Archivo Variable, Archivo, sans-serif" font-size="22" font-weight="700" fill="#121212">${score}</text>
+                <text x="50" y="67" text-anchor="middle" font-family="Lato, sans-serif" font-size="10" fill="#6b6f6c">/100</text>
+              </svg>
+            </div>
+
+            <div class="text-center sm:text-left">
+              <p class="mb-1 text-sm text-muted">${topic.shortTitle} Score</p>
+              <h2 class="font-display mb-3 text-2xl font-bold tracking-tight text-ink lg:text-3xl">${score}/100</h2>
+              <span class="inline-block rounded-full px-4 py-1.5 text-sm font-semibold"
+                style="background:${colors.bg};color:${colors.text};border:1px solid ${colors.border}">
+                ${band.label}
+              </span>
+            </div>
+          </div>
+
+          <div class="border-t border-line px-8 py-6">
+            <p class="text-base leading-relaxed text-body">${band.summary}</p>
+          </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="mb-8">
+          <h3 class="font-display mb-4 text-xl font-bold text-ink">Your top recommendations</h3>
+          <div class="space-y-3">
+            ${band.recommendations
+              .map(
+                (rec, i) => `
+              <div class="flex items-start gap-3 rounded-xl border border-line bg-surface px-5 py-4">
+                <span class="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">${i + 1}</span>
+                <p class="text-sm leading-relaxed text-body">${rec}</p>
+              </div>`,
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <!-- CTAs -->
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <a href="${upworkCta}" target="_blank" rel="noopener noreferrer"
+            class="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-500 px-6 py-3.5 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+            Book a Free Strategy Call
+          </a>
+          <button id="results-restart-btn" type="button"
+            class="inline-flex flex-1 items-center justify-center rounded-xl border-2 border-line px-6 py-3.5 text-sm font-semibold text-body transition-colors hover:border-brand-400 hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+            Take Another Test
+          </button>
+        </div>
+
+        <p class="mt-6 text-center text-xs text-muted">
+          A member of the Agora team may follow up at ${formData?.email ?? 'your email'} with tailored insights.
+        </p>
+      </div>
+    `;
+
+    document.getElementById('results-restart-btn').addEventListener('click', () => {
+      closeOverlay();
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Hero card interactivity
+  // ---------------------------------------------------------------------------
+  function syncHeroCard() {
+    const topic = getTopic(state.topicId);
+    if (!topic) return;
+    document.getElementById('hero-topic-title').textContent = topic.title;
+    document.getElementById('hero-topic-desc').textContent = topic.description;
+    document.getElementById('hero-time-estimate').textContent =
+      'Estimated time: ' + getEstimatedTime(state.questionCount);
+  }
+
+  document.querySelectorAll('.hero-tile').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.topicId = btn.dataset.topicId;
+      document.querySelectorAll('.hero-tile').forEach((b) => {
+        const active = b.dataset.topicId === state.topicId;
+        b.classList.toggle('border-brand-400', active);
+        b.classList.toggle('bg-brand-50', active);
+        b.classList.toggle('text-brand-700', active);
+        b.classList.toggle('border-line', !active);
+        b.classList.toggle('text-body', !active);
+        b.setAttribute('aria-selected', String(active));
+      });
+      syncHeroCard();
+    });
+  });
+
+  document.querySelectorAll('.hero-count-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.questionCount = parseInt(btn.dataset.count, 10);
+      document.querySelectorAll('.hero-count-btn').forEach((b) => {
+        const active = parseInt(b.dataset.count, 10) === state.questionCount;
+        b.classList.toggle('border-brand-400', active);
+        b.classList.toggle('bg-brand-50', active);
+        b.classList.toggle('text-brand-700', active);
+        b.classList.toggle('border-line', !active);
+        b.classList.toggle('text-body', !active);
+        b.setAttribute('aria-pressed', String(active));
+      });
+      document.getElementById('hero-time-estimate').textContent =
+        'Estimated time: ' + getEstimatedTime(state.questionCount);
+    });
+  });
+
+  document.getElementById('hero-start-btn').addEventListener('click', () => {
+    startQuiz(state.topicId, state.questionCount);
+  });
+
+  document.getElementById('hero-choose-btn').addEventListener('click', () => {
+    document.getElementById('test-section').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('hero-sample-btn').addEventListener('click', () => {
+    // Show results with demo data (no email gate)
+    state.topicId = quizTopicsData[0].id;
+    state.sessionQuestions = quizTopicsData[0].questions.slice(0, 10);
+    state.answers = quizTopicsData[0].questions.slice(0, 10).map(() => 2); // example: mostly "Often"
+    openOverlay();
+    showResults({ email: 'demo@example.com', topicId: quizTopicsData[0].id });
+  });
+
+  document.getElementById('cta-start-btn').addEventListener('click', () => {
+    showSetupScreen(quizTopicsData[0].id);
+  });
+
+  // ---------------------------------------------------------------------------
+  // Test grid card clicks
+  // ---------------------------------------------------------------------------
+  document.querySelectorAll('.start-test-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showSetupScreen(btn.dataset.topicId);
+    });
+  });
+
+  // Card click (outside button)
+  document.querySelectorAll('.test-card').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.start-test-btn')) return;
+      showSetupScreen(card.dataset.topicId);
+    });
+    card.style.cursor = 'pointer';
+  });
+
+  // ---------------------------------------------------------------------------
+  // Quiz back button
+  // ---------------------------------------------------------------------------
+  document.getElementById('quiz-back-btn').addEventListener('click', () => {
+    if (state.phase === 'questions' && state.currentIndex > 0) {
+      state.currentIndex--;
+      renderQuestion();
+    } else if (state.phase === 'questions') {
+      showSetupScreen(state.topicId);
+    } else {
+      closeOverlay();
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // Filter / search
+  // ---------------------------------------------------------------------------
+  function filterCards() {
+    const query = document.getElementById('test-search').value.toLowerCase().trim();
+    const topicFilter = document.getElementById('filter-topic').value;
+    const cards = document.querySelectorAll('.test-card');
+    let visible = 0;
+
+    cards.forEach((card) => {
+      const titleMatch = !query || card.dataset.title.includes(query);
+      const topicMatch = !topicFilter || card.dataset.topicId === topicFilter;
+      const show = titleMatch && topicMatch;
+      card.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+
+    document.getElementById('test-empty').classList.toggle('hidden', visible > 0);
+  }
+
+  document.getElementById('test-search').addEventListener('input', filterCards);
+  document.getElementById('filter-topic').addEventListener('change', filterCards);
+  document.getElementById('filter-type').addEventListener('change', filterCards); // type filter resets — all tests show
+  document.getElementById('clear-filters-btn').addEventListener('click', () => {
+    document.getElementById('test-search').value = '';
+    document.getElementById('filter-type').value = '';
+    document.getElementById('filter-topic').value = '';
+    filterCards();
+  });
+
+  // ---------------------------------------------------------------------------
+  // Keyboard: Escape closes overlay
+  // ---------------------------------------------------------------------------
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && state.phase !== 'hub') {
+      closeOverlay();
+    }
+  });
+</script>
