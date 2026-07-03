@@ -27,8 +27,14 @@ export const mainNav: NavItem[] = [
       { label: 'Skill Mastery', href: skillMasteryPath },
     ],
   },
-  { label: 'Tools & Insights', href: '/tools/' },
-  { label: 'Blog', href: '/blog/' },
+  {
+    label: 'Tools & Insights',
+    href: '/tools/',
+    children: [
+      { label: 'Tools & Insights', href: '/tools/' },
+      { label: 'Blog', href: '/blog/' },
+    ],
+  },
   // "LED Wall" points to the real flagship article slug (preserved for SEO).
   { label: 'LED Wall', href: '/building-an-authentic-brand-identity/' },
 ];
