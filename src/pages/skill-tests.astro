@@ -21,7 +21,7 @@ const steps = [
   {
     number: '01',
     title: 'Pick a skill',
-    text: 'Choose the field you want to test — your own, or a candidate or VA’s.',
+    text: 'Choose the field you want to test: your own, or a candidate or VA’s.',
   },
   {
     number: '02',
@@ -43,7 +43,7 @@ const steps = [
 
 <BaseLayout
   title="Free Skill Tests | Test Your Data, Marketing & AI Skills | Agora Data Driven"
-  description="Take a free skill test with real right-and-wrong questions. Benchmark your own proficiency — or your team's and VAs' — in data science, AI, SEO, paid media, conversion, and CRM. Then master it."
+  description="Take a free skill test with real right-and-wrong questions. Benchmark your own or your team's proficiency in data science, AI, SEO, paid media, conversion, and CRM. Then master it."
 >
   <!-- ── HUB VIEW ──────────────────────────────────────────────────────────── -->
   <div id="hub">
@@ -83,12 +83,12 @@ const steps = [
               class="font-display text-ink mb-5 text-4xl leading-tight font-bold tracking-tight lg:text-5xl"
             >
               How sharp are<br />
-              <span class="text-gradient">your skills — really?</span>
+              <span class="text-gradient">your skills, really?</span>
             </h1>
 
             <p class="text-body mb-7 text-lg leading-relaxed">
-              Real questions with real right and wrong answers. Test your own proficiency — or have
-              your team or VAs take it — then jump into Mastery Mode to close the gaps.
+              Real questions with real right and wrong answers. Test your own proficiency, or have
+              your team or VAs take it, then jump into Mastery Mode to close the gaps.
             </p>
 
             <ul class="hero-values mb-9 grid grid-cols-2 gap-x-6 gap-y-3">
@@ -230,7 +230,7 @@ const steps = [
           </h2>
           <p class="text-muted text-lg">
             Start free in Guest Mode to see where you stand. Sign in to Mastery Mode when you’re
-            ready to actually get better — the full Agora Skill Mastery engine.
+            ready to actually get better: the full Agora Skill Mastery engine.
           </p>
         </div>
 
@@ -305,7 +305,7 @@ const steps = [
 
         <p class="text-muted mt-6 text-center text-sm">
           The <strong class="text-body">Data Science</strong> test is a live preview of the Skill Mastery
-          engine — same questions, same standard. Score well, then sign in to go all the way.
+          engine: same questions, same standard. Score well, then sign in to go all the way.
         </p>
       </Container>
     </section>
@@ -353,7 +353,7 @@ const steps = [
             Choose a skill test
           </h2>
           <p class="text-muted text-lg">
-            Each test checks real, technical proficiency in one field — right and wrong answers, no
+            Each test checks real, technical proficiency in one field: right and wrong answers, no
             fluff.
           </p>
         </div>
@@ -479,7 +479,7 @@ const steps = [
             class="font-display mb-4 text-3xl font-bold tracking-tight lg:text-4xl"
             style="color:#fff"
           >
-            Know exactly where you — and your team — stand
+            Know exactly where you, and your team, stand
           </h2>
           <p class="mb-8 text-lg" style="color:rgba(215,227,218,0.85)">
             Start free in Guest Mode. Sign in to Mastery Mode to turn a score into real skill.
@@ -637,7 +637,7 @@ const steps = [
   }
 
   // ---------------------------------------------------------------------------
-  // Lead storage (optional email report — swap body for CRM/API integration)
+  // Lead storage (optional email report, swap body for CRM/API integration)
   // ---------------------------------------------------------------------------
   function submitQuizLead(data) {
     try {
@@ -645,7 +645,7 @@ const steps = [
       existing.push({ ...data, timestamp: new Date().toISOString() });
       localStorage.setItem('agora-quiz-leads', JSON.stringify(existing));
     } catch {
-      // localStorage unavailable — fail silently
+      // localStorage unavailable, fail silently
     }
     // TODO: Replace or augment with an API call, e.g.:
     // fetch('/api/quiz-lead', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) })
@@ -747,7 +747,7 @@ const steps = [
         <p class="mt-3 text-xs text-muted">Free · No sign-up · Nothing saved</p>
         ${
           isDs
-            ? `<p class="mt-6 text-xs text-muted">This is a live preview of the <a href="${masteryHref}" class="font-medium text-brand-600 underline hover:text-brand-700">Skill Mastery engine</a> — 541 topics, spaced repetition, and AI tutoring in Mastery Mode.</p>`
+            ? `<p class="mt-6 text-xs text-muted">This is a live preview of the <a href="${masteryHref}" class="font-medium text-brand-600 underline hover:text-brand-700">Skill Mastery engine</a>, 541 topics, spaced repetition, and AI tutoring in Mastery Mode.</p>`
             : ''
         }
       </div>
@@ -859,7 +859,7 @@ const steps = [
     // Option selection (only if not yet answered)
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        if (state.answers[idx]) return; // already answered — locked
+        if (state.answers[idx]) return; // already answered, locked
         const chosen = parseInt(btn.dataset.index, 10);
         state.answers[idx] = { selected: chosen, correct: chosen === q.correctIndex };
         applyAnswerVisual(q, state.answers[idx]);
@@ -925,7 +925,7 @@ const steps = [
       verdict.textContent = 'Correct ✓';
       verdict.style.color = '#15803d';
     } else {
-      verdict.textContent = 'Not quite — answer: ' + q.options[q.correctIndex];
+      verdict.textContent = 'Not quite. Answer: ' + q.options[q.correctIndex];
       verdict.style.color = '#b91c1c';
     }
     text.textContent = q.explanation || '';
@@ -1035,7 +1035,7 @@ const steps = [
           <p class="mb-4 text-sm leading-relaxed" style="color:rgba(215,227,218,0.85)">
             ${
               isDs
-                ? 'This was a preview. Sign in to the full Skill Mastery engine — 541 topics, spaced-repetition drills on your weakest areas, AI hints, and progress tracking.'
+                ? 'This was a preview. Sign in to the full Skill Mastery engine: 541 topics, spaced-repetition drills on your weakest areas, AI hints, and progress tracking.'
                 : 'Sign in to Mastery Mode for spaced-repetition drills, progress tracking, and AI tutoring that turns weak spots into strengths.'
             }
           </p>
@@ -1054,7 +1054,7 @@ const steps = [
         <!-- Optional email report -->
         <div class="mb-8 rounded-2xl border border-line bg-surface p-6">
           <h3 class="font-display mb-1 text-base font-bold text-ink">Email me a copy of these results</h3>
-          <p class="mb-4 text-sm text-muted">Handy for benchmarking a team or VA. Optional — your score is already above.</p>
+          <p class="mb-4 text-sm text-muted">Handy for benchmarking a team or VA. Optional. Your score is already above.</p>
           <form id="email-report-form" novalidate class="flex flex-col gap-3 sm:flex-row">
             <input type="email" id="report-email" name="email" autocomplete="email" placeholder="you@company.com"
               class="flex-1 rounded-lg border border-line bg-surface px-4 py-3 text-sm text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100" />
@@ -1107,7 +1107,7 @@ const steps = [
         score,
       });
       document.getElementById('email-report-form').innerHTML =
-        '<p class="text-sm font-medium text-brand-700">Thanks — we’ll send your results shortly.</p>';
+        '<p class="text-sm font-medium text-brand-700">Thanks, we’ll send your results shortly.</p>';
       msg.classList.add('hidden');
     });
   }

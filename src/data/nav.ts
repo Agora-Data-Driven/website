@@ -29,9 +29,9 @@ export const mainNav: NavItem[] = [
   },
   {
     label: 'Tools & Insights',
-    href: '/tools/',
+    href: '/skill-tests/',
     children: [
-      { label: 'Tools & Insights', href: '/tools/' },
+      { label: 'Skill Tests', href: '/skill-tests/' },
       { label: 'Blog', href: '/blog/' },
     ],
   },
@@ -42,7 +42,7 @@ export const mainNav: NavItem[] = [
 export const footerNav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Portfolio', href: '/agora-portfolio/' },
-  { label: 'Tools & Insights', href: '/tools/' },
+  { label: 'Skill Tests', href: '/skill-tests/' },
   { label: 'Blog', href: '/blog/' },
   { label: 'LED Wall', href: '/building-an-authentic-brand-identity/' },
   { label: 'Skill Mastery', href: skillMasteryPath },

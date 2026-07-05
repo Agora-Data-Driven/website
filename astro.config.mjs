@@ -12,11 +12,13 @@ const SITE = 'https://agoradatadriven.com';
 export default defineConfig({
   site: SITE,
   // SEO redirects (old WordPress URLs -> new). 301 by default.
+  // One key per source; Astro normalizes trailing slashes, so each matches both
+  // /x and /x/ (listing both forms collides).
   redirects: {
     '/category/blog': '/blog/',
-    '/category/blog/': '/blog/',
     '/data-analytics-reporting': '/agora-portfolio/',
-    '/data-analytics-reporting/': '/agora-portfolio/',
+    // Skill Tests page was formerly at /tools/.
+    '/tools': '/skill-tests/',
   },
   // Full-stack output for GCP Cloud Run. Content pages opt into prerendering
   // with `export const prerender = true` for static-fast delivery; the Node

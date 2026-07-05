@@ -1,5 +1,5 @@
 /** Quiz data for the Skill Tests (guest-mode front end of the Skill Mastery engine).
- *  Right/wrong technical proficiency questions — one correct option per question.
+ *  Right/wrong technical proficiency questions, one correct option per question.
  *  Generated from an authored + fact-checked question bank; edit the source, not by hand at scale. */
 
 export type ProficiencyBandId = 'novice' | 'developing' | 'proficient' | 'expert';
@@ -43,7 +43,7 @@ export const quizTopics: QuizTopic[] = [
     title: 'Data Science & Analytics Test',
     shortTitle: 'Data Science',
     description:
-      'Python, SQL, statistics, and machine-learning fundamentals — a live preview of the Skill Mastery engine.',
+      'Python, SQL, statistics, and machine-learning fundamentals: a live preview of the Skill Mastery engine.',
     iconPath:
       'M3 13.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5h-1A1.5 1.5 0 0 1 3 18.5v-5Zm6.5-5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v10a1.5 1.5 0 0 1-1.5 1.5h-1A1.5 1.5 0 0 1 9.5 18.5v-10Zm6.5-4a1.5 1.5 0 0 1 1.5-1.5h1A1.5 1.5 0 0 1 22 4.5v14a1.5 1.5 0 0 1-1.5 1.5h-1A1.5 1.5 0 0 1 16 18.5v-14Z',
     availableQuestionCounts: [5, 10, 20],
