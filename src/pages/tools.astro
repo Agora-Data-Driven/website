@@ -6,43 +6,44 @@ import Container from '@components/Container.astro';
 import { quizTopics } from '@data/quizData';
 import type { QuizTopic } from '@data/quizData';
 import { cta } from '@data/cta';
+import { skillMasteryPath } from '@data/nav';
 
 const checklistItems = [
-  'Data science readiness',
+  'Data science & analytics',
   'AI integration',
-  'Organic content',
-  'Media buying',
+  'Organic content & SEO',
+  'Paid media buying',
   'Website conversion',
-  'Retention & CRM',
+  'Retention, CRM & email',
 ];
 
 const steps = [
   {
     number: '01',
-    title: 'Choose your topic',
-    text: 'Pick the area you want to assess.',
+    title: 'Pick a skill',
+    text: 'Choose the field you want to test — your own, or a candidate or VA’s.',
   },
   {
     number: '02',
-    title: 'Select your depth',
-    text: 'Choose 5, 10, or 20 questions.',
+    title: 'Choose your depth',
+    text: 'Answer 5, 10, or 20 questions.',
   },
   {
     number: '03',
-    title: 'Take the test',
-    text: 'Answer quick multiple-choice questions.',
+    title: 'Right or wrong',
+    text: 'Real questions with real answers, and instant feedback after each one.',
   },
   {
     number: '04',
-    title: 'Get your results',
-    text: 'Enter your email to unlock your score and recommendations.',
+    title: 'See your true level',
+    text: 'An honest score, a full review of what you missed, and where to go deeper.',
   },
 ];
 ---
 
 <BaseLayout
-  title="Future-Proof Business Tests | Free Marketing & AI Diagnostics | Agora Data Driven"
-  description="Take a free 3-minute test to see how your business stacks up on data science, AI, organic content, media buying, website conversion, or retention."
+  title="Free Skill Tests | Test Your Data, Marketing & AI Skills | Agora Data Driven"
+  description="Take a free skill test with real right-and-wrong questions. Benchmark your own proficiency — or your team's and VAs' — in data science, AI, SEO, paid media, conversion, and CRM. Then master it."
 >
   <!-- ── HUB VIEW ──────────────────────────────────────────────────────────── -->
   <div id="hub">
@@ -74,20 +75,20 @@ const steps = [
               class="eyebrow text-brand-600 mb-3 inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] uppercase"
             >
               <span class="bg-brand-500/10 border-brand-200 rounded-full border px-2.5 py-0.5"
-                >Free Tests</span
+                >Free skill tests · Guest mode</span
               >
             </p>
 
             <h1
               class="font-display text-ink mb-5 text-4xl leading-tight font-bold tracking-tight lg:text-5xl"
             >
-              Is Your Business<br />
-              <span class="text-gradient">Future-Proof?</span>
+              How sharp are<br />
+              <span class="text-gradient">your skills — really?</span>
             </h1>
 
             <p class="text-body mb-7 text-lg leading-relaxed">
-              Choose a 3-minute test to see if your business is keeping up with modern marketing,
-              AI, and data.
+              Real questions with real right and wrong answers. Test your own proficiency — or have
+              your team or VAs take it — then jump into Mastery Mode to close the gaps.
             </p>
 
             <ul class="hero-values mb-9 grid grid-cols-2 gap-x-6 gap-y-3">
@@ -119,12 +120,12 @@ const steps = [
               >
                 Choose a Test
               </button>
-              <button
-                id="hero-sample-btn"
-                class="text-brand-600 hover:text-brand-700 inline-flex items-center gap-1 rounded-lg px-4 py-3 text-sm font-medium transition-colors"
+              <a
+                href={skillMasteryPath}
+                class="border-line text-body hover:border-brand-400 hover:text-brand-700 inline-flex items-center gap-1.5 rounded-lg border px-5 py-3 text-sm font-semibold transition-colors"
               >
-                See sample results →
-              </button>
+                Sign in to Mastery Mode →
+              </a>
             </div>
           </div>
 
@@ -135,7 +136,7 @@ const steps = [
               id="hero-card"
             >
               <p class="text-muted mb-4 text-xs font-semibold tracking-widest uppercase">
-                Choose your test
+                Start a skill test
               </p>
 
               <!-- Topic tiles -->
@@ -212,11 +213,100 @@ const steps = [
                 Start Test
               </button>
               <p id="hero-time-estimate" class="text-muted text-center text-xs">
-                Estimated time: ~2–3 min
+                Free · No sign-up · Nothing saved
               </p>
             </div>
           </div>
         </div>
+      </Container>
+    </section>
+
+    <!-- ── GUEST vs MASTERY ──────────────────────────────────────────────── -->
+    <section class="border-line bg-canvas border-b py-16 lg:py-20">
+      <Container>
+        <div class="mb-10 max-w-2xl">
+          <h2 class="font-display text-ink mb-3 text-3xl font-bold tracking-tight lg:text-4xl">
+            Two ways in
+          </h2>
+          <p class="text-muted text-lg">
+            Start free in Guest Mode to see where you stand. Sign in to Mastery Mode when you’re
+            ready to actually get better — the full Agora Skill Mastery engine.
+          </p>
+        </div>
+
+        <div class="grid gap-5 lg:grid-cols-2">
+          <!-- Guest -->
+          <div class="border-line bg-surface shadow-card flex flex-col rounded-2xl border p-7">
+            <span
+              class="text-brand-700 bg-brand-50 border-brand-200 mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
+              >Guest Mode · Free</span
+            >
+            <h3 class="font-display text-ink mb-2 text-xl font-bold">Test yourself in minutes</h3>
+            <p class="text-muted mb-5 text-sm leading-relaxed">
+              Pick any field, answer real right-and-wrong questions, and get an honest score with a
+              full review. Perfect for a quick self-check or for screening a candidate or VA.
+              Nothing is saved.
+            </p>
+            <ul class="text-body mb-6 space-y-2 text-sm">
+              <li class="flex items-start gap-2">
+                <span class="text-brand-500 mt-0.5">✓</span> Right/wrong questions with instant feedback
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-brand-500 mt-0.5">✓</span> An explanation for every answer
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-brand-500 mt-0.5">✓</span> A shareable score to benchmark your team
+              </li>
+            </ul>
+            <button
+              id="guest-choose-btn"
+              type="button"
+              class="border-brand-300 text-brand-700 hover:border-brand-500 hover:bg-brand-50 focus-visible:outline-brand-500 mt-auto inline-flex items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold transition-all focus-visible:outline focus-visible:outline-2"
+            >
+              Choose a Test
+            </button>
+          </div>
+
+          <!-- Mastery -->
+          <div class="surface-dark shadow-pop flex flex-col rounded-2xl p-7">
+            <span
+              class="mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
+              style="color:#bff0bd;background:rgba(79,168,74,0.14);border-color:rgba(79,168,74,0.35)"
+              >Mastery Mode · Sign in</span
+            >
+            <h3 class="font-display mb-2 text-xl font-bold" style="color:#fff">
+              Actually master it
+            </h3>
+            <p class="mb-5 text-sm leading-relaxed" style="color:rgba(215,227,218,0.85)">
+              The full Skill Mastery engine: <strong style="color:#fff">541 topics</strong> across Python,
+              statistics, and machine learning, with spaced-repetition drills that target your weakest
+              areas, AI hints and explanations, and progress tracking over time.
+            </p>
+            <ul class="mb-6 space-y-2 text-sm" style="color:rgba(215,227,218,0.9)">
+              <li class="flex items-start gap-2">
+                <span style="color:#7ed07a" class="mt-0.5">✓</span> Priority quizzes on your weakest topics
+              </li>
+              <li class="flex items-start gap-2">
+                <span style="color:#7ed07a" class="mt-0.5">✓</span> Progress tracking &amp; mastery scoring
+              </li>
+              <li class="flex items-start gap-2">
+                <span style="color:#7ed07a" class="mt-0.5">✓</span> AI-generated questions &amp; “teach
+                me” explanations
+              </li>
+            </ul>
+            <a
+              href={skillMasteryPath}
+              class="bg-brand-500 shadow-glow hover:bg-brand-400 mt-auto inline-flex items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            >
+              Sign in to Mastery Mode →
+            </a>
+          </div>
+        </div>
+
+        <p class="text-muted mt-6 text-center text-sm">
+          The <strong class="text-body">Data Science</strong> test is a live preview of the Skill Mastery
+          engine — same questions, same standard. Score well, then sign in to go all the way.
+        </p>
       </Container>
     </section>
 
@@ -248,22 +338,11 @@ const steps = [
             />
           </div>
           <select
-            id="filter-type"
-            class="border-line bg-canvas text-body focus:border-brand-400 focus:ring-brand-400 rounded-lg border px-3 py-2.5 text-sm focus:ring-1 focus:outline-none"
-            aria-label="Filter by business type"
-          >
-            <option value="">All business types</option>
-            <option value="ecommerce">E-commerce</option>
-            <option value="saas">SaaS / Software</option>
-            <option value="agency">Agency / Services</option>
-            <option value="local">Local Business</option>
-          </select>
-          <select
             id="filter-topic"
             class="border-line bg-canvas text-body focus:border-brand-400 focus:ring-brand-400 rounded-lg border px-3 py-2.5 text-sm focus:ring-1 focus:outline-none"
             aria-label="Filter by topic"
           >
-            <option value="">All topics</option>
+            <option value="">All fields</option>
             {quizTopics.map((t: QuizTopic) => <option value={t.id}>{t.shortTitle}</option>)}
           </select>
         </div>
@@ -271,11 +350,11 @@ const steps = [
         <!-- Heading -->
         <div class="mb-10 max-w-2xl">
           <h2 class="font-display text-ink mb-3 text-3xl font-bold tracking-tight lg:text-4xl">
-            Choose your test
+            Choose a skill test
           </h2>
           <p class="text-muted text-lg">
-            Each test focuses on one area of marketing, AI, or data so you get a more relevant
-            score.
+            Each test checks real, technical proficiency in one field — right and wrong answers, no
+            fluff.
           </p>
         </div>
 
@@ -295,19 +374,26 @@ const steps = [
                 role="listitem"
               >
                 {/* Icon */}
-                <div class="bg-tint mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl">
-                  <svg
-                    class="text-brand-600 h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.75"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d={topic.iconPath} />
-                  </svg>
+                <div class="mb-4 flex items-center justify-between">
+                  <div class="bg-tint inline-flex h-11 w-11 items-center justify-center rounded-xl">
+                    <svg
+                      class="text-brand-600 h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d={topic.iconPath} />
+                    </svg>
+                  </div>
+                  {topic.id === 'data-science' && (
+                    <span class="text-brand-700 bg-brand-50 border-brand-200 rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wide uppercase">
+                      Skill Mastery preview
+                    </span>
+                  )}
                 </div>
 
                 <h3 class="font-display text-ink mb-2 text-lg font-bold">{topic.shortTitle}</h3>
@@ -393,18 +479,27 @@ const steps = [
             class="font-display mb-4 text-3xl font-bold tracking-tight lg:text-4xl"
             style="color:#fff"
           >
-            Get your business score in minutes
+            Know exactly where you — and your team — stand
           </h2>
           <p class="mb-8 text-lg" style="color:rgba(215,227,218,0.85)">
-            Free, fast, and tailored to the area you want to improve.
+            Start free in Guest Mode. Sign in to Mastery Mode to turn a score into real skill.
           </p>
-          <button
-            id="cta-start-btn"
-            type="button"
-            class="bg-brand-500 shadow-glow hover:bg-brand-400 inline-flex items-center rounded-lg px-8 py-3.5 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
-          >
-            Start Free Test
-          </button>
+          <div class="flex flex-wrap justify-center gap-3">
+            <button
+              id="cta-start-btn"
+              type="button"
+              class="bg-brand-500 shadow-glow hover:bg-brand-400 inline-flex items-center rounded-lg px-8 py-3.5 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            >
+              Start a Free Test
+            </button>
+            <a
+              href={skillMasteryPath}
+              class="inline-flex items-center rounded-lg border px-8 py-3.5 text-sm font-semibold transition-colors"
+              style="color:#fff;border-color:rgba(255,255,255,0.3)"
+            >
+              Sign in to Mastery Mode →
+            </a>
+          </div>
         </div>
       </Container>
     </section>
@@ -476,7 +571,14 @@ const steps = [
   <!-- /#quiz-overlay -->
 </BaseLayout>
 
-<script is:inline define:vars={{ quizTopicsData: quizTopics, upworkCta: cta.becomeClient.href }}>
+<script
+  is:inline
+  define:vars={{
+    quizTopicsData: quizTopics,
+    masteryHref: skillMasteryPath,
+    hireHref: cta.becomeClient.href,
+  }}
+>
   // ---------------------------------------------------------------------------
   // State
   // ---------------------------------------------------------------------------
@@ -485,9 +587,8 @@ const steps = [
     questionCount: 10,
     sessionQuestions: [],
     currentIndex: 0,
-    answers: [], // array of number (score per question answered)
-    phase: 'hub', // 'hub' | 'setup' | 'questions' | 'email' | 'results'
-    submitting: false,
+    answers: [], // array of { selected: number, correct: boolean } | null
+    phase: 'hub', // 'hub' | 'setup' | 'questions' | 'results'
   };
 
   // ---------------------------------------------------------------------------
@@ -498,34 +599,45 @@ const steps = [
   }
 
   function getEstimatedTime(count) {
-    if (count === 5) return '~1 min';
-    if (count === 10) return '~2–3 min';
-    return '~5–6 min';
+    if (count === 5) return '~2 min';
+    if (count === 10) return '~4 min';
+    return '~8 min';
+  }
+
+  function correctCount() {
+    return state.answers.reduce((n, a) => n + (a && a.correct ? 1 : 0), 0);
   }
 
   function calculateScore() {
-    if (state.answers.length === 0) return 0;
-    const total = state.answers.reduce((a, b) => a + b, 0);
-    const max = state.sessionQuestions.length * 3;
-    return Math.round((total / max) * 100);
+    const total = state.sessionQuestions.length;
+    if (total === 0) return 0;
+    return Math.round((correctCount() / total) * 100);
   }
 
   function getBand(topic, score) {
-    return topic.scoreBands.find((b) => score >= b.min && score <= b.max) ?? topic.scoreBands[0];
+    return topic.bands.find((b) => score >= b.min && score <= b.max) ?? topic.bands[0];
   }
 
   function bandColorClass(bandId) {
     const map = {
-      behind: { bg: '#fff3e0', text: '#b45309', border: '#fcd34d' },
+      novice: { bg: '#fff3e0', text: '#b45309', border: '#fcd34d' },
       developing: { bg: '#fef9c3', text: '#a16207', border: '#fde047' },
-      competitive: { bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
-      'future-ready': { bg: '#dcfce7', text: '#15803d', border: '#86efac' },
+      proficient: { bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
+      expert: { bg: '#dcfce7', text: '#15803d', border: '#86efac' },
     };
     return map[bandId] ?? map['developing'];
   }
 
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   // ---------------------------------------------------------------------------
-  // Lead storage  (swap submitQuizLead body for CRM/API integration)
+  // Lead storage (optional email report — swap body for CRM/API integration)
   // ---------------------------------------------------------------------------
   function submitQuizLead(data) {
     try {
@@ -533,9 +645,9 @@ const steps = [
       existing.push({ ...data, timestamp: new Date().toISOString() });
       localStorage.setItem('agora-quiz-leads', JSON.stringify(existing));
     } catch {
-      // localStorage unavailable — fail silently, still show results
+      // localStorage unavailable — fail silently
     }
-    // TODO: Replace or augment with API call, e.g.:
+    // TODO: Replace or augment with an API call, e.g.:
     // fetch('/api/quiz-lead', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) })
     //   .catch(err => console.error('Lead submission error:', err));
   }
@@ -596,6 +708,8 @@ const steps = [
     setProgressLabel('');
     setProgressBar(null);
 
+    const isDs = topic.id === 'data-science';
+
     const content = document.getElementById('quiz-content');
     content.innerHTML = `
       <div class="mx-auto max-w-xl text-center">
@@ -604,8 +718,9 @@ const steps = [
             <path d="${topic.iconPath}" />
           </svg>
         </div>
-        <h2 class="font-display mb-3 text-2xl font-bold tracking-tight text-ink lg:text-3xl">${topic.title}</h2>
-        <p class="mb-10 text-base leading-relaxed text-muted">${topic.description}</p>
+        <h2 class="font-display mb-3 text-2xl font-bold tracking-tight text-ink lg:text-3xl">${escapeHtml(topic.title)}</h2>
+        <p class="mb-2 text-base leading-relaxed text-muted">${escapeHtml(topic.description)}</p>
+        <p class="mb-10 text-sm text-muted">Real questions. One right answer each. You’ll see the correct answer and why, after every question.</p>
 
         <div class="mb-8">
           <p class="mb-3 text-sm font-semibold text-ink">How many questions?</p>
@@ -629,7 +744,12 @@ const steps = [
           class="inline-flex w-full max-w-xs items-center justify-center rounded-xl bg-brand-500 py-3.5 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
           Start Test
         </button>
-        <p class="mt-3 text-xs text-muted">Free · No credit card required</p>
+        <p class="mt-3 text-xs text-muted">Free · No sign-up · Nothing saved</p>
+        ${
+          isDs
+            ? `<p class="mt-6 text-xs text-muted">This is a live preview of the <a href="${masteryHref}" class="font-medium text-brand-600 underline hover:text-brand-700">Skill Mastery engine</a> — 541 topics, spaced repetition, and AI tutoring in Mastery Mode.</p>`
+            : ''
+        }
       </div>
     `;
 
@@ -671,8 +791,14 @@ const steps = [
     state.questionCount = count;
     state.sessionQuestions = topic.questions.slice(0, count);
     state.currentIndex = 0;
-    state.answers = [];
+    state.answers = new Array(state.sessionQuestions.length).fill(null);
     state.phase = 'questions';
+    if (
+      state.phase === 'questions' &&
+      document.getElementById('quiz-overlay').classList.contains('hidden')
+    ) {
+      openOverlay();
+    }
     renderQuestion();
   }
 
@@ -686,70 +812,74 @@ const steps = [
     setProgressLabel(`Question ${idx + 1} of ${total}`);
     setProgressBar(idx / total);
 
+    const answered = state.answers[idx];
+    const isLast = idx === total - 1;
+
     const content = document.getElementById('quiz-content');
     content.innerHTML = `
       <div class="mx-auto max-w-2xl">
         <p class="mb-3 text-sm font-medium text-muted">Question ${idx + 1} of ${total}</p>
-        <h2 class="font-display mb-8 text-xl font-bold leading-snug text-ink lg:text-2xl">${q.question}</h2>
+        <h2 class="font-display mb-8 text-xl font-bold leading-snug text-ink lg:text-2xl">${escapeHtml(q.question)}</h2>
 
-        <div class="mb-8 space-y-3" id="options-list" role="listbox" aria-label="Answer options">
+        <div class="mb-6 space-y-3" id="options-list" role="listbox" aria-label="Answer options">
           ${q.options
             .map(
               (opt, i) => `
-            <button type="button" data-index="${i}" data-score="${opt.score}"
+            <button type="button" data-index="${i}"
               role="option" aria-selected="false"
               class="option-btn w-full rounded-xl border-2 border-line bg-surface px-5 py-4 text-left text-sm leading-relaxed text-body transition-all hover:border-brand-300 hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
               <span class="flex items-start gap-3">
                 <span class="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 border-current text-xs font-bold option-indicator">
                   ${String.fromCharCode(65 + i)}
                 </span>
-                <span>${opt.label}</span>
+                <span>${escapeHtml(opt)}</span>
               </span>
             </button>`,
             )
             .join('')}
         </div>
 
+        <div id="explain-area" class="mb-8 hidden rounded-xl border border-line bg-canvas px-5 py-4">
+          <p id="explain-verdict" class="mb-1 text-sm font-bold"></p>
+          <p id="explain-text" class="text-sm leading-relaxed text-body"></p>
+        </div>
+
         <div class="flex items-center justify-between">
           ${idx > 0 ? `<button id="quiz-prev-btn" type="button" class="rounded-lg px-4 py-2.5 text-sm font-medium text-body hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">← Previous</button>` : '<span></span>'}
           <button id="quiz-next-btn" type="button" disabled
             class="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white shadow-glow-sm transition-all hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
-            ${idx === total - 1 ? 'Finish Test' : 'Next Question'} →
+            ${isLast ? 'See Results' : 'Next Question'} →
           </button>
         </div>
       </div>
     `;
 
-    // Restore previously selected answer if going back
-    const prevScore = state.answers[idx] ?? null;
-    if (prevScore !== null) {
-      content.querySelectorAll('.option-btn').forEach((btn) => {
-        if (parseInt(btn.dataset.score, 10) === prevScore) {
-          markOptionSelected(btn);
-          document.getElementById('quiz-next-btn').disabled = false;
-        }
-      });
-    }
+    const buttons = Array.from(content.querySelectorAll('.option-btn'));
 
-    // Option selection
-    content.querySelectorAll('.option-btn').forEach((btn) => {
+    // Option selection (only if not yet answered)
+    buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        content.querySelectorAll('.option-btn').forEach(clearOptionSelected);
-        markOptionSelected(btn);
-        state.answers[idx] = parseInt(btn.dataset.score, 10);
-        document.getElementById('quiz-next-btn').disabled = false;
+        if (state.answers[idx]) return; // already answered — locked
+        const chosen = parseInt(btn.dataset.index, 10);
+        state.answers[idx] = { selected: chosen, correct: chosen === q.correctIndex };
+        applyAnswerVisual(q, state.answers[idx]);
       });
     });
 
+    // Restore an already-answered question (e.g. after Previous)
+    if (answered) {
+      applyAnswerVisual(q, answered);
+    }
+
     // Next
     document.getElementById('quiz-next-btn').addEventListener('click', () => {
-      if (state.answers[idx] === undefined) return;
-      if (state.currentIndex < state.sessionQuestions.length - 1) {
+      if (!state.answers[idx]) return;
+      if (!isLast) {
         state.currentIndex++;
         document.getElementById('quiz-overlay').scrollTop = 0;
         renderQuestion();
       } else {
-        showEmailGate();
+        showResults();
       }
     });
 
@@ -763,158 +893,87 @@ const steps = [
     });
   }
 
-  function markOptionSelected(btn) {
-    btn.classList.remove(
-      'border-line',
-      'bg-surface',
-      'hover:border-brand-300',
-      'hover:bg-brand-50',
-    );
-    btn.classList.add('border-brand-500', 'bg-brand-50', 'text-brand-700');
-    btn.setAttribute('aria-selected', 'true');
-    const ind = btn.querySelector('.option-indicator');
-    if (ind) {
-      ind.classList.add('bg-brand-500', 'border-brand-500', 'text-white');
-    }
-  }
-
-  function clearOptionSelected(btn) {
-    btn.classList.remove('border-brand-500', 'bg-brand-50', 'text-brand-700');
-    btn.classList.add('border-line', 'bg-surface', 'hover:border-brand-300', 'hover:bg-brand-50');
-    btn.removeAttribute('aria-selected');
-    const ind = btn.querySelector('.option-indicator');
-    if (ind) {
-      ind.classList.remove('bg-brand-500', 'border-brand-500', 'text-white');
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Screen: Email gate
-  // ---------------------------------------------------------------------------
-  function showEmailGate() {
-    const topic = getTopic(state.topicId);
-    state.phase = 'email';
-    setOverlayTitle(topic.shortTitle);
-    setProgressLabel('Almost done');
-    setProgressBar(1);
-
+  // Lock the options, reveal correct/incorrect + explanation, enable Next.
+  function applyAnswerVisual(q, answer) {
     const content = document.getElementById('quiz-content');
-    content.innerHTML = `
-      <div class="mx-auto max-w-lg">
-        <div class="mb-8 text-center">
-          <div class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand-100">
-            <svg class="h-6 w-6 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 1 0-2.636 6.364M16.5 12V8.25" />
-            </svg>
-          </div>
-          <h2 class="font-display mb-2 text-2xl font-bold tracking-tight text-ink">Get your full ${topic.shortTitle} score</h2>
-          <p class="text-base text-muted">Enter your email to unlock your score, benchmark, and recommendations.</p>
-        </div>
+    const buttons = Array.from(content.querySelectorAll('.option-btn'));
 
-        <form id="email-gate-form" novalidate class="space-y-4">
-          <div>
-            <label for="gate-email" class="mb-1.5 block text-sm font-medium text-ink">Email address <span class="text-red-500" aria-hidden="true">*</span></label>
-            <input type="email" id="gate-email" name="email" required autocomplete="email"
-              placeholder="you@company.com"
-              class="w-full rounded-lg border border-line bg-surface px-4 py-3 text-sm text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
-              aria-required="true" />
-            <p id="gate-email-error" class="mt-1 hidden text-xs text-red-600" role="alert">Please enter a valid email address.</p>
-          </div>
-
-          <div>
-            <label for="gate-business" class="mb-1.5 block text-sm font-medium text-ink">Business name <span class="text-muted">(optional)</span></label>
-            <input type="text" id="gate-business" name="businessName" autocomplete="organization"
-              placeholder="Your company"
-              class="w-full rounded-lg border border-line bg-surface px-4 py-3 text-sm text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100" />
-          </div>
-
-          <div>
-            <label for="gate-industry" class="mb-1.5 block text-sm font-medium text-ink">Industry <span class="text-muted">(optional)</span></label>
-            <select id="gate-industry" name="industry"
-              class="w-full rounded-lg border border-line bg-surface px-4 py-3 text-sm text-body focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100">
-              <option value="">Select your industry</option>
-              <option value="ecommerce">E-commerce / Retail</option>
-              <option value="saas">SaaS / Software</option>
-              <option value="agency">Marketing / Agency</option>
-              <option value="finance">Finance / Fintech</option>
-              <option value="health">Health / Wellness</option>
-              <option value="hospitality">Hospitality / Events</option>
-              <option value="real-estate">Real Estate</option>
-              <option value="education">Education / Training</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
-          <button type="submit" id="gate-submit-btn"
-            class="mt-2 w-full rounded-xl bg-brand-500 py-3.5 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
-            Show My Results
-          </button>
-
-          <p class="text-center text-xs text-muted">No spam. Unsubscribe any time.</p>
-        </form>
-      </div>
-    `;
-
-    document.getElementById('email-gate-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      handleEmailSubmit(e.target);
+    buttons.forEach((btn) => {
+      const i = parseInt(btn.dataset.index, 10);
+      btn.disabled = true;
+      btn.classList.remove('hover:border-brand-300', 'hover:bg-brand-50');
+      const ind = btn.querySelector('.option-indicator');
+      if (i === q.correctIndex) {
+        btn.classList.remove('border-line', 'bg-surface');
+        btn.classList.add('border-green-500', 'bg-green-50', 'text-green-800');
+        if (ind) ind.classList.add('bg-green-500', 'border-green-500', 'text-white');
+      } else if (i === answer.selected) {
+        btn.classList.remove('border-line', 'bg-surface');
+        btn.classList.add('border-red-400', 'bg-red-50', 'text-red-700');
+        if (ind) ind.classList.add('bg-red-500', 'border-red-500', 'text-white');
+      } else {
+        btn.classList.add('opacity-60');
+      }
+      btn.setAttribute('aria-selected', String(i === answer.selected));
     });
-  }
 
-  function handleEmailSubmit(form) {
-    const emailEl = form.querySelector('#gate-email');
-    const emailError = form.querySelector('#gate-email-error');
-    const email = emailEl.value.trim();
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-    if (!isValidEmail) {
-      emailEl.classList.add('border-red-400');
-      emailError.classList.remove('hidden');
-      emailEl.focus();
-      return;
+    const area = document.getElementById('explain-area');
+    const verdict = document.getElementById('explain-verdict');
+    const text = document.getElementById('explain-text');
+    area.classList.remove('hidden');
+    if (answer.correct) {
+      verdict.textContent = 'Correct ✓';
+      verdict.style.color = '#15803d';
+    } else {
+      verdict.textContent = 'Not quite — answer: ' + q.options[q.correctIndex];
+      verdict.style.color = '#b91c1c';
     }
+    text.textContent = q.explanation || '';
 
-    emailEl.classList.remove('border-red-400');
-    emailError.classList.add('hidden');
-
-    const formData = {
-      email,
-      businessName: form.querySelector('#gate-business').value.trim(),
-      industry: form.querySelector('#gate-industry').value,
-      topicId: state.topicId,
-      topicTitle: getTopic(state.topicId)?.title ?? '',
-      questionCount: state.questionCount,
-      score: calculateScore(),
-    };
-
-    const submitBtn = form.querySelector('#gate-submit-btn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Loading…';
-
-    try {
-      submitQuizLead(formData);
-    } catch {
-      // fail silently — still show results
-    } finally {
-      showResults(formData);
-    }
+    document.getElementById('quiz-next-btn').disabled = false;
   }
 
   // ---------------------------------------------------------------------------
   // Screen: Results
   // ---------------------------------------------------------------------------
-  function showResults(formData) {
-    const topic = getTopic(state.topicId ?? formData?.topicId);
-    const score = formData?.score ?? calculateScore();
+  function showResults() {
+    const topic = getTopic(state.topicId);
+    const total = state.sessionQuestions.length;
+    const correct = correctCount();
+    const score = calculateScore();
     const band = getBand(topic, score);
     const colors = bandColorClass(band.id);
     const circumference = 2 * Math.PI * 40;
     const offset = circumference * (1 - score / 100);
     state.phase = 'results';
+    const isDs = topic.id === 'data-science';
 
     setOverlayTitle(topic.shortTitle);
     setProgressLabel('Your results');
     setProgressBar(null);
+
+    const breakdownRows = state.sessionQuestions
+      .map((q, i) => {
+        const a = state.answers[i];
+        const ok = a && a.correct;
+        return `
+        <div class="flex items-start gap-3 rounded-xl border border-line bg-surface px-4 py-3">
+          <span class="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold"
+            style="background:${ok ? '#dcfce7' : '#fee2e2'};color:${ok ? '#15803d' : '#b91c1c'}">
+            ${ok ? '✓' : '✕'}
+          </span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-ink">${escapeHtml(q.question)}</p>
+            ${
+              ok
+                ? ''
+                : `<p class="mt-1 text-xs text-muted"><span class="font-semibold text-body">Correct:</span> ${escapeHtml(q.options[q.correctIndex])}</p>`
+            }
+            <p class="mt-1 text-xs leading-relaxed text-muted">${escapeHtml(q.explanation || '')}</p>
+          </div>
+        </div>`;
+      })
+      .join('');
 
     const content = document.getElementById('quiz-content');
     content.innerHTML = `
@@ -924,7 +983,7 @@ const steps = [
           <div class="flex flex-col items-center gap-6 p-8 sm:flex-row">
             <!-- Score ring -->
             <div class="flex-shrink-0">
-              <svg width="100" height="100" viewBox="0 0 100 100" aria-label="${score} out of 100" role="img">
+              <svg width="100" height="100" viewBox="0 0 100 100" aria-label="${score} percent" role="img">
                 <circle cx="50" cy="50" r="40" fill="none" stroke="#e6e6e9" stroke-width="8"/>
                 <circle cx="50" cy="50" r="40" fill="none" stroke="#4fa84a" stroke-width="8"
                   stroke-dasharray="${circumference}"
@@ -932,62 +991,124 @@ const steps = [
                   stroke-linecap="round"
                   transform="rotate(-90 50 50)"
                   style="transition:stroke-dashoffset 0.8s cubic-bezier(.22,1,.36,1)"/>
-                <text x="50" y="54" text-anchor="middle" font-family="Archivo Variable, Archivo, sans-serif" font-size="22" font-weight="700" fill="#121212">${score}</text>
-                <text x="50" y="67" text-anchor="middle" font-family="Lato, sans-serif" font-size="10" fill="#6b6f6c">/100</text>
+                <text x="50" y="54" text-anchor="middle" font-family="Archivo Variable, Archivo, sans-serif" font-size="22" font-weight="700" fill="#121212">${score}%</text>
+                <text x="50" y="67" text-anchor="middle" font-family="Lato, sans-serif" font-size="10" fill="#6b6f6c">${correct}/${total}</text>
               </svg>
             </div>
 
             <div class="text-center sm:text-left">
-              <p class="mb-1 text-sm text-muted">${topic.shortTitle} Score</p>
-              <h2 class="font-display mb-3 text-2xl font-bold tracking-tight text-ink lg:text-3xl">${score}/100</h2>
+              <p class="mb-1 text-sm text-muted">${escapeHtml(topic.shortTitle)} · ${correct} of ${total} correct</p>
+              <h2 class="font-display mb-3 text-2xl font-bold tracking-tight text-ink lg:text-3xl">${score}%</h2>
               <span class="inline-block rounded-full px-4 py-1.5 text-sm font-semibold"
                 style="background:${colors.bg};color:${colors.text};border:1px solid ${colors.border}">
-                ${band.label}
+                ${escapeHtml(band.label)}
               </span>
             </div>
           </div>
 
           <div class="border-t border-line px-8 py-6">
-            <p class="text-base leading-relaxed text-body">${band.summary}</p>
+            <p class="text-base leading-relaxed text-body">${escapeHtml(band.summary)}</p>
           </div>
         </div>
 
         <!-- Recommendations -->
         <div class="mb-8">
-          <h3 class="font-display mb-4 text-xl font-bold text-ink">Your top recommendations</h3>
+          <h3 class="font-display mb-4 text-xl font-bold text-ink">How to level up</h3>
           <div class="space-y-3">
             ${band.recommendations
               .map(
                 (rec, i) => `
               <div class="flex items-start gap-3 rounded-xl border border-line bg-surface px-5 py-4">
                 <span class="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">${i + 1}</span>
-                <p class="text-sm leading-relaxed text-body">${rec}</p>
+                <p class="text-sm leading-relaxed text-body">${escapeHtml(rec)}</p>
               </div>`,
               )
               .join('')}
           </div>
         </div>
 
+        <!-- Mastery Mode CTA -->
+        <div class="mb-8 rounded-2xl p-6 surface-dark">
+          <h3 class="font-display mb-1 text-lg font-bold" style="color:#fff">${
+            isDs ? 'Go all the way with Mastery Mode' : 'Ready to actually master this?'
+          }</h3>
+          <p class="mb-4 text-sm leading-relaxed" style="color:rgba(215,227,218,0.85)">
+            ${
+              isDs
+                ? 'This was a preview. Sign in to the full Skill Mastery engine — 541 topics, spaced-repetition drills on your weakest areas, AI hints, and progress tracking.'
+                : 'Sign in to Mastery Mode for spaced-repetition drills, progress tracking, and AI tutoring that turns weak spots into strengths.'
+            }
+          </p>
+          <a href="${masteryHref}"
+            class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-glow hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+            Sign in to Mastery Mode →
+          </a>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="mb-8">
+          <h3 class="font-display mb-4 text-xl font-bold text-ink">Question review</h3>
+          <div class="space-y-2.5">${breakdownRows}</div>
+        </div>
+
+        <!-- Optional email report -->
+        <div class="mb-8 rounded-2xl border border-line bg-surface p-6">
+          <h3 class="font-display mb-1 text-base font-bold text-ink">Email me a copy of these results</h3>
+          <p class="mb-4 text-sm text-muted">Handy for benchmarking a team or VA. Optional — your score is already above.</p>
+          <form id="email-report-form" novalidate class="flex flex-col gap-3 sm:flex-row">
+            <input type="email" id="report-email" name="email" autocomplete="email" placeholder="you@company.com"
+              class="flex-1 rounded-lg border border-line bg-surface px-4 py-3 text-sm text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+            <button type="submit" id="report-submit-btn"
+              class="rounded-lg bg-brand-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+              Email my results
+            </button>
+          </form>
+          <p id="report-msg" class="mt-2 hidden text-xs text-brand-700"></p>
+        </div>
+
         <!-- CTAs -->
         <div class="flex flex-col gap-3 sm:flex-row">
-          <a href="${upworkCta}" target="_blank" rel="noopener noreferrer"
-            class="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-500 px-6 py-3.5 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
-            Book a Free Strategy Call
+          <a href="${hireHref}" target="_blank" rel="noopener noreferrer"
+            class="inline-flex flex-1 items-center justify-center rounded-xl border-2 border-line px-6 py-3.5 text-sm font-semibold text-body transition-colors hover:border-brand-400 hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+            Hire skilled, tested talent
           </a>
           <button id="results-restart-btn" type="button"
             class="inline-flex flex-1 items-center justify-center rounded-xl border-2 border-line px-6 py-3.5 text-sm font-semibold text-body transition-colors hover:border-brand-400 hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
             Take Another Test
           </button>
         </div>
-
-        <p class="mt-6 text-center text-xs text-muted">
-          A member of the Agora team may follow up at ${formData?.email ?? 'your email'} with tailored insights.
-        </p>
       </div>
     `;
 
     document.getElementById('results-restart-btn').addEventListener('click', () => {
       closeOverlay();
+    });
+
+    document.getElementById('email-report-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const emailEl = document.getElementById('report-email');
+      const email = emailEl.value.trim();
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      const msg = document.getElementById('report-msg');
+      if (!valid) {
+        emailEl.classList.add('border-red-400');
+        msg.textContent = 'Please enter a valid email address.';
+        msg.style.color = '#b91c1c';
+        msg.classList.remove('hidden');
+        return;
+      }
+      emailEl.classList.remove('border-red-400');
+      submitQuizLead({
+        email,
+        topicId: state.topicId,
+        topicTitle: topic.title,
+        questionCount: total,
+        correct,
+        score,
+      });
+      document.getElementById('email-report-form').innerHTML =
+        '<p class="text-sm font-medium text-brand-700">Thanks — we’ll send your results shortly.</p>';
+      msg.classList.add('hidden');
     });
   }
 
@@ -999,8 +1120,6 @@ const steps = [
     if (!topic) return;
     document.getElementById('hero-topic-title').textContent = topic.title;
     document.getElementById('hero-topic-desc').textContent = topic.description;
-    document.getElementById('hero-time-estimate').textContent =
-      'Estimated time: ' + getEstimatedTime(state.questionCount);
   }
 
   document.querySelectorAll('.hero-tile').forEach((btn) => {
@@ -1031,8 +1150,6 @@ const steps = [
         b.classList.toggle('text-body', !active);
         b.setAttribute('aria-pressed', String(active));
       });
-      document.getElementById('hero-time-estimate').textContent =
-        'Estimated time: ' + getEstimatedTime(state.questionCount);
     });
   });
 
@@ -1044,13 +1161,8 @@ const steps = [
     document.getElementById('test-section').scrollIntoView({ behavior: 'smooth' });
   });
 
-  document.getElementById('hero-sample-btn').addEventListener('click', () => {
-    // Show results with demo data (no email gate)
-    state.topicId = quizTopicsData[0].id;
-    state.sessionQuestions = quizTopicsData[0].questions.slice(0, 10);
-    state.answers = quizTopicsData[0].questions.slice(0, 10).map(() => 2); // example: mostly "Often"
-    openOverlay();
-    showResults({ email: 'demo@example.com', topicId: quizTopicsData[0].id });
+  document.getElementById('guest-choose-btn')?.addEventListener('click', () => {
+    document.getElementById('test-section').scrollIntoView({ behavior: 'smooth' });
   });
 
   document.getElementById('cta-start-btn').addEventListener('click', () => {
@@ -1067,7 +1179,6 @@ const steps = [
     });
   });
 
-  // Card click (outside button)
   document.querySelectorAll('.test-card').forEach((card) => {
     card.addEventListener('click', (e) => {
       if (e.target.closest('.start-test-btn')) return;
@@ -1112,10 +1223,8 @@ const steps = [
 
   document.getElementById('test-search').addEventListener('input', filterCards);
   document.getElementById('filter-topic').addEventListener('change', filterCards);
-  document.getElementById('filter-type').addEventListener('change', filterCards); // type filter resets — all tests show
   document.getElementById('clear-filters-btn').addEventListener('click', () => {
     document.getElementById('test-search').value = '';
-    document.getElementById('filter-type').value = '';
     document.getElementById('filter-topic').value = '';
     filterCards();
   });
