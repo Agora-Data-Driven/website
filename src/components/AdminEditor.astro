@@ -12,8 +12,9 @@
  * no-ops instantly unless the admin toolbar is present, so public visitors are unaffected.
  */
 import { isSsoAdmin } from '@lib/sso';
+import { serverEnv } from '@lib/env';
 
-const isAdmin = isSsoAdmin(Astro.request.headers.get('cookie'), import.meta.env.SSO_SECRET ?? '');
+const isAdmin = isSsoAdmin(Astro.request.headers.get('cookie'), serverEnv('SSO_SECRET'));
 const editParam = Astro.url.searchParams.get('edit');
 // Remember edit mode across navigation in a cookie the server reads (set/clear here, server-side).
 if (isAdmin && editParam === '1')

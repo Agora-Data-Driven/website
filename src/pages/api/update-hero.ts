@@ -11,9 +11,10 @@
 
 import type { APIRoute } from 'astro';
 import { createHmac } from 'crypto';
+import { serverEnv } from '@lib/env';
 
-const SSO_SECRET = import.meta.env.SSO_SECRET ?? '';
-const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN ?? '';
+const SSO_SECRET = serverEnv('SSO_SECRET');
+const GITHUB_TOKEN = serverEnv('GITHUB_TOKEN');
 const GITHUB_REPO = 'Agora-Data-Driven/website';
 const GITHUB_BRANCH = 'main';
 

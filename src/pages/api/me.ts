@@ -8,6 +8,7 @@
 import type { APIRoute } from 'astro';
 export const prerender = false;
 import { ssoIdentity } from '@lib/sso';
+import { serverEnv } from '@lib/env';
 
 /** Pretty display name from an email local part: "ian.fernandez" -> "Ian Fernandez". */
 function displayName(email: string): string {
@@ -20,8 +21,7 @@ function displayName(email: string): string {
 }
 
 export const GET: APIRoute = ({ request }) => {
-  const secret = import.meta.env.SSO_SECRET ?? '';
-  const id = ssoIdentity(request.headers.get('cookie'), secret);
+  const id = ssoIdentity(request.headers.get('cookie'), serverEnv('SSO_SECRET'));
   const body = id
     ? { authed: true, email: id.email, name: displayName(id.email), admin: id.admin }
     : { authed: false };

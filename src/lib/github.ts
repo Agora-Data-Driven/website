@@ -7,12 +7,14 @@
  * Auth: a fine-grained PAT in `GITHUB_TOKEN` (Secret Manager `SEO_GITHUB_TOKEN`). Absent → editing
  * is disabled and the APIs return a clear error, never a crash.
  */
+import { serverEnv } from '@lib/env';
+
 const GITHUB_REPO = 'Agora-Data-Driven/website';
 const GITHUB_BRANCH = 'main';
 const API = 'https://api.github.com';
 
 export function githubToken(): string {
-  return import.meta.env.GITHUB_TOKEN ?? '';
+  return serverEnv('GITHUB_TOKEN');
 }
 
 function headers(token: string): Record<string, string> {

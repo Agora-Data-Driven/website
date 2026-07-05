@@ -7,6 +7,7 @@
  * A super-admin is any payload whose `clients` list includes "*". Fail-closed on anything odd.
  */
 import { createHmac } from 'crypto';
+import { serverEnv } from '@lib/env';
 
 interface SsoPayload {
   sub?: string;
@@ -63,6 +64,5 @@ export function ssoIdentity(cookieHeader: string | null, secret: string): SsoIde
 
 /** Convenience: is the current request from a logged-in portal super-admin? */
 export function isAdminRequest(request: Request): boolean {
-  const secret = import.meta.env.SSO_SECRET ?? '';
-  return isSsoAdmin(request.headers.get('cookie'), secret);
+  return isSsoAdmin(request.headers.get('cookie'), serverEnv('SSO_SECRET'));
 }

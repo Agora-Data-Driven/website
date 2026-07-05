@@ -5,6 +5,7 @@ import Breadcrumb from '@components/Breadcrumb.astro';
 import { site } from '@data/site';
 import { getSilo } from '@data/categories';
 import { createHmac } from 'crypto';
+import { serverEnv } from '@lib/env';
 
 interface Props {
   title: string;
@@ -54,7 +55,7 @@ function isSsoAdmin(cookieHeader: string | null, secret: string): boolean {
     return false;
   }
 }
-const ssoSecret = import.meta.env.SSO_SECRET ?? '';
+const ssoSecret = serverEnv('SSO_SECRET');
 const isAdmin = isSsoAdmin(Astro.request.headers.get('cookie'), ssoSecret);
 const postSlug = slug ?? Astro.url.pathname.replace(/^\/|\/$/g, '');
 
