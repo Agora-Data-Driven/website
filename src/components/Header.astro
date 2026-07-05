@@ -90,9 +90,53 @@ const linkBase =
 
       <!-- Desktop CTAs -->
       <div class="hidden items-center gap-3 lg:flex">
-        <Button href={cta.clientLogin.href} external variant="secondary"
-          >{cta.clientLogin.label}</Button
+        <!-- Signed-out: Login opens the modal (falls back to the portal link with no JS). -->
+        <a
+          id="agLoginBtn"
+          href={cta.clientLogin.href}
+          class="border-line text-ink hover:border-brand-600 hover:text-brand-600 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
+          >Login</a
         >
+        <!-- Signed-in (revealed by /api/me): Edit this page (admins) + account menu. -->
+        <button
+          id="agEditBtn"
+          type="button"
+          class="bg-brand-600 hover:bg-brand-700 hidden rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
+          >Edit this page</button
+        >
+        <div id="agAccount" class="relative hidden">
+          <button
+            id="agAccountBtn"
+            type="button"
+            class="border-line text-ink hover:border-brand-600 inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
+            aria-haspopup="true"
+          >
+            <span id="agAccountName">Account</span>
+            <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path
+                fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
+                clip-rule="evenodd"></path>
+            </svg>
+          </button>
+          <div
+            id="agAccountMenu"
+            class="border-line bg-surface shadow-pop absolute top-full right-0 mt-2 hidden w-48 rounded-xl border p-1.5"
+          >
+            <a
+              id="agDashLink"
+              href="https://portal.agoradatadriven.com/"
+              class="text-body hover:bg-canvas hover:text-brand-600 block rounded-lg px-3 py-2 text-sm"
+              >My dashboards</a
+            >
+            <button
+              id="agLogoutBtn"
+              type="button"
+              class="text-body hover:bg-canvas hover:text-brand-600 block w-full rounded-lg px-3 py-2 text-left text-sm"
+              >Log out</button
+            >
+          </div>
+        </div>
         <Button href={cta.becomeClient.href} external variant="icon">
           {cta.becomeClient.label}
         </Button>
@@ -168,11 +212,119 @@ const linkBase =
   </div>
 </header>
 
+<!-- Login modal (Google-first). Opened by the header "Login" button; auth happens at the portal,
+     which mints the shared cookie and redirects back here. -->
+<div
+  id="loginModal"
+  class="fixed inset-0 z-[100] items-center justify-center p-4"
+  style="display:none"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Sign in"
+>
+  <div id="loginBackdrop" class="bg-ink/50 absolute inset-0"></div>
+  <div class="border-line bg-surface shadow-pop relative w-full max-w-sm rounded-2xl border p-7">
+    <button
+      id="loginClose"
+      type="button"
+      class="text-muted hover:text-ink absolute top-4 right-4 text-lg leading-none"
+      aria-label="Close">✕</button
+    >
+    <h2 class="text-ink text-xl font-bold">Sign in</h2>
+    <p class="text-muted mt-1 text-sm">Access your dashboards and workspace.</p>
+    <a
+      id="loginGoogle"
+      href="#"
+      class="border-line text-ink hover:border-brand-600 mt-6 flex items-center justify-center gap-2.5 rounded-lg border bg-white px-4 py-2.5 text-sm font-semibold transition-colors"
+    >
+      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"
+        ><path
+          fill="#EA4335"
+          d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+        ></path><path
+          fill="#4285F4"
+          d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+        ></path><path
+          fill="#FBBC05"
+          d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+        ></path><path
+          fill="#34A853"
+          d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+        ></path></svg
+      >
+      Continue with Google
+    </a>
+    <a
+      id="loginPassword"
+      href="#"
+      class="text-brand-600 hover:text-brand-700 mt-3 block text-center text-sm font-semibold"
+      >Sign in with a password</a
+    >
+  </div>
+</div>
+
 <script>
+  // --- Mobile nav toggle ---
   const btn = document.getElementById('navToggle');
   const panel = document.getElementById('mobileNav');
   btn?.addEventListener('click', () => {
     const isHidden = panel?.classList.toggle('hidden');
     btn.setAttribute('aria-expanded', String(isHidden === false));
   });
+
+  // --- Account-aware header + login modal ---
+  const PORTAL = 'https://portal.agoradatadriven.com';
+  const el = (id: string) => document.getElementById(id);
+
+  // Login modal: auth at the portal with a next back to this page.
+  const modal = el('loginModal');
+  const openLogin = (e?: Event) => {
+    if (e) e.preventDefault();
+    const next = encodeURIComponent(window.location.href);
+    el('loginGoogle')?.setAttribute('href', `${PORTAL}/auth/google/login?next=${next}`);
+    el('loginPassword')?.setAttribute('href', `${PORTAL}/login?next=${next}`);
+    if (modal) modal.style.display = 'flex';
+  };
+  const closeLogin = () => {
+    if (modal) modal.style.display = 'none';
+  };
+  el('agLoginBtn')?.addEventListener('click', openLogin);
+  el('loginClose')?.addEventListener('click', closeLogin);
+  el('loginBackdrop')?.addEventListener('click', closeLogin);
+
+  // Account menu dropdown.
+  const accBtn = el('agAccountBtn');
+  const accMenu = el('agAccountMenu');
+  accBtn?.addEventListener('click', () => accMenu?.classList.toggle('hidden'));
+  document.addEventListener('click', (e) => {
+    if (!accMenu || accMenu.classList.contains('hidden')) return;
+    const t = e.target as Node;
+    if (!accBtn?.contains(t) && !accMenu.contains(t)) accMenu.classList.add('hidden');
+  });
+
+  // "Edit this page" -> turn on edit mode (a cookie the server reads) + reload.
+  el('agEditBtn')?.addEventListener('click', () => {
+    document.cookie = 'ag_edit=1; path=/; max-age=3600; samesite=lax';
+    window.location.reload();
+  });
+  // Log out at the portal (clears the shared cookie), then come back here.
+  el('agLogoutBtn')?.addEventListener('click', () => {
+    window.location.href = `${PORTAL}/logout?next=${encodeURIComponent(window.location.href)}`;
+  });
+
+  // Reflect who's signed in: swap "Login" for the account menu (+ Edit for admins on editable pages).
+  fetch('/api/me', { credentials: 'same-origin' })
+    .then((r) => r.json())
+    .then((me: { authed: boolean; name?: string; email?: string; admin?: boolean }) => {
+      if (!me.authed) return;
+      el('agLoginBtn')?.classList.add('hidden');
+      el('agAccount')?.classList.remove('hidden');
+      const nameEl = el('agAccountName');
+      if (nameEl) nameEl.textContent = me.name || me.email || 'Account';
+      const editable = !!document.querySelector('[data-ag-editable]');
+      if (me.admin && editable) el('agEditBtn')?.classList.remove('hidden');
+    })
+    .catch(() => {
+      /* stay signed-out */
+    });
 </script>
