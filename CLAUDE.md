@@ -26,8 +26,27 @@ npm run preview    # alias of start — runs the built server (build first)
 npm run check      # astro type-check
 npm run lint       # eslint . && prettier --check .
 npm run format     # prettier --write .
-npm run deploy     # build remotely + deploy to Cloud Run
+npm run deploy     # build remotely + deploy to Cloud Run (manual; same as the CD workflow)
 ```
+
+## In-page website editor (admin-only)
+
+A logged-in portal super-admin can edit the live site in place. Auth is the shared `ag_sso` cookie
+(super-admin = `clients` includes `*`), checked in `src/lib/sso.ts`. Enter edit mode with `?edit=1`
+(remembered in an `ag_edit` cookie; `?edit=0` exits); `src/components/AdminEditor.astro` (in
+`BaseLayout`) renders the toolbar + client logic. It only works on **server-rendered** pages (the home
+page and blog posts are SSR; flip a page's `prerender` to `false` to make it editable).
+
+- **Images:** hover any site image → **Replace** → `POST /api/edit/image` commits it to `public/<path>`
+  (generalizes the older `/api/update-hero`). Build-hashed `/_astro/*` images aren't editable.
+- **Blog text:** on a post, **Edit text** loads the raw markdown → `POST /api/edit/post` commits
+  `src/content/posts/<slug>.md` (lossless; preserves frontmatter).
+- **Publish:** every save commits to `main` via the GitHub Contents API (`src/lib/github.ts`, token
+  `GITHUB_TOKEN`=`SEO_GITHUB_TOKEN`). **`.github/workflows/deploy.yml`** then auto-deploys to Cloud Run
+  via **Workload Identity** (SA `github-deployer@`, no key) — so a save is live in a few minutes.
+- **Google sign-in** for the editor is issued centrally by the portal; a login there mints the
+  `ag_sso` cookie this site trusts. It's OPT-IN — until the portal's OAuth client exists, admins reach
+  edit mode via a portal session.
 
 ## Folder structure
 
