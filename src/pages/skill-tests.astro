@@ -122,7 +122,8 @@ const steps = [
               </button>
               <a
                 href={skillMasteryPath}
-                class="border-line text-body hover:border-brand-400 hover:text-brand-700 inline-flex items-center gap-1.5 rounded-lg border px-5 py-3 text-sm font-semibold transition-colors"
+                class="mastery-cta border-line text-body hover:border-brand-400 hover:text-brand-700 inline-flex items-center gap-1.5 rounded-lg border px-5 py-3 text-sm font-semibold transition-colors"
+                data-auth-label="Go to Mastery Mode →"
               >
                 Sign in to Mastery Mode →
               </a>
@@ -270,8 +271,9 @@ const steps = [
           <!-- Mastery -->
           <div class="surface-dark shadow-pop flex flex-col rounded-2xl p-7">
             <span
-              class="mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
+              class="mastery-badge mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
               style="color:#bff0bd;background:rgba(79,168,74,0.14);border-color:rgba(79,168,74,0.35)"
+              data-auth-label="Mastery Mode · Signed in"
               >Mastery Mode · Sign in</span
             >
             <h3 class="font-display mb-2 text-xl font-bold" style="color:#fff">
@@ -296,7 +298,8 @@ const steps = [
             </ul>
             <a
               href={skillMasteryPath}
-              class="bg-brand-500 shadow-glow hover:bg-brand-400 mt-auto inline-flex items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+              class="mastery-cta bg-brand-500 shadow-glow hover:bg-brand-400 mt-auto inline-flex items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+              data-auth-label="Go to Mastery Mode →"
             >
               Sign in to Mastery Mode →
             </a>
@@ -481,7 +484,11 @@ const steps = [
           >
             Know exactly where you, and your team, stand
           </h2>
-          <p class="mb-8 text-lg" style="color:rgba(215,227,218,0.85)">
+          <p
+            class="mastery-cta-copy mb-8 text-lg"
+            style="color:rgba(215,227,218,0.85)"
+            data-auth-label="Start free in Guest Mode. Jump into Mastery Mode to turn a score into real skill."
+          >
             Start free in Guest Mode. Sign in to Mastery Mode to turn a score into real skill.
           </p>
           <div class="flex flex-wrap justify-center gap-3">
@@ -494,8 +501,9 @@ const steps = [
             </button>
             <a
               href={skillMasteryPath}
-              class="inline-flex items-center rounded-lg border px-8 py-3.5 text-sm font-semibold transition-colors"
+              class="mastery-cta inline-flex items-center rounded-lg border px-8 py-3.5 text-sm font-semibold transition-colors"
               style="color:#fff;border-color:rgba(255,255,255,0.3)"
+              data-auth-label="Go to Mastery Mode →"
             >
               Sign in to Mastery Mode →
             </a>
@@ -1237,4 +1245,25 @@ const steps = [
       closeOverlay();
     }
   });
+
+  // ---------------------------------------------------------------------------
+  // Account-aware CTAs: when the visitor already holds the shared ag_sso session,
+  // "Sign in to Mastery Mode" is wrong copy — swap every tagged element to its
+  // signed-in label. Same /api/me endpoint the site header uses (works on this
+  // prerendered page too). Anonymous or on error → leave the sign-in copy as-is.
+  // ---------------------------------------------------------------------------
+  fetch('/api/me', { credentials: 'same-origin' })
+    .then((r) => r.json())
+    .then((me) => {
+      if (!me || !me.authed) return;
+      document
+        .querySelectorAll('.mastery-cta, .mastery-badge, .mastery-cta-copy')
+        .forEach((elm) => {
+          const label = elm.getAttribute('data-auth-label');
+          if (label) elm.textContent = label;
+        });
+    })
+    .catch(() => {
+      /* stay signed-out */
+    });
 </script>

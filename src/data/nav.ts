@@ -10,10 +10,11 @@ export interface NavItem {
  * AGORA Mastery Engine, a separate Cloud Run app (project `agora-data-driven`).
  * `skillMasteryUrl` is the live app origin; we embed it (iframe) on the internal
  * `skillMasteryPath` page rather than linking out, so nav points at the path.
- * TODO: swap the origin for https://mastery.agoradatadriven.com once a Cloud Run
- * domain mapping + DNS record are set up (matches the webdev./apply. pattern).
+ * On its own `mastery.agoradatadriven.com` custom domain (Cloud Run domain mapping,
+ * CNAME → ghs.googlehosted.com) so it's same-site with this site: the shared
+ * `.agoradatadriven.com` ag_sso cookie flows into the iframe — no second sign-in.
  */
-export const skillMasteryUrl = 'https://mastery-engine-c732u7m57a-uc.a.run.app';
+export const skillMasteryUrl = 'https://mastery.agoradatadriven.com';
 export const skillMasteryPath = '/skill-mastery/';
 
 export const mainNav: NavItem[] = [
