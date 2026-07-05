@@ -12,8 +12,8 @@ See [docs/PLAN.md](docs/PLAN.md) for the original build plan and [CLAUDE.md](CLA
 ## Quick start
 
 ```bash
-git clone https://github.com/Agoradatadriven/Official-website.git agora-website
-cd agora-website
+git clone https://github.com/Agora-Data-Driven/website.git website
+cd website
 ```
 
 **New machine?** Run the one-time bootstrap for your OS. It installs Node.js, the

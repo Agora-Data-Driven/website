@@ -14,7 +14,7 @@ import { createHmac } from 'crypto';
 
 const SSO_SECRET = import.meta.env.SSO_SECRET ?? '';
 const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN ?? '';
-const GITHUB_REPO = 'Agoradatadriven/Official-website';
+const GITHUB_REPO = 'Agora-Data-Driven/website';
 const GITHUB_BRANCH = 'main';
 
 function isAdminSso(cookieHeader: string | null): boolean {
