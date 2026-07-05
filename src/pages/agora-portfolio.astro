@@ -8,8 +8,10 @@ import { getCollection } from 'astro:content';
 
 export const prerender = true;
 
-// Narrative case studies authored as Markdown posts (type: 'case-study').
+// Our own client case studies authored as Markdown posts (type: 'case-study').
 // They keep their original article URL but are surfaced here, not in the blog.
+// NOTE: 'data-file' posts (analytical stories about OTHER businesses, e.g.
+// Airbnb/Blockbuster) are intentionally excluded, they live on the blog only.
 const postCaseStudies = (
   await getCollection('posts', ({ data }) => !data.draft && data.type === 'case-study')
 ).sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());

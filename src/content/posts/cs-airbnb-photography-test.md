@@ -3,7 +3,7 @@ title: 'How a Borrowed Camera and One Week of Data Saved Airbnb'
 publishDate: 2026-06-27
 excerpt: 'In 2009, Airbnb was flat. Brian Chesky flew to New York, borrowed a camera, and photographed host listings himself. Revenue doubled that week. The company spent the next decade scaling that one measured experiment.'
 category: 'Marketing Analytics'
-type: case-study
+type: data-file
 draft: false
 industry: 'Marketplace'
 ---

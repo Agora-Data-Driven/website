@@ -3,7 +3,7 @@ title: 'Blockbuster Had the Data. They Just Optimised the Wrong Thing.'
 publishDate: 2026-06-27
 excerpt: 'At its peak, Blockbuster had 60 million customer transaction records and $800 million a year in late fee revenue. They used the data to protect the fees. Netflix used theirs to eliminate them.'
 category: 'Marketing Analytics'
-type: case-study
+type: data-file
 draft: false
 industry: 'Media & Entertainment'
 ---

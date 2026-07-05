@@ -25,8 +25,9 @@ export interface BlogPost {
   topic: string;
   /** Used for industry filter. Use 'All industries' when not industry-specific. */
   industry: string;
-  /** Optional source provenance label for case studies. */
-  sourceLabel?: string;
+  /** Kind badge for the Case Studies carousel: 'Case Study' for our own client
+   *  work vs 'The Data Files' for stories about other, well-known businesses. */
+  kindLabel?: string;
   /** Pre-formatted display date string, e.g. 'Jun 27, 2026'. */
   date: string;
   /** Fallback read time string used when no markdown body is available. */
@@ -200,7 +201,7 @@ export const blogPosts: BlogPost[] = [
     category: 'Ecommerce',
     topic: 'Paid Marketing',
     industry: 'Ecommerce',
-    sourceLabel: 'Brand strategy',
+    kindLabel: 'The Data Files',
     date: 'Jun 27, 2026',
     readTimeFallback: '7 min read',
     thumbnailVariant: 'gymshark-influencer',
@@ -216,7 +217,7 @@ export const blogPosts: BlogPost[] = [
     category: 'Hospitality',
     topic: 'Experimentation',
     industry: 'Hospitality',
-    sourceLabel: 'Brand strategy',
+    kindLabel: 'The Data Files',
     date: 'Jun 27, 2026',
     readTimeFallback: '7 min read',
     thumbnailVariant: 'airbnb-photography',
@@ -232,7 +233,7 @@ export const blogPosts: BlogPost[] = [
     category: 'Ecommerce',
     topic: 'Marketing Analytics',
     industry: 'Ecommerce',
-    sourceLabel: 'Public business story',
+    kindLabel: 'The Data Files',
     date: 'Jun 27, 2026',
     readTimeFallback: '8 min read',
     thumbnailVariant: 'bed-bath-coupon',
@@ -248,7 +249,7 @@ export const blogPosts: BlogPost[] = [
     category: 'SaaS',
     topic: 'Strategy & Growth',
     industry: 'SaaS',
-    sourceLabel: 'Public business story',
+    kindLabel: 'The Data Files',
     date: 'Jun 24, 2026',
     readTimeFallback: '7 min read',
     thumbnailVariant: 'moviepass-uniteconomics',
@@ -264,7 +265,7 @@ export const blogPosts: BlogPost[] = [
     category: 'Big Tech',
     topic: 'Strategy & Growth',
     industry: 'Big Tech',
-    sourceLabel: 'Public business story',
+    kindLabel: 'The Data Files',
     date: 'Jun 24, 2026',
     readTimeFallback: '8 min read',
     thumbnailVariant: 'blockbuster-netflix',

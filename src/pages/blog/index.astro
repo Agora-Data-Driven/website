@@ -52,7 +52,16 @@ function toCard(p: CollectionEntry<'posts'>): BlogPost {
     slug: p.id,
     title: p.data.title,
     excerpt: p.data.excerpt,
-    section: p.data.type === 'case-study' ? 'case-studies' : 'data-driven-marketing',
+    section:
+      p.data.type === 'case-study' || p.data.type === 'data-file'
+        ? 'case-studies'
+        : 'data-driven-marketing',
+    kindLabel:
+      p.data.type === 'case-study'
+        ? 'Case Study'
+        : p.data.type === 'data-file'
+          ? 'The Data Files'
+          : undefined,
     category: p.data.category,
     topic: p.data.category,
     industry: p.data.industry ?? 'All industries',
@@ -471,9 +480,15 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
                       <span class="text-brand-600 text-[10px] font-bold tracking-[0.16em] uppercase">
                         {post.category}
                       </span>
-                      {post.sourceLabel && (
-                        <span class="text-muted bg-canvas rounded-full px-2 py-0.5 text-[10px] font-medium">
-                          {post.sourceLabel}
+                      {post.kindLabel && (
+                        <span
+                          class={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                            post.kindLabel === 'Case Study'
+                              ? 'bg-tint text-brand-700'
+                              : 'border-line text-muted border bg-canvas'
+                          }`}
+                        >
+                          {post.kindLabel}
                         </span>
                       )}
                     </div>

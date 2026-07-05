@@ -3,7 +3,7 @@ title: "The Coupon That Ate Bed Bath & Beyond's Best Customers"
 publishDate: 2026-06-27
 excerpt: 'Bed Bath & Beyond mailed hundreds of millions of coupons a year with no segmentation. When they finally tried to stop, they had already taught their highest-value customers to wait, and trained their data to lie.'
 category: 'Marketing Analytics'
-type: case-study
+type: data-file
 draft: false
 industry: 'Ecommerce'
 ---

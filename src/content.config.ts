@@ -17,8 +17,12 @@ const posts = defineCollection({
     // an out-of-vocabulary value (e.g. from the auto SEO pipeline) from failing
     // the build, it falls back to a safe bucket instead. Re-tag when noticed.
     category: z.enum(siloNames).catch(FALLBACK_CATEGORY),
-    // 'case-study' posts are surfaced under Portfolio, not in the blog silos.
-    type: z.enum(['post', 'case-study']).default('post'),
+    // Content kind, drives where a post surfaces and how it's badged:
+    //  - 'case-study': OUR OWN client work. Surfaced under Portfolio.
+    //  - 'data-file':  analytical stories about other, well-known businesses
+    //    ("The Data Files"). Blog only, never Portfolio.
+    //  - 'post':       standard blog article (default).
+    type: z.enum(['post', 'case-study', 'data-file']).default('post'),
     draft: z.boolean().default(false),
     // Optional industry tag for filtering (e.g. 'E-commerce', 'Local Business', 'B2B').
     industry: z.string().optional(),

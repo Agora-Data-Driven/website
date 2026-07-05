@@ -3,7 +3,7 @@ title: "MoviePass Had 3 Million Subscribers and Still Didn't Know What They Cost
 publishDate: 2026-06-24
 excerpt: 'MoviePass built its pricing model on an assumption about user behaviour that it never tested. The assumption was wrong, and the company burned through tens of millions of dollars per month before that became undeniable.'
 category: 'Marketing Analytics'
-type: case-study
+type: data-file
 draft: false
 industry: 'SaaS'
 ---
