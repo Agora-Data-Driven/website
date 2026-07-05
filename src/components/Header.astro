@@ -97,6 +97,14 @@ const linkBase =
           class="border-line text-ink hover:border-brand-600 hover:text-brand-600 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
           >Login</a
         >
+        <!-- Signed-in: quick link into Agora Atrium (portal routes admins to the console, clients to
+             their workspace). Revealed by /api/me. -->
+        <a
+          id="agAtriumBtn"
+          href="https://portal.agoradatadriven.com/"
+          class="border-brand-600 text-brand-700 hover:bg-brand-50 hidden rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
+          >Atrium</a
+        >
         <!-- Signed-in (revealed by /api/me): Edit this page (admins) + account menu. -->
         <button
           id="agEditBtn"
@@ -318,6 +326,7 @@ const linkBase =
     .then((me: { authed: boolean; name?: string; email?: string; admin?: boolean }) => {
       if (!me.authed) return;
       el('agLoginBtn')?.classList.add('hidden');
+      el('agAtriumBtn')?.classList.remove('hidden');
       el('agAccount')?.classList.remove('hidden');
       const nameEl = el('agAccountName');
       if (nameEl) nameEl.textContent = me.name || me.email || 'Account';
