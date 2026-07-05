@@ -1,0 +1,350 @@
+---
+/**
+ * In-page website editor. Renders its toolbar ONLY for a logged-in portal super-admin in edit mode
+ * (`?edit=1`, remembered in the `ag_edit` cookie so it persists across navigation; `?edit=0` exits).
+ * It adds:
+ *   - a floating "Replace" affordance over every editable site image  -> POST /api/edit/image
+ *   - inline text editing on blog posts (title + raw-markdown body)    -> POST /api/edit/post
+ * Both "Save" by committing to the repo, which auto-deploys (publishes live in a few minutes).
+ *
+ * The editor only works on server-rendered pages (the ag_sso cookie must be read at request time);
+ * prerendered pages don't show it. The styles + guarded script are shipped site-wide but the script
+ * no-ops instantly unless the admin toolbar is present, so public visitors are unaffected.
+ */
+import { isSsoAdmin } from '@lib/sso';
+
+const isAdmin = isSsoAdmin(Astro.request.headers.get('cookie'), import.meta.env.SSO_SECRET ?? '');
+const editParam = Astro.url.searchParams.get('edit');
+// Remember edit mode across navigation in a cookie the server reads (set/clear here, server-side).
+if (isAdmin && editParam === '1')
+  Astro.cookies.set('ag_edit', '1', { path: '/', maxAge: 3600, sameSite: 'lax' });
+if (editParam === '0') Astro.cookies.delete('ag_edit', { path: '/' });
+const editCookie = Astro.cookies.get('ag_edit')?.value === '1';
+const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCookie));
+---
+
+{
+  editing && (
+    <div id="ag-editor">
+      <div id="ag-toolbar">
+        <span class="ag-dot" />
+        <span class="ag-label">Editing &middot; changes publish live</span>
+        <button type="button" id="ag-text-toggle" hidden>
+          Edit text
+        </button>
+        <a href="?edit=0" id="ag-exit">
+          Exit
+        </a>
+      </div>
+      <button type="button" id="ag-img-btn">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+        Replace
+      </button>
+      <input
+        type="file"
+        id="ag-img-input"
+        accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/svg+xml"
+        hidden
+      />
+      <div id="ag-toast" hidden />
+    </div>
+  )
+}
+
+<style>
+  #ag-toolbar {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2147483000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #0c1022;
+    color: #fff;
+    padding: 8px 12px 8px 14px;
+    border-radius: 999px;
+    font:
+      600 13px/1 'Lato',
+      system-ui,
+      sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  }
+  #ag-toolbar .ag-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4fab4a;
+    box-shadow: 0 0 0 3px rgba(79, 171, 74, 0.3);
+  }
+  #ag-toolbar button,
+  #ag-toolbar a {
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: 6px 12px;
+  }
+  #ag-text-toggle {
+    background: #4fab4a;
+    color: #fff;
+  }
+  #ag-exit {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+  }
+  #ag-img-btn {
+    position: fixed;
+    z-index: 2147483001;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: rgba(12, 16, 34, 0.92);
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font:
+      700 12px/1 'Lato',
+      system-ui,
+      sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  }
+  :global([data-ag-editable-img]) {
+    outline: 2px dashed rgba(79, 171, 74, 0.7);
+    outline-offset: 2px;
+    cursor: pointer;
+  }
+  #ag-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 70px;
+    transform: translateX(-50%);
+    z-index: 2147483002;
+    background: #0c1022;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font:
+      600 13px/1.4 'Lato',
+      system-ui,
+      sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: min(420px, 90vw);
+    text-align: center;
+  }
+  :global(body.ag-text-editing [data-edit-role='body']) {
+    display: none;
+  }
+  #ag-md-editor {
+    width: 100%;
+  }
+  #ag-md-editor textarea {
+    width: 100%;
+    min-height: 60vh;
+    font:
+      400 15px/1.6 ui-monospace,
+      'SFMono-Regular',
+      Menlo,
+      monospace;
+    padding: 16px;
+    border: 1px solid #e7e8ee;
+    border-radius: 12px;
+    resize: vertical;
+  }
+  #ag-md-editor .ag-md-actions {
+    display: flex;
+    gap: 10px;
+    margin: 12px 0 0;
+  }
+  #ag-md-editor .ag-md-actions button {
+    border: 0;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font:
+      700 13px/1 'Lato',
+      system-ui,
+      sans-serif;
+  }
+  #ag-md-save {
+    background: #4fab4a;
+    color: #fff;
+  }
+  #ag-md-cancel {
+    background: #fff;
+    color: #0c1022;
+    border: 1px solid #e7e8ee;
+  }
+  :global([data-edit-role='title'][contenteditable='true']) {
+    outline: 2px dashed rgba(79, 171, 74, 0.7);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+</style>
+
+<script>
+  // Runs on every page but no-ops instantly unless the admin editor toolbar is present.
+  const editor = document.getElementById('ag-editor');
+  if (editor) {
+    const toast = (msg: string, ok = true): void => {
+      const t = document.getElementById('ag-toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.style.background = ok ? '#0c1022' : '#8a1f1c';
+      t.hidden = false;
+      window.clearTimeout((t as HTMLElement & { _t?: number })._t);
+      (t as HTMLElement & { _t?: number })._t = window.setTimeout(() => {
+        t.hidden = true;
+      }, 4000);
+    };
+
+    // ---- Image replace -------------------------------------------------------------------
+    const IMG_EXT = /\.(png|jpe?g|webp|gif|avif|svg)$/i;
+    const editable = (img: HTMLImageElement): boolean => {
+      const src = img.getAttribute('src') || '';
+      return src.startsWith('/') && !src.startsWith('/_astro/') && IMG_EXT.test(src.split('?')[0]);
+    };
+    const imgBtn = document.getElementById('ag-img-btn') as HTMLButtonElement | null;
+    const imgInput = document.getElementById('ag-img-input') as HTMLInputElement | null;
+    let hovered: HTMLImageElement | null = null;
+    let target: HTMLImageElement | null = null;
+
+    document.querySelectorAll('img').forEach((el) => {
+      const img = el as HTMLImageElement;
+      if (editable(img)) img.setAttribute('data-ag-editable-img', '');
+    });
+
+    if (imgBtn) {
+      document.addEventListener('mouseover', (e) => {
+        const el = e.target as HTMLElement;
+        if (el.tagName === 'IMG' && el.hasAttribute('data-ag-editable-img')) {
+          hovered = el as HTMLImageElement;
+          const r = hovered.getBoundingClientRect();
+          imgBtn.style.top = `${Math.max(8, r.top + 8)}px`;
+          imgBtn.style.left = `${Math.max(8, r.right - 96)}px`;
+          imgBtn.style.display = 'flex';
+        }
+      });
+      imgBtn.addEventListener('click', () => {
+        target = hovered;
+        imgInput?.click();
+      });
+    }
+    if (imgInput) {
+      imgInput.addEventListener('change', () => {
+        const file = imgInput.files && imgInput.files[0];
+        if (!file || !target) return;
+        const img = target;
+        const src = (img.getAttribute('src') || '').split('?')[0];
+        const fd = new FormData();
+        fd.append('path', src);
+        fd.append('image', file);
+        toast('Uploading…');
+        fetch('/api/edit/image', { method: 'POST', body: fd })
+          .then((r) => r.json())
+          .then((res: { ok: boolean; error?: string }) => {
+            if (res.ok) {
+              img.setAttribute('src', `${src}?v=${Date.now()}`);
+              toast('Saved. Publishing live (~3 min).');
+            } else {
+              toast(res.error || 'Upload failed', false);
+            }
+          })
+          .catch(() => toast('Network error', false));
+        imgInput.value = '';
+      });
+    }
+
+    // ---- Blog post text editing ----------------------------------------------------------
+    const article = document.querySelector('[data-edit-post]');
+    const slug = article?.getAttribute('data-edit-post') || '';
+    const textToggle = document.getElementById('ag-text-toggle') as HTMLButtonElement | null;
+    if (slug && textToggle) {
+      textToggle.hidden = false;
+      const bodyEl = document.querySelector('[data-edit-role="body"]') as HTMLElement | null;
+      const titleEl = document.querySelector('[data-edit-role="title"]') as HTMLElement | null;
+      textToggle.addEventListener('click', () => {
+        if (!bodyEl) return;
+        toast('Loading source…');
+        fetch(`/api/edit/post?slug=${encodeURIComponent(slug)}`)
+          .then((r) => r.json())
+          .then((res: { ok: boolean; body?: string; error?: string }) => {
+            if (!res.ok) {
+              toast(res.error || 'Could not load post', false);
+              return;
+            }
+            const t = document.getElementById('ag-toast');
+            if (t) t.hidden = true;
+            const wrap = document.createElement('div');
+            wrap.id = 'ag-md-editor';
+            const ta = document.createElement('textarea');
+            ta.value = res.body || '';
+            wrap.appendChild(ta);
+            const actions = document.createElement('div');
+            actions.className = 'ag-md-actions';
+            const save = document.createElement('button');
+            save.id = 'ag-md-save';
+            save.textContent = 'Save & publish';
+            const cancel = document.createElement('button');
+            cancel.id = 'ag-md-cancel';
+            cancel.textContent = 'Cancel';
+            actions.append(save, cancel);
+            wrap.appendChild(actions);
+            bodyEl.after(wrap);
+            document.body.classList.add('ag-text-editing');
+            if (titleEl) titleEl.setAttribute('contenteditable', 'true');
+
+            const finish = (): void => {
+              wrap.remove();
+              document.body.classList.remove('ag-text-editing');
+              if (titleEl) titleEl.removeAttribute('contenteditable');
+            };
+            cancel.addEventListener('click', finish);
+            save.addEventListener('click', () => {
+              save.disabled = true;
+              toast('Saving…');
+              fetch('/api/edit/post', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  slug,
+                  title: titleEl ? titleEl.textContent?.trim() : undefined,
+                  body: ta.value,
+                }),
+              })
+                .then((r) => r.json())
+                .then((res2: { ok: boolean; error?: string }) => {
+                  if (res2.ok) {
+                    toast('Saved. Publishing live (~3 min).');
+                    finish();
+                  } else {
+                    toast(res2.error || 'Save failed', false);
+                    save.disabled = false;
+                  }
+                })
+                .catch(() => {
+                  toast('Network error', false);
+                  save.disabled = false;
+                });
+            });
+          })
+          .catch(() => toast('Network error', false));
+      });
+    }
+  }
+</script>

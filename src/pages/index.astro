@@ -10,7 +10,10 @@ import LatestPosts from '@components/home/LatestPosts.astro';
 import Faq from '@components/home/Faq.astro';
 import QuoteCta from '@components/home/QuoteCta.astro';
 
-export const prerender = true;
+// Server-rendered (not prerendered) so the in-page website editor can read the ag_sso admin cookie
+// at request time — the home page is the editor's landing (open it with ?edit=1). Output is the same
+// HTML as before; it's just rendered per request instead of at build.
+export const prerender = false;
 ---
 
 <BaseLayout>

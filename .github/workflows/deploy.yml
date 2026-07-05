@@ -1,0 +1,44 @@
+name: Deploy
+
+# Publishes the site to Cloud Run on every push to main — this is what makes the in-page editor's
+# "Save" go live: a save commits to the repo, which triggers this deploy. Authentication is via
+# Workload Identity Federation (no long-lived key): the workflow's OIDC token impersonates the
+# github-deployer service account, which has run.admin + actAs on the runtime SA.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+# Only one deploy at a time; a newer push supersedes an in-flight one.
+concurrency:
+  group: deploy-cloudrun
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: agora-data-driven
+          workload_identity_provider: projects/585951669065/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-deployer@agora-data-driven.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy agora-data-driven \
+            --source . \
+            --project agora-data-driven \
+            --region asia-southeast1 \
+            --allow-unauthenticated \
+            --update-secrets=SSO_SECRET=platform-sso-key:latest,GITHUB_TOKEN=SEO_GITHUB_TOKEN:latest \
+            --quiet
