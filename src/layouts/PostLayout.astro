@@ -211,7 +211,7 @@ const jsonLd = {
         <div style="background:#fff;border-radius:16px;padding:28px;width:min(420px,90vw);box-shadow:0 20px 60px rgba(0,0,0,0.2);">
           <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;">Change hero photo</h3>
           <p style="margin:0 0 18px;font-size:13px;color:#6B7280;">
-            Upload a new image for <strong>{postSlug}</strong>. PNG or JPG, under 5 MB.
+            Upload a new image for <strong>{postSlug}</strong>. PNG, JPG, or WebP, under 5 MB.
           </p>
           <form id="admin-hero-form">
             <input type="hidden" name="slug" value={postSlug} />
@@ -263,28 +263,56 @@ const jsonLd = {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.style.display = 'none';
       });
+      const fileInput = form.querySelector('input[type="file"]') as HTMLInputElement | null;
+      const fail = (msg: string): void => {
+        status.style.color = '#E5413E';
+        status.textContent = msg;
+      };
       form.addEventListener('submit', (e) => {
         e.preventDefault();
+        // Validate client-side first: an oversized screenshot or wrong file type is by far the most
+        // common cause of a failed upload, and catching it here gives a clear reason immediately
+        // instead of a round trip that surfaces as a generic "Network error".
+        const file = fileInput?.files?.[0];
+        if (!file) return fail('Please choose an image first.');
+        if (file.type && !/^image\/(png|jpe?g|webp)$/.test(file.type))
+          return fail('Please choose a PNG, JPG, or WebP image.');
+        if (file.size > 5 * 1024 * 1024)
+          return fail(`That image is ${(file.size / 1048576).toFixed(1)} MB — please use one under 5 MB.`);
+
         submit.disabled = true;
         submit.textContent = 'Uploading...';
-        status.textContent = '';
+        status.style.color = '#6B7280';
+        status.textContent = 'Uploading and publishing…';
         fetch('/api/update-hero', { method: 'POST', body: new FormData(form) })
-          .then((r) => r.json())
-          .then((res) => {
-            if (res.ok) {
+          .then(async (r) => {
+            // Tolerate a non-JSON body (e.g. a 5xx HTML page from Cloud Run while a prior save's
+            // deploy is rolling out) so the message is actionable rather than blank.
+            const text = await r.text().catch(() => '');
+            let res: { ok?: boolean; error?: string } = {};
+            try {
+              res = JSON.parse(text) as typeof res;
+            } catch {
+              res = {
+                ok: false,
+                error:
+                  r.status >= 500
+                    ? `Server error (${r.status}). A publish may be in progress — wait a minute and try again.`
+                    : `Unexpected response (${r.status}).`,
+              };
+            }
+            if (r.ok && res.ok) {
               status.style.color = '#347A30';
               status.textContent = 'Saved. Reloading...';
               setTimeout(() => window.location.reload(), 1500);
             } else {
-              status.style.color = '#E5413E';
-              status.textContent = 'Error: ' + (res.error || 'Upload failed');
+              fail(res.error || 'Upload failed.');
               submit.disabled = false;
               submit.textContent = 'Upload';
             }
           })
           .catch(() => {
-            status.style.color = '#E5413E';
-            status.textContent = 'Network error.';
+            fail('Couldn’t reach the server. Check your connection and try again.');
             submit.disabled = false;
             submit.textContent = 'Upload';
           });

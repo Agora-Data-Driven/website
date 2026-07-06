@@ -106,7 +106,7 @@
       }
 
       // ---- Scenes ------------------------------------------------------------
-      function neuralNet(p: number, now: number) {
+      function neuralNet(_p: number, now: number) {
         const pad = 22;
         const layers = [4, 6, 5, 3];
         const xs = layers.map((_, k) => pad + (k / (layers.length - 1)) * (w - 2 * pad));

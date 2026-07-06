@@ -4,7 +4,7 @@ interface Props {
   size?: 'narrow' | 'default' | 'wide';
   class?: string;
 }
-const { as = 'div', size = 'default', class: className = '' } = Astro.props;
+const { as = 'div', size = 'default', class: className = '' }: Props = Astro.props;
 const Tag = as as keyof HTMLElementTagNameMap;
 const maxBySize: Record<string, string> = {
   narrow: 'max-w-3xl',

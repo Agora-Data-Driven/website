@@ -157,45 +157,90 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
   :global(body.ag-text-editing [data-edit-role='body']) {
     display: none;
   }
-  #ag-md-editor {
+  /* The markdown editor below is built in JS (document.createElement), so it never receives Astro's
+     scoped `data-astro-cid` attribute. These rules MUST be :global() or they silently don't apply —
+     which is what collapsed the textarea to a tiny box and left the buttons unstyled. */
+  :global(#ag-md-editor) {
     width: 100%;
+    margin: 8px 0 0;
   }
-  #ag-md-editor textarea {
+  :global(#ag-md-editor .ag-md-head) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 14px;
+    margin: 0 0 10px;
+  }
+  :global(#ag-md-editor .ag-md-head strong) {
+    font:
+      700 15px/1.3 'Lato',
+      system-ui,
+      sans-serif;
+    color: #0c1022;
+  }
+  :global(#ag-md-editor .ag-md-hint) {
+    font:
+      400 12px/1.4 'Lato',
+      system-ui,
+      sans-serif;
+    color: #6b7280;
+  }
+  :global(#ag-md-editor textarea) {
+    display: block;
     width: 100%;
     min-height: 60vh;
     font:
-      400 15px/1.6 ui-monospace,
+      400 15px/1.7 ui-monospace,
       'SFMono-Regular',
       Menlo,
       monospace;
-    padding: 16px;
+    color: #0c1022;
+    background: #fff;
+    padding: 16px 18px;
     border: 1px solid #e7e8ee;
     border-radius: 12px;
     resize: vertical;
+    box-shadow: 0 1px 2px rgba(12, 16, 34, 0.04);
   }
-  #ag-md-editor .ag-md-actions {
+  :global(#ag-md-editor textarea:focus) {
+    outline: none;
+    border-color: #4fab4a;
+    box-shadow: 0 0 0 3px rgba(79, 171, 74, 0.2);
+  }
+  :global(#ag-md-editor .ag-md-actions) {
     display: flex;
     gap: 10px;
-    margin: 12px 0 0;
+    margin: 14px 0 0;
   }
-  #ag-md-editor .ag-md-actions button {
+  :global(#ag-md-editor .ag-md-actions button) {
     border: 0;
     cursor: pointer;
     border-radius: 8px;
-    padding: 9px 18px;
+    padding: 10px 20px;
     font:
       700 13px/1 'Lato',
       system-ui,
       sans-serif;
   }
-  #ag-md-save {
+  :global(#ag-md-editor .ag-md-actions button:disabled) {
+    opacity: 0.6;
+    cursor: default;
+  }
+  :global(#ag-md-save) {
     background: #4fab4a;
     color: #fff;
   }
-  #ag-md-cancel {
+  :global(#ag-md-save:hover:not(:disabled)) {
+    background: #459640;
+  }
+  :global(#ag-md-cancel) {
     background: #fff;
     color: #0c1022;
     border: 1px solid #e7e8ee;
+  }
+  :global(#ag-md-cancel:hover) {
+    background: #f5f6f8;
   }
   :global([data-edit-role='title'][contenteditable='true']) {
     outline: 2px dashed rgba(79, 171, 74, 0.7);
@@ -219,6 +264,30 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
         t.hidden = true;
       }, 4000);
     };
+
+    // Parse a response as our {ok,error,...} JSON, but tolerate a non-JSON body (e.g. a 502/503
+    // HTML page from Cloud Run while a previous save's deploy is rolling out) so we surface a
+    // useful message instead of a blank "Network error".
+    interface EditResult {
+      ok: boolean;
+      error?: string;
+      body?: string;
+    }
+    const readResult = async (r: Response): Promise<EditResult> => {
+      const text = await r.text().catch(() => '');
+      try {
+        return JSON.parse(text) as EditResult;
+      } catch {
+        return {
+          ok: false,
+          error:
+            r.status >= 500
+              ? `Server error (${r.status}). A publish may be in progress — wait a minute and try again.`
+              : `Unexpected response (${r.status}).`,
+        };
+      }
+    };
+    const NETWORK_MSG = 'Couldn’t reach the server. Check your connection and try again.';
 
     // ---- Image replace -------------------------------------------------------------------
     const IMG_EXT = /\.(png|jpe?g|webp|gif|avif|svg)$/i;
@@ -256,6 +325,18 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
       imgInput.addEventListener('change', () => {
         const file = imgInput.files && imgInput.files[0];
         if (!file || !target) return;
+        // Validate up front so an oversized screenshot fails instantly with a clear message,
+        // rather than after a round trip that can look like a generic network failure.
+        if (file.type && !file.type.startsWith('image/')) {
+          toast('Please choose an image file.', false);
+          imgInput.value = '';
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          toast(`That image is ${(file.size / 1048576).toFixed(1)} MB — please use one under 5 MB.`, false);
+          imgInput.value = '';
+          return;
+        }
         const img = target;
         const src = (img.getAttribute('src') || '').split('?')[0];
         const fd = new FormData();
@@ -263,8 +344,8 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
         fd.append('image', file);
         toast('Uploading…');
         fetch('/api/edit/image', { method: 'POST', body: fd })
-          .then((r) => r.json())
-          .then((res: { ok: boolean; error?: string }) => {
+          .then(readResult)
+          .then((res) => {
             if (res.ok) {
               img.setAttribute('src', `${src}?v=${Date.now()}`);
               toast('Saved. Publishing live (~3 min).');
@@ -272,7 +353,7 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
               toast(res.error || 'Upload failed', false);
             }
           })
-          .catch(() => toast('Network error', false));
+          .catch(() => toast(NETWORK_MSG, false));
         imgInput.value = '';
       });
     }
@@ -289,8 +370,8 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
         if (!bodyEl) return;
         toast('Loading source…');
         fetch(`/api/edit/post?slug=${encodeURIComponent(slug)}`)
-          .then((r) => r.json())
-          .then((res: { ok: boolean; body?: string; error?: string }) => {
+          .then(readResult)
+          .then((res) => {
             if (!res.ok) {
               toast(res.error || 'Could not load post', false);
               return;
@@ -299,8 +380,19 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
             if (t) t.hidden = true;
             const wrap = document.createElement('div');
             wrap.id = 'ag-md-editor';
+            const head = document.createElement('div');
+            head.className = 'ag-md-head';
+            const label = document.createElement('strong');
+            label.textContent = 'Editing article text';
+            const hint = document.createElement('span');
+            hint.className = 'ag-md-hint';
+            hint.textContent = 'Markdown: **bold**, ## heading, - list, [text](url)';
+            head.append(label, hint);
+            wrap.appendChild(head);
             const ta = document.createElement('textarea');
             ta.value = res.body || '';
+            ta.setAttribute('aria-label', 'Article text (Markdown)');
+            ta.spellcheck = true;
             wrap.appendChild(ta);
             const actions = document.createElement('div');
             actions.className = 'ag-md-actions';
@@ -315,6 +407,10 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
             bodyEl.after(wrap);
             document.body.classList.add('ag-text-editing');
             if (titleEl) titleEl.setAttribute('contenteditable', 'true');
+            // Bring the freshly-opened editor into view and focus it, cursor at the top.
+            wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            ta.focus();
+            ta.setSelectionRange(0, 0);
 
             const finish = (): void => {
               wrap.remove();
@@ -334,8 +430,8 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
                   body: ta.value,
                 }),
               })
-                .then((r) => r.json())
-                .then((res2: { ok: boolean; error?: string }) => {
+                .then(readResult)
+                .then((res2) => {
                   if (res2.ok) {
                     toast('Saved. Publishing live (~3 min).');
                     finish();
@@ -345,12 +441,12 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
                   }
                 })
                 .catch(() => {
-                  toast('Network error', false);
+                  toast(NETWORK_MSG, false);
                   save.disabled = false;
                 });
             });
           })
-          .catch(() => toast('Network error', false));
+          .catch(() => toast(NETWORK_MSG, false));
       });
     }
   }
