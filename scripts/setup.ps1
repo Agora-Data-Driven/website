@@ -79,6 +79,41 @@ function Ensure-Tool([string]$cmd, [string]$wingetId, [string]$label) {
   return $false
 }
 
+# Configure GitHub auth so `git push` NEVER opens a browser again. Prefer a pasted
+# Personal Access Token (durable, browser-free); fall back to the browser device flow.
+# No-op if already signed in (so re-running never re-prompts).
+function Set-GitHubAuth {
+  $__eap = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+  try {
+    if (-not (Have gh)) { Warn "gh not on PATH yet - skipping GitHub auth (reopen terminal + re-run)."; return }
+    gh auth status *> $null
+    if ($LASTEXITCODE -eq 0) { Info "Already signed in to GitHub."; gh auth setup-git 2>$null | Out-Null; return }
+    Write-Host "   GitHub sign-in (so git push never opens a browser). Do ONE of:" -ForegroundColor Cyan
+    Write-Host "     - copy your PAT to the clipboard, then press ENTER here to use it, or" -ForegroundColor Gray
+    Write-Host "     - paste the PAT on the line below and press Enter (it will be visible), or" -ForegroundColor Gray
+    Write-Host "     - type 'b' then Enter to sign in via browser instead." -ForegroundColor Gray
+    Write-Host "   Create one: https://github.com/settings/tokens  (classic; scopes: repo, workflow, read:org)" -ForegroundColor DarkGray
+    $tok = Read-Host "   PAT (or ENTER=use clipboard, b=browser)"
+    if ($tok -match '^(b|browser)$') { gh auth login --web --git-protocol https }
+    else {
+      if ([string]::IsNullOrWhiteSpace($tok)) {
+        try { $tok = (Get-Clipboard -Raw 2>$null | Out-String) } catch { $tok = "" }
+        if (-not [string]::IsNullOrWhiteSpace($tok)) { Info "Using the token from your clipboard." }
+      }
+      $tok = ($tok -replace '\s', '')
+      if ([string]::IsNullOrWhiteSpace($tok)) { Warn "No token found (clipboard empty?). Falling back to browser."; gh auth login --web --git-protocol https }
+      else {
+        $tok | gh auth login --with-token
+        if ($LASTEXITCODE -ne 0) { Warn "Token rejected (needs scopes: repo, workflow, read:org). Falling back to browser."; gh auth login --web --git-protocol https }
+      }
+    }
+    $tok = $null
+    gh auth setup-git 2>$null | Out-Null
+    gh auth status *> $null
+    if ($LASTEXITCODE -eq 0) { Info "GitHub configured - git push will not prompt." } else { Warn "GitHub auth not confirmed - pushes may still prompt." }
+  } finally { $ErrorActionPreference = $__eap }
+}
+
 if (-not (Test-Path '.\package.json')) {
   Write-Host "ERROR: could not find package.json at $RepoRoot." -ForegroundColor Red
   exit 1
@@ -89,12 +124,13 @@ if (-not (Have winget)) {
 }
 
 # --- 1-3. Tooling ------------------------------------------------------------
-Step "Checking required tools (Node.js, gcloud, GitHub CLI)"
+Step "Checking required tools (git, Node.js, gcloud, GitHub CLI)"
+$okGit    = Ensure-Tool 'git'    'Git.Git'           'Git'
 $okNode   = Ensure-Tool 'node'   'OpenJS.NodeJS.LTS' 'Node.js LTS'
 $okGcloud = Ensure-Tool 'gcloud' 'Google.CloudSDK'   'Google Cloud CLI'
 $okGh     = Ensure-Tool 'gh'     'GitHub.cli'        'GitHub CLI'
 
-if (-not ($okNode -and $okGcloud -and $okGh)) {
+if (-not ($okGit -and $okNode -and $okGcloud -and $okGh)) {
   Warn "A tool was just installed but is not on PATH in this window yet."
   Warn "Close this window, open a NEW PowerShell, and re-run setup.ps1 - it skips whatever is already done."
   exit 1
@@ -113,16 +149,9 @@ if ($active -ne $Account) {
 gcloud config set project $ProjectId | Out-Null
 gcloud config set run/region $Region | Out-Null
 
-# --- 4b. GitHub sign-in (browser, idempotent) + git credential helper -------
+# --- 4b. GitHub sign-in (PAT preferred -> browser-free pushes) --------------
 Step "GitHub sign-in"
-if ((Get-ExitCode { gh auth status }) -ne 0) {
-  Info "Opening your browser to sign in to GitHub..."
-  gh auth login --web --git-protocol https
-} else {
-  Info "Already signed in to GitHub."
-}
-# Make `git push` over HTTPS use your gh token (no password prompts). Idempotent.
-gh auth setup-git
+Set-GitHubAuth
 
 # --- 6. Enable GCP APIs ------------------------------------------------------
 Step "Enabling required GCP APIs"
