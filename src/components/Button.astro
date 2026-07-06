@@ -26,7 +26,6 @@ const isIcon = variant === 'icon';
 // right, and a white "label + arrow" layer slides in from the left. Applied to
 // EVERY variant except the "Become a client" icon button. Pure CSS, no JS, no
 // React / framer-motion (this is an Astro zero-JS project).
-const isInteractive = !isIcon;
 const base =
   'group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full border font-semibold will-change-transform disabled:pointer-events-none disabled:opacity-50';
 const sizes = {
