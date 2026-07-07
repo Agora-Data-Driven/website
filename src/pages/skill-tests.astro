@@ -49,6 +49,12 @@ const steps = [
   <div id="hub">
     <!-- ── HERO ────────────────────────────────────────────────────────────── -->
     <section class="border-line bg-surface relative overflow-hidden border-b">
+      <!-- Moving aurora: soft green/violet light drifting behind the hero -->
+      <div class="aurora" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+        <div class="aurora__blob aurora__blob--3"></div>
+      </div>
       <div class="bg-grid pointer-events-none absolute inset-0 opacity-40" aria-hidden="true"></div>
       <div
         class="pointer-events-none absolute inset-0"
@@ -57,12 +63,14 @@ const steps = [
       >
       </div>
       <div
-        class="border-brand-200/25 pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full border"
+        class="border-brand-300/30 spin-slow pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full border-2"
+        style="border-style:dashed"
         aria-hidden="true"
       >
       </div>
       <div
-        class="border-brand-200/15 pointer-events-none absolute -top-6 -right-6 h-44 w-44 rounded-full border"
+        class="border-brand-200/25 spin-slower pointer-events-none absolute -top-6 -right-6 h-44 w-44 rounded-full border"
+        style="border-style:dashed"
         aria-hidden="true"
       >
       </div>
@@ -72,7 +80,7 @@ const steps = [
           <!-- Left -->
           <div class="flex flex-col justify-center">
             <p
-              class="eyebrow text-brand-600 mb-3 inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] uppercase"
+              class="eyebrow text-brand-600 reveal mb-3 inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] uppercase"
             >
               <span class="bg-brand-500/10 border-brand-200 rounded-full border px-2.5 py-0.5"
                 >Free skill tests · Guest mode</span
@@ -80,18 +88,22 @@ const steps = [
             </p>
 
             <h1
-              class="font-display text-ink mb-5 text-4xl leading-tight font-bold tracking-tight lg:text-5xl"
+              class="font-display text-ink reveal mb-5 text-4xl leading-tight font-bold tracking-tight lg:text-5xl"
+              style="--reveal-delay:80ms"
             >
               How sharp are<br />
-              <span class="text-gradient">your skills, really?</span>
+              <span class="text-gradient-animated">your skills, really?</span>
             </h1>
 
-            <p class="text-body mb-7 text-lg leading-relaxed">
+            <p class="text-body reveal mb-7 text-lg leading-relaxed" style="--reveal-delay:160ms">
               Real questions with real right and wrong answers. Test your own proficiency, or have
               your team or VAs take it, then jump into Mastery Mode to close the gaps.
             </p>
 
-            <ul class="hero-values mb-9 grid grid-cols-2 gap-x-6 gap-y-3">
+            <ul
+              class="hero-values reveal mb-9 grid grid-cols-2 gap-x-6 gap-y-3"
+              style="--reveal-delay:240ms"
+            >
               {
                 checklistItems.map((item) => (
                   <li class="text-muted flex items-center gap-2 text-sm">
@@ -113,10 +125,10 @@ const steps = [
               }
             </ul>
 
-            <div class="flex flex-wrap gap-3">
+            <div class="reveal flex flex-wrap gap-3" style="--reveal-delay:320ms">
               <button
                 id="hero-choose-btn"
-                class="bg-brand-500 shadow-glow-sm hover:bg-brand-600 focus-visible:outline-brand-500 inline-flex items-center rounded-lg px-6 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2"
+                class="btn-sheen bg-brand-500 shadow-glow-sm hover:bg-brand-600 focus-visible:outline-brand-500 inline-flex items-center rounded-lg px-6 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2"
               >
                 Choose a Test
               </button>
@@ -133,7 +145,7 @@ const steps = [
           <!-- Right: Preview card -->
           <div class="flex items-center justify-center lg:justify-end">
             <div
-              class="border-line bg-surface shadow-pop w-full max-w-sm rounded-2xl border p-6"
+              class="border-line bg-surface shadow-pop float-soft w-full max-w-sm rounded-2xl border p-6"
               id="hero-card"
             >
               <p class="text-muted mb-4 text-xs font-semibold tracking-widest uppercase">
@@ -209,7 +221,7 @@ const steps = [
               <button
                 id="hero-start-btn"
                 type="button"
-                class="bg-brand-500 shadow-glow-sm hover:bg-brand-600 focus-visible:outline-brand-500 mb-3 w-full rounded-lg py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2"
+                class="btn-sheen bg-brand-500 shadow-glow-sm hover:bg-brand-600 focus-visible:outline-brand-500 mb-3 w-full rounded-lg py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2"
               >
                 Start Test
               </button>
@@ -237,7 +249,9 @@ const steps = [
 
         <div class="grid gap-5 lg:grid-cols-2">
           <!-- Guest -->
-          <div class="border-line bg-surface shadow-card flex flex-col rounded-2xl border p-7">
+          <div
+            class="reveal card-hover border-line bg-surface shadow-card flex flex-col rounded-2xl border p-7"
+          >
             <span
               class="text-brand-700 bg-brand-50 border-brand-200 mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
               >Guest Mode · Free</span
@@ -269,7 +283,10 @@ const steps = [
           </div>
 
           <!-- Mastery -->
-          <div class="surface-dark shadow-pop flex flex-col rounded-2xl p-7">
+          <div
+            class="reveal surface-dark shadow-pop flex flex-col rounded-2xl p-7"
+            style="--reveal-delay:110ms"
+          >
             <span
               class="mastery-badge mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
               style="color:#bff0bd;background:rgba(79,168,74,0.14);border-color:rgba(79,168,74,0.35)"
@@ -369,9 +386,10 @@ const steps = [
           aria-label="Available tests"
         >
           {
-            quizTopics.map((topic: QuizTopic) => (
+            quizTopics.map((topic: QuizTopic, i: number) => (
               <article
-                class="test-card group border-line bg-surface shadow-card hover:shadow-pop flex flex-col rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-0.5"
+                class="test-card reveal group border-line bg-surface shadow-card hover:shadow-pop flex flex-col rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-1"
+                style={`--reveal-delay:${Math.min(i, 6) * 70}ms`}
                 data-topic-id={topic.id}
                 data-title={topic.shortTitle.toLowerCase()}
                 role="listitem"
@@ -475,9 +493,14 @@ const steps = [
     </section>
 
     <!-- ── FINAL CTA BANNER ──────────────────────────────────────────────── -->
-    <section class="surface-dark py-20 lg:py-24">
+    <section class="surface-dark relative overflow-hidden py-20 lg:py-24">
+      <div class="aurora aurora--dark" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+        <div class="aurora__blob aurora__blob--3"></div>
+      </div>
       <Container>
-        <div class="mx-auto max-w-2xl text-center">
+        <div class="relative z-10 mx-auto max-w-2xl text-center">
           <h2
             class="font-display mb-4 text-3xl font-bold tracking-tight lg:text-4xl"
             style="color:#fff"
@@ -495,7 +518,7 @@ const steps = [
             <button
               id="cta-start-btn"
               type="button"
-              class="bg-brand-500 shadow-glow hover:bg-brand-400 inline-flex items-center rounded-lg px-8 py-3.5 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+              class="btn-sheen bg-brand-500 shadow-glow hover:bg-brand-400 inline-flex items-center rounded-lg px-8 py-3.5 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
             >
               Start a Free Test
             </button>

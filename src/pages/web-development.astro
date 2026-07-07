@@ -31,9 +31,12 @@ export const prerender = true;
             </h1>
             <div class="mb-6">
               <p class="text-xl font-semibold leading-relaxed text-[#52992c] sm:text-2xl">
-                Building e-commerce flows<br />
-                Building automation systems<br />
-                Building business websites
+                <span>Building&nbsp;</span>
+                <span class="sr-only"
+                  >e-commerce flows, automation systems, and business websites.</span
+                ><span id="wd-rotator" aria-hidden="true">e-commerce flows</span><span
+                  class="wd-caret"
+                  aria-hidden="true"></span>
               </p>
             </div>
             <p class="mb-10 max-w-2xl text-lg leading-relaxed text-zinc-600">
@@ -62,25 +65,25 @@ export const prerender = true;
             </div>
           </div>
 
-          <div class="relative hidden min-h-[520px] items-center justify-center lg:flex">
-            <div class="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden opacity-60">
-              <span class="absolute left-[8%] top-[12%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
+          <div class="wd-stage relative hidden min-h-[520px] items-center justify-center lg:flex">
+            <div class="pointer-events-none absolute inset-0 overflow-hidden">
+              <span class="wd-code wd-code-1 absolute left-[8%] top-[12%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
                 const app = express();
               </span>
-              <span class="absolute left-[63%] top-[18%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
+              <span class="wd-code wd-code-2 absolute left-[63%] top-[18%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
                 function build() &#123; return true; &#125;
               </span>
-              <span class="absolute left-[15%] top-[72%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
+              <span class="wd-code wd-code-3 absolute left-[15%] top-[72%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
                 import &#123; useState &#125; from 'react';
               </span>
-              <span class="absolute left-[72%] top-[68%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
+              <span class="wd-code wd-code-4 absolute left-[72%] top-[68%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
                 npm run build && npm start
               </span>
             </div>
             <img
               src="/web-development/BG-LOGO.png"
               alt="Agora Data Driven logo"
-              class="w-full max-w-[430px] object-contain drop-shadow-2xl"
+              class="wd-logo relative z-10 w-full max-w-[430px] object-contain drop-shadow-2xl"
             />
           </div>
         </div>
@@ -603,10 +606,139 @@ export const prerender = true;
     animation: wd-spin 4s linear infinite;
   }
 
+  /* ---- Hero: one-line typewriter rotator (mirrors the homepage hero) ---- */
+  .wd-caret {
+    display: inline-block;
+    width: 0.55ch;
+    height: 1em;
+    margin-left: 0.06em;
+    background: currentColor;
+    vertical-align: -0.1em;
+    animation: wd-blink 1.05s step-end infinite;
+  }
+  @keyframes wd-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* ---- Hero: animated code-stream backdrop + floating logo ---- */
+  /* Each snippet drifts on its own slow loop and softly pulses, so the code
+     reads like a live data stream flowing behind the mark. */
+  .wd-code {
+    will-change: transform, opacity;
+    animation: wd-drift 16s ease-in-out infinite;
+  }
+  .wd-code-1 {
+    animation-duration: 15s;
+    animation-delay: -2s;
+  }
+  .wd-code-2 {
+    animation-duration: 19s;
+    animation-delay: -8s;
+  }
+  .wd-code-3 {
+    animation-duration: 17s;
+    animation-delay: -5s;
+  }
+  .wd-code-4 {
+    animation-duration: 21s;
+    animation-delay: -11s;
+  }
+  @keyframes wd-drift {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0.35;
+    }
+    25% {
+      transform: translate(14px, -18px);
+      opacity: 0.85;
+    }
+    50% {
+      transform: translate(-10px, -30px);
+      opacity: 0.6;
+    }
+    75% {
+      transform: translate(-16px, -12px);
+      opacity: 0.85;
+    }
+    100% {
+      transform: translate(0, 0);
+      opacity: 0.35;
+    }
+  }
+  /* The logo breathes gently above the drifting code. */
+  .wd-logo {
+    animation: wd-float 9s ease-in-out infinite;
+  }
+  @keyframes wd-float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-0.4deg);
+    }
+    50% {
+      transform: translateY(-16px) rotate(0.4deg);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-blob,
-    .spin-slow {
+    .spin-slow,
+    .wd-caret,
+    .wd-code,
+    .wd-logo {
       animation: none;
     }
   }
 </style>
+
+<script>
+  // One-line rotating typewriter for the web-dev hero subheading — same feel as
+  // the homepage hero rotator, but the fixed word "Building" stays put and only
+  // the phrase after it cycles.
+  const el = document.getElementById('wd-rotator');
+  if (el) {
+    const phrases = [
+      'e-commerce flows',
+      'automation systems',
+      'business websites',
+      'booking experiences',
+    ];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      el.textContent = phrases[0];
+    } else {
+      let w = 0;
+      let c = phrases[0].length;
+      let deleting = true;
+      const tick = () => {
+        const word = phrases[w];
+        if (!deleting) {
+          c++;
+          el.textContent = word.slice(0, c);
+          if (c === word.length) {
+            deleting = true;
+            setTimeout(tick, 1600);
+            return;
+          }
+          setTimeout(tick, 70);
+        } else {
+          c--;
+          el.textContent = word.slice(0, Math.max(c, 0));
+          if (c <= 0) {
+            deleting = false;
+            w = (w + 1) % phrases.length;
+            setTimeout(tick, 240);
+            return;
+          }
+          setTimeout(tick, 34);
+        }
+      };
+      setTimeout(tick, 1400);
+    }
+  }
+</script>
