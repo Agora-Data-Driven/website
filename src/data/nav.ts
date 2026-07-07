@@ -24,7 +24,7 @@ export const mainNav: NavItem[] = [
     href: '/agora-portfolio/',
     children: [
       { label: 'Marketing & Analytics', href: '/agora-portfolio/' },
-      { label: 'Web Development', href: 'https://webdev.agoradatadriven.com/', external: true },
+      { label: 'Web Development', href: '/web-development/' },
       { label: 'Skill Mastery', href: skillMasteryPath },
     ],
   },

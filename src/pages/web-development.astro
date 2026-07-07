@@ -1,0 +1,612 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Container from '@components/Container.astro';
+import Button from '@components/Button.astro';
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="Web Development"
+  description="A portfolio of web development work for Agora Data Driven, including business websites, automation systems, and conversion-focused digital experiences."
+  canonical="/web-development/"
+>
+  <div class="min-h-screen bg-[#fafafa] text-zinc-900 selection:bg-zinc-900 selection:text-white">
+    <!-- ============================ HERO ============================ -->
+    <section class="relative overflow-hidden bg-[#fafafa]">
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="animate-blob absolute -left-24 top-20 h-80 w-80 rounded-full bg-[#52992c]/10 blur-3xl"></div>
+        <div class="animate-blob animation-delay-2000 absolute right-0 top-40 h-96 w-96 rounded-full bg-zinc-300/30 blur-3xl"></div>
+        <div class="animate-blob animation-delay-4000 absolute bottom-0 left-1/2 h-80 w-80 rounded-full bg-[#52992c]/10 blur-3xl"></div>
+      </div>
+
+      <Container class="relative z-10 px-6 py-24 md:px-8 lg:px-12 lg:py-32">
+        <div class="grid items-start gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p class="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-[#52992c]">
+              Web development portfolio
+            </p>
+            <h1 class="mb-4 max-w-3xl text-4xl font-bold tracking-tight text-zinc-950 sm:text-5xl lg:text-[4.25rem] lg:leading-[1.05]">
+              Building real websites, automations & digital experiences.
+            </h1>
+            <div class="mb-6">
+              <p class="text-xl font-semibold leading-relaxed text-[#52992c] sm:text-2xl">
+                Building e-commerce flows<br />
+                Building automation systems<br />
+                Building business websites
+              </p>
+            </div>
+            <p class="mb-10 max-w-2xl text-lg leading-relaxed text-zinc-600">
+              We create business websites, booking flows, automations, and digital systems while
+              continuously strengthening our front-end and full-stack web development skills.
+            </p>
+            <div class="mb-16 flex flex-wrap items-center gap-4">
+              <Button href="#work" variant="primary" size="lg">View our work</Button>
+              <Button href="mailto:info@agoradatadriven.com" variant="secondary" size="lg">
+                Contact us
+              </Button>
+            </div>
+            <div class="grid gap-6 border-t border-zinc-200 pt-8 sm:grid-cols-3">
+              <div>
+                <div class="mb-1 text-2xl font-bold text-zinc-950">3+</div>
+                <div class="text-xs uppercase tracking-[0.3em] text-zinc-500">Live projects</div>
+              </div>
+              <div>
+                <div class="mb-1 text-2xl font-bold text-zinc-950">10+</div>
+                <div class="text-xs uppercase tracking-[0.3em] text-zinc-500">Automations</div>
+              </div>
+              <div>
+                <div class="mb-1 text-2xl font-bold text-zinc-950">15+</div>
+                <div class="text-xs uppercase tracking-[0.3em] text-zinc-500">Skills</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative hidden min-h-[520px] items-center justify-center lg:flex">
+            <div class="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden opacity-60">
+              <span class="absolute left-[8%] top-[12%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
+                const app = express();
+              </span>
+              <span class="absolute left-[63%] top-[18%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
+                function build() &#123; return true; &#125;
+              </span>
+              <span class="absolute left-[15%] top-[72%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
+                import &#123; useState &#125; from 'react';
+              </span>
+              <span class="absolute left-[72%] top-[68%] font-mono text-sm font-bold uppercase tracking-[0.4em] text-[#52992c]/80">
+                npm run build && npm start
+              </span>
+            </div>
+            <img
+              src="/web-development/BG-LOGO.png"
+              alt="Agora Data Driven logo"
+              class="w-full max-w-[430px] object-contain drop-shadow-2xl"
+            />
+          </div>
+        </div>
+      </Container>
+    </section>
+
+    <!-- ============================ ABOUT ============================ -->
+    <section id="about" class="overflow-hidden bg-[#fdfdfe] py-24 lg:py-32">
+      <Container>
+        <div class="grid items-center gap-16 lg:grid-cols-2">
+          <div>
+            <h2 class="mb-8 text-3xl font-bold tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+              Bridging the gap between business needs and technical execution.
+            </h2>
+            <div class="space-y-6 text-lg leading-relaxed text-zinc-600">
+              <p>
+                We don't just watch tutorials. We build real-world solutions. We have practical
+                experience delivering business websites, e-commerce platforms, booking systems, and
+                automated workflows using tools like WordPress, Elementor, and ActiveCampaign.
+              </p>
+              <p>
+                Having mastered front-end fundamentals, we are actively expanding our expertise into
+                full-stack web development. We are driven by the challenge of building custom,
+                complex applications from the ground up.
+              </p>
+              <p>
+                Our approach combines technical structure with business utility. We aim to build
+                digital experiences that not only look exceptional but function flawlessly and drive
+                measurable results.
+              </p>
+            </div>
+          </div>
+          <div class="relative mx-auto w-full max-w-md">
+            <div class="overflow-hidden rounded-[2rem] border border-zinc-200 bg-[#fdfdfe]">
+              <video
+                src="/web-development/CODINGS.mp4"
+                autoplay
+                loop
+                muted
+                playsinline
+                class="h-full w-full object-cover contrast-125 grayscale invert"></video>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+
+    <!-- ===================== LEARNING JOURNEY ===================== -->
+    <section id="journey" class="bg-[#fafafa] py-24 lg:py-32">
+      <Container>
+        <div class="mb-16 max-w-3xl lg:mb-20">
+          <h2 class="mb-6 text-3xl font-bold tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+            Our learning journey
+          </h2>
+          <p class="text-lg leading-relaxed text-zinc-600">
+            A clear progression from foundational knowledge to practical business implementation, and
+            now toward advanced full-stack development.
+          </p>
+        </div>
+
+        <div class="grid gap-8 lg:grid-cols-2">
+          <!-- Completed & Applied -->
+          <div class="rounded-[2rem] border border-zinc-200/70 bg-white p-8 shadow-sm sm:p-12">
+            <h3 class="mb-8 flex items-center gap-4 text-2xl font-semibold text-zinc-950">
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 text-zinc-900">
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="m8.5 12 2.5 2.5 4.5-5"></path>
+                </svg>
+              </span>
+              Completed &amp; Applied
+            </h3>
+            <ul class="space-y-5">
+              {
+                [
+                  'Completed front-end fundamentals and JavaScript coursework',
+                  'Learned version control and Git/GitHub workflow',
+                  'Built and launched real business websites',
+                  'Developed WordPress / Elementor / WooCommerce implementation skills',
+                  'Worked on chatbot and automation integrations',
+                  'Applied Python and Pandas for technical/data-related work',
+                ].map((item) => (
+                  <li class="flex items-start gap-4 leading-relaxed text-zinc-600">
+                    <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400" />
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <!-- Currently Learning -->
+          <div class="rounded-[2rem] bg-zinc-950 p-8 text-white shadow-sm sm:p-12">
+            <h3 class="mb-8 flex items-center gap-4 text-2xl font-semibold text-white">
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800 text-white">
+                <svg viewBox="0 0 24 24" class="spin-slow h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 3">
+                  <circle cx="12" cy="12" r="9"></circle>
+                </svg>
+              </span>
+              Currently Learning
+            </h3>
+            <ul class="space-y-5">
+              {
+                [
+                  'Advancing into full-stack front-end and back-end development',
+                  'Deepening JavaScript and React implementation',
+                  'Exploring APIs, databases, and modern web architecture',
+                ].map((item) => (
+                  <li class="flex items-start gap-4 leading-relaxed text-zinc-300">
+                    <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-600" />
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <div class="mt-12 border-t border-zinc-800/80 pt-8">
+              <h4 class="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
+                Coursework Background
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                {
+                  ['Meta Front-End Dev', 'JavaScript', 'Git/GitHub', 'HTML & CSS in Depth'].map(
+                    (course) => (
+                      <span class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-300">
+                        {course}
+                      </span>
+                    ),
+                  )
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+
+    <!-- ============================ SKILLS ============================ -->
+    <section id="skills" class="bg-[#fafafa] py-24 lg:py-32">
+      <Container>
+        <div class="mb-16 max-w-3xl lg:mb-20">
+          <h2 class="mb-6 text-3xl font-bold tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+            Technical arsenal
+          </h2>
+          <p class="text-lg leading-relaxed text-zinc-600">
+            A combination of foundational web technologies and practical business implementation
+            tools, constantly expanding.
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {
+            [
+              {
+                title: 'Front-End Development',
+                skills: [
+                  'HTML5',
+                  'CSS3',
+                  'JavaScript (ES6+)',
+                  'Responsive Design',
+                  'UI/UX Fundamentals',
+                ],
+              },
+              {
+                title: 'Website Platforms',
+                skills: ['WordPress', 'Elementor', 'WooCommerce', 'Booking Systems'],
+              },
+              {
+                title: 'Automations & Integrations',
+                skills: [
+                  'ActiveCampaign',
+                  'Chatbot Setup',
+                  'Workflow Automation',
+                  'API Integrations',
+                ],
+              },
+              {
+                title: 'Technical & Data',
+                skills: ['Git / GitHub', 'Python', 'Pandas', 'VS Code', 'Antigravity'],
+              },
+              {
+                title: 'Currently Expanding Into',
+                skills: ['Full-Stack Development', 'React', 'Node.js', 'Databases'],
+                highlight: true,
+              },
+            ].map((group) => (
+              <div
+                class={`rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 ${
+                  group.highlight
+                    ? 'bg-zinc-950 text-white shadow-xl'
+                    : 'border border-zinc-200/60 bg-white shadow-sm hover:border-zinc-300 hover:shadow-xl'
+                }`}
+              >
+                <h3
+                  class={`mb-6 text-lg font-semibold ${group.highlight ? 'text-white' : 'text-zinc-950'}`}
+                >
+                  {group.title}
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                  {group.skills.map((skill) => (
+                    <span
+                      class={`inline-block rounded-md px-3 py-1.5 text-sm font-medium ${
+                        group.highlight ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'
+                      }`}
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </Container>
+    </section>
+
+    <!-- ======================= FEATURED WORK ======================= -->
+    <section id="work" class="bg-white py-24 lg:py-32">
+      <Container>
+        <div class="mb-20 max-w-3xl">
+          <h2 class="mb-6 text-3xl font-bold tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+            Featured work
+          </h2>
+          <p class="text-lg leading-relaxed text-zinc-600">
+            Real business websites built to drive outcomes, combining clean structure with practical
+            integrations. Developed using Antigravity and refined with VS Code.
+          </p>
+        </div>
+
+        <div class="space-y-20">
+          {
+            [
+              {
+                title: 'Rooming House Expert',
+                type: 'Real Estate Business Website',
+                description:
+                  'A professional platform created for a property-focused business to present services, projects, and business information in a trustworthy way.',
+                contributions: [
+                  'Website structure and page setup',
+                  'Layout and content organization',
+                  'Business-focused presentation',
+                  'Chatbot setup for the website',
+                  'Newsletter signup form to ActiveCampaign',
+                  'Live website delivery',
+                ],
+                tools: ['GitHub', 'VS Code', 'Wordpress', 'ActiveCampaign'],
+                video: '/web-development/RHEV.mp4',
+                link: 'https://roominghouse.expert',
+              },
+              {
+                title: 'HydRate MedBar',
+                type: 'Spa & Wellness Salon Website',
+                description:
+                  'A wellness and med spa website designed to showcase services, build trust, and drive conversions for a service-based business.',
+                contributions: [
+                  'Website layout',
+                  'Service presentation',
+                  'Visual structure',
+                  'Conversion-focused business website setup',
+                  'Launch support',
+                ],
+                tools: ['GitHub', 'Wordpress', 'VS Code'],
+                video: '/web-development/HRMV.mp4',
+                link: 'https://hydratemedbar.com',
+              },
+              {
+                title: 'Sabbath Spa',
+                type: 'Spa Website with Booking',
+                description:
+                  'A comprehensive spa website featuring an integrated online booking system to help users browse services and schedule appointments seamlessly.',
+                contributions: [
+                  'Website structure',
+                  'Service page presentation',
+                  'Booking system setup',
+                  'User flow from service browsing to booking',
+                ],
+                tools: ['GitHub', 'VS Code', 'Booking System Integration', 'Wordpress'],
+                video: '/web-development/SSWV.mp4',
+                link: 'https://sabbathspa.com',
+              },
+            ].map((project, index) => (
+              <div class="grid items-center gap-12 lg:grid-cols-12 lg:gap-20">
+                <div class={`lg:col-span-5 ${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
+                  <div class="mb-6 inline-flex rounded-full border border-zinc-200 bg-zinc-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.3em] text-zinc-600">
+                    {project.type}
+                  </div>
+                  <h3 class="mb-6 text-3xl font-bold tracking-tight text-zinc-950 lg:text-4xl">
+                    {project.title}
+                  </h3>
+                  <p class="mb-8 text-lg leading-relaxed text-zinc-600">{project.description}</p>
+
+                  <div class="mb-8">
+                    <h4 class="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-zinc-950">
+                      Our contribution
+                    </h4>
+                    <ul class="space-y-3">
+                      {project.contributions.map((item) => (
+                        <li class="flex items-start gap-3 text-sm leading-relaxed text-zinc-600">
+                          <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div class="mb-10">
+                    <h4 class="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-zinc-950">
+                      Built with
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                      {project.tools.map((tool) => (
+                        <span class="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 shadow-sm">
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap gap-4">
+                    <Button href={project.link} external variant="primary" size="lg">
+                      View live site
+                    </Button>
+                    <Button
+                      href="https://www.upwork.com/agencies/1818954484693860352"
+                      external
+                      variant="secondary"
+                      size="lg"
+                    >
+                      View Upwork
+                    </Button>
+                  </div>
+                </div>
+
+                <div class={`lg:col-span-7 ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}>
+                  <div class="overflow-hidden rounded-[2rem] bg-[#fafafa] shadow-2xl">
+                    <video
+                      src={project.video}
+                      autoplay
+                      loop
+                      muted
+                      playsinline
+                      class="h-auto w-full object-contain text-[#52992c]"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </Container>
+    </section>
+
+    <!-- =========================== SERVICES =========================== -->
+    <section id="services" class="relative overflow-hidden bg-white py-24 lg:py-32">
+      <div
+        class="pointer-events-none absolute inset-0 opacity-[0.03]"
+        style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 32px 32px;"
+      >
+      </div>
+      <Container class="relative z-10">
+        <div class="mx-auto mb-20 max-w-3xl text-center">
+          <h2 class="mb-6 text-3xl font-bold tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+            What we can build
+          </h2>
+          <p class="text-lg leading-relaxed text-zinc-600">
+            Practical, business-ready solutions that combine solid web development with powerful
+            integrations.
+          </p>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2">
+          {
+            [
+              {
+                title: 'Business websites & landing pages',
+                description:
+                  'Clean, responsive, and conversion-focused websites built to represent your business professionally.',
+              },
+              {
+                title: 'WordPress & WooCommerce',
+                description:
+                  'Setup, customization, and deployment of robust content management and e-commerce systems.',
+              },
+              {
+                title: 'Automations & integrations',
+                description:
+                  'Connecting your website to ActiveCampaign, setting up chatbots, and streamlining business workflows.',
+              },
+              {
+                title: 'Booking systems & UI',
+                description:
+                  'Implementing seamless booking flows and responsive front-end interfaces for service-based businesses.',
+              },
+            ].map((item) => (
+              <div class="rounded-[2rem] border border-zinc-200/70 bg-[#fafafa] p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-xl">
+                <div class="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-100 bg-white text-zinc-900 shadow-sm">
+                  <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                    <path d="M8 8h8" />
+                    <path d="M8 12h8" />
+                    <path d="M8 16h5" />
+                  </svg>
+                </div>
+                <h3 class="mb-4 text-xl font-semibold text-zinc-950">{item.title}</h3>
+                <p class="leading-relaxed text-zinc-600">{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+      </Container>
+    </section>
+
+    <!-- ============================ VISION ============================ -->
+    <section class="relative overflow-hidden bg-zinc-950 py-24 text-white lg:py-32">
+      <div
+        class="pointer-events-none absolute right-0 top-0 h-[600px] w-[600px] translate-x-1/3 -translate-y-1/3 rounded-full bg-zinc-900 opacity-40 blur-[100px]">
+      </div>
+      <div
+        class="pointer-events-none absolute bottom-0 left-0 h-[500px] w-[500px] -translate-x-1/3 translate-y-1/3 rounded-full bg-zinc-900 opacity-30 blur-[80px]">
+      </div>
+      <Container class="relative z-10">
+        <div class="mx-auto max-w-4xl text-center">
+          <h2 class="mb-8 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Building Now, Growing Further
+          </h2>
+          <p class="mx-auto max-w-3xl text-xl leading-relaxed text-zinc-400 sm:text-2xl">
+            We already build real websites and business systems today, and we are continuing to
+            deepen our skills in front-end and full-stack development so we can create more
+            customized, scalable, and technically advanced digital experiences in the future.
+          </p>
+        </div>
+      </Container>
+    </section>
+
+    <!-- ============================ CONTACT ============================ -->
+    <section id="contact" class="bg-[#fafafa] py-24 lg:py-32">
+      <Container>
+        <div class="overflow-hidden rounded-[2.5rem] border border-zinc-200/70 bg-white p-8 text-center shadow-sm sm:p-12 lg:p-16">
+          <h2 class="mb-6 text-4xl font-bold tracking-tight text-zinc-950 sm:text-5xl">
+            Let's build something together.
+          </h2>
+          <p class="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-zinc-600">
+            We are open to freelance projects, collaborations, and web development opportunities.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <Button href="mailto:info@agoradatadriven.com" variant="primary" size="lg">
+              Email us
+            </Button>
+            <Button
+              href="https://www.upwork.com/agencies/1818954484693860352"
+              external
+              variant="secondary"
+              size="lg"
+            >
+              Hire us on Upwork
+            </Button>
+          </div>
+          <div class="mt-10 flex justify-center gap-4">
+            <a
+              href="https://www.linkedin.com/"
+              class="rounded-full border border-zinc-200 bg-zinc-50 p-4 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-950"
+              aria-label="LinkedIn"
+            >
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M6.94 8.5a1.56 1.56 0 1 0 0-3.12 1.56 1.56 0 0 0 0 3.12Z" />
+                <path d="M5.5 9.75h2.88V18H5.5z" />
+                <path d="M11.3 9.75h2.76v1.11h.04c.38-.72 1.32-1.48 2.72-1.48 2.91 0 3.45 1.92 3.45 4.41V18h-2.88v-7.4c0-1.76-.03-4.03-2.46-4.03-2.46 0-2.84 1.92-2.84 3.9V18H11.3z" />
+              </svg>
+            </a>
+            <a
+              href="https://github.com/Agora-Data-Driven"
+              class="rounded-full border border-zinc-200 bg-zinc-50 p-4 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-950"
+              aria-label="GitHub"
+            >
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor">
+                <path d="M12 .5a12 12 0 0 0-3.8 23.03c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.43-4.04-1.43-.55-1.4-1.34-1.77-1.34-1.77-1.09-.75.08-.74.08-.74 1.2.09 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.24a11.5 11.5 0 0 1 6.01 0c2.29-1.56 3.3-1.24 3.3-1.24.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.82 5.62-5.5 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.58A12 12 0 0 0 12 .5Z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </Container>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Floating "blob" backdrop for the hero — ported from the standalone
+     webdev.agoradatadriven.com app (these keyframes/utilities are not part of
+     the main site's global CSS). Pure CSS, no JS. */
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  /* Slow rotation for the "Currently Learning" dashed marker. */
+  @keyframes wd-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .spin-slow {
+    animation: wd-spin 4s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-blob,
+    .spin-slow {
+      animation: none;
+    }
+  }
+</style>
