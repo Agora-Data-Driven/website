@@ -88,8 +88,16 @@ scripts/        setup + startday bootstrap scripts (PowerShell + bash)
 
 1. Create `src/content/posts/<slug>.md`.
 2. Frontmatter: `title, slug, publishDate, excerpt, heroImage, heroAlt, category` (+ optional `updatedDate`, `draft`).
-3. Put hero image in `src/assets/`; reference it so `astro:assets` optimizes it.
+3. Hero image → `public/blog-images/<slug>.webp`, referenced as `heroImage: '/blog-images/<slug>.webp'`.
+   **One file per post, never a shared path** — the in-page editor's "Replace" commits to the image's own
+   source path, so two posts sharing a hero would overwrite each other. It must live in `public/` (not
+   `src/assets/`) because build-hashed `/_astro/*` images aren't editable. `heroImage` is optional: omit
+   it and the card/hero fall back to the branded `BlogThumbnail` SVG, then add a photo later via the editor.
+   Provenance for the current photos (all CC0/public-domain) is in `docs/blog-image-sources.json`.
 4. Write body in Markdown. `npm run dev` to preview; it auto-appears on `/blog/` and at its slug.
+
+Cards, category hubs, and "keep reading" rows all render the same `PostCard.astro` from the `CardData`
+shape in `src/lib/posts.ts` — add a surface there, not a new card.
 
 ## Commits
 

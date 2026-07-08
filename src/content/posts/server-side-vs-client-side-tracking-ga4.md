@@ -2,8 +2,8 @@
 title: 'Server-Side vs Client-Side Tracking for Accurate GA4'
 publishDate: 2026-06-27
 excerpt: 'Client-side tracking for GA4 is failing; server-side tracking offers superior accuracy and control over your crucial data.'
-heroImage: '/placeholders/cover-1.svg'
-heroAlt: 'Web analytics data flowing from a browser through a server to a dashboard.'
+heroImage: '/blog-images/server-side-vs-client-side-tracking-ga4.webp'
+heroAlt: 'Racks of servers in a data centre.'
 category: 'Marketing Analytics'
 draft: false
 ---

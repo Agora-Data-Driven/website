@@ -33,7 +33,7 @@ import { cta } from '@data/cta';
     <!-- Copy -->
     <div>
       <p
-        class="reveal border-brand-200 bg-tint/70 text-brand-700 inline-flex items-center gap-2 rounded-full border py-1.5 pr-4 pl-2.5 text-xs font-semibold tracking-wide uppercase backdrop-blur"
+        class="reveal-now border-brand-200 bg-tint/70 text-brand-700 inline-flex items-center gap-2 rounded-full border py-1.5 pr-4 pl-2.5 text-xs font-semibold tracking-wide uppercase backdrop-blur"
       >
         <span class="bg-brand-500 grid h-4 w-4 place-items-center rounded-full" aria-hidden="true">
           <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
@@ -41,7 +41,7 @@ import { cta } from '@data/cta';
         Data-driven marketing &amp; analytics
       </p>
       <h1
-        class="reveal text-ink mt-6 text-4xl leading-[1.04] font-bold sm:text-5xl lg:text-[4rem]"
+        class="reveal-now text-ink mt-6 text-4xl leading-[1.04] font-bold sm:text-5xl lg:text-[4rem]"
         style="--reveal-delay: 80ms"
       >
         Analytics powered marketing for
@@ -51,12 +51,12 @@ import { cta } from '@data/cta';
           ></span>
         </span>
       </h1>
-      <p class="reveal text-muted mt-6 max-w-xl text-lg" style="--reveal-delay: 160ms">
+      <p class="reveal-now text-muted mt-6 max-w-xl text-lg" style="--reveal-delay: 160ms">
         We turn insights into sales. From strategy to execution, we help you scale, optimize, and
         make smarter decisions, faster. Working with us isn't a cost; it's an investment.
       </p>
 
-      <div class="reveal mt-8 flex flex-wrap gap-4" style="--reveal-delay: 240ms">
+      <div class="reveal-now mt-8 flex flex-wrap gap-4" style="--reveal-delay: 240ms">
         <Button href={cta.becomeClient.href} external variant="icon" size="lg">
           {cta.becomeClient.label}
         </Button>
@@ -71,7 +71,7 @@ import { cta } from '@data/cta';
       </div>
 
       <div
-        class="reveal text-muted mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
+        class="reveal-now text-muted mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
         style="--reveal-delay: 320ms"
       >
         <span class="flex items-center gap-2">
@@ -90,7 +90,7 @@ import { cta } from '@data/cta';
     </div>
 
     <!-- Brand video showcase -->
-    <div class="reveal relative w-full" style="--reveal-delay: 200ms">
+    <div class="reveal-now relative w-full" style="--reveal-delay: 200ms">
       <div
         class="glow-pulse bg-brand-300/25 pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] blur-3xl"
       >
@@ -98,13 +98,17 @@ import { cta } from '@data/cta';
       <div
         class="group border-line bg-surface shadow-pop relative w-full overflow-hidden rounded-2xl border"
       >
+        <!-- preload is auto, not metadata: on an autoplaying video the metadata
+             hint only makes the browser suspend the fetch after the moov atom and
+             then immediately resume it to begin playback. It saves no bytes and
+             costs a round-trip before the first frame. -->
         <video
           class="bg-surface aspect-video w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
           autoplay
           loop
           muted
           playsinline
-          preload="metadata"
+          preload="auto"
           poster="/agora-hero-poster.webp"
           aria-label="A short look at how Agora Data Driven works with clients"
         >
@@ -166,30 +170,63 @@ import { cta } from '@data/cta';
       let w = 0;
       let c = words[0].length;
       let deleting = true;
-      const tick = () => {
+      // Every tick rewrites the <h1>'s text, which re-lays-out the headline and
+      // repaints its background-clip:text gradient. Left ungated that ran ~26x a
+      // second forever — scrolled past, and in background tabs. Pause it when it
+      // can't be seen; the state machine resumes exactly where it stopped.
+      let timer = 0;
+      let onScreen = false;
+      const arm = (ms: number) => {
+        timer = window.setTimeout(tick, ms);
+      };
+      function tick() {
+        timer = 0;
         const word = words[w];
         if (!deleting) {
           c++;
-          el.textContent = word.slice(0, c);
+          el!.textContent = word.slice(0, c);
           if (c === word.length) {
             deleting = true;
-            setTimeout(tick, 1500);
+            arm(1500);
             return;
           }
-          setTimeout(tick, 75);
+          arm(75);
         } else {
           c--;
-          el.textContent = word.slice(0, Math.max(c, 0));
+          el!.textContent = word.slice(0, Math.max(c, 0));
           if (c <= 0) {
             deleting = false;
             w = (w + 1) % words.length;
-            setTimeout(tick, 260);
+            arm(260);
             return;
           }
-          setTimeout(tick, 38);
+          arm(38);
         }
-      };
-      setTimeout(tick, 1600);
+      }
+
+      let started = false;
+      function sync() {
+        const want = onScreen && !document.hidden;
+        if (want && !timer) {
+          // first run keeps the original 1600ms beat before typing begins
+          arm(started ? 38 : 1600);
+          started = true;
+        } else if (!want && timer) {
+          clearTimeout(timer);
+          timer = 0;
+        }
+      }
+
+      document.addEventListener('visibilitychange', sync);
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver((entries) => {
+          onScreen = entries[entries.length - 1].isIntersecting;
+          sync();
+        }).observe(el);
+      } else {
+        onScreen = true;
+        sync();
+      }
     }
   }
 </script>
@@ -205,6 +242,7 @@ import { cta } from '@data/cta';
     const GREEN = '79,168,74';
     const ACCENT = '106,106,234'; // subtle purple accent for a few nodes
     const LINK = 135; // px distance to draw a connection
+    const LINK2 = LINK * LINK;
 
     type Node = { x: number; y: number; vx: number; vy: number; r: number; ph: number; a: boolean };
     type Packet = { i: number; j: number; t: number; sp: number };
@@ -213,18 +251,72 @@ import { cta } from '@data/cta';
     let nodes: Node[] = [];
     let packets: Packet[] = [];
 
+    // ---- Precomputed paint styles -------------------------------------------
+    // Building `rgba(...)` strings inside the frame loop meant ~300 throwaway
+    // strings per frame (one per link, two per node) plus a `toFixed` each. The
+    // alphas are smooth ramps, so quantize them and look the string up instead.
+    // 24 steps is finer than the eye can resolve on a 1px, <0.22-alpha line.
+    const STEPS = 24;
+    const LINK_FILL: string[] = [];
+    const GLOW_FILL: [string[], string[]] = [[], []];
+    const CORE_FILL: [string[], string[]] = [[], []];
+    for (let s = 0; s < STEPS; s++) {
+      const t = s / (STEPS - 1);
+      LINK_FILL.push(`rgba(${GREEN},${(t * 0.22).toFixed(3)})`);
+      for (let c = 0; c < 2; c++) {
+        const col = c === 0 ? GREEN : ACCENT;
+        GLOW_FILL[c].push(`rgba(${col},${(0.07 + 0.08 * t).toFixed(3)})`);
+        CORE_FILL[c].push(`rgba(${col},${(0.42 + 0.26 * t).toFixed(3)})`);
+      }
+    }
+    const PACKET_FILL = `rgba(${GREEN},0.85)`;
+    // One Path2D per *occupied* alpha bucket → at most 24 stroke() calls a frame
+    // (typically ~10), instead of a beginPath/stroke pair per link.
+    const linkPaths = new Map<number, Path2D>();
+
+    function strokeLinks() {
+      linkPaths.clear(); // Path2D has no clear() — buckets are rebuilt each frame
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < LINK2) {
+            const s = ((1 - Math.sqrt(d2) / LINK) * (STEPS - 1)) | 0;
+            let p = linkPaths.get(s);
+            if (!p) linkPaths.set(s, (p = new Path2D()));
+            p.moveTo(a.x, a.y);
+            p.lineTo(b.x, b.y);
+          }
+        }
+      }
+      for (const [s, p] of linkPaths) {
+        ctx!.strokeStyle = LINK_FILL[s];
+        ctx!.stroke(p);
+      }
+    }
+
     function rand(min: number, max: number) {
       return min + Math.random() * (max - min);
     }
 
     function resize() {
       const r = cv!.getBoundingClientRect();
-      w = r.width;
-      h = r.height;
+      const nw = r.width;
+      const nh = r.height;
+      // ResizeObserver fires for sub-pixel and no-op changes (and once on
+      // observe). Regenerating the field would visibly teleport every node, so
+      // bail unless the box actually changed.
+      if (nodes.length && Math.abs(nw - w) < 1 && Math.abs(nh - h) < 1) return;
+      w = nw;
+      h = nh;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       cv!.width = Math.max(1, Math.round(w * dpr));
       cv!.height = Math.max(1, Math.round(h * dpr));
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx!.lineWidth = 1; // constant — hoisted out of the frame loop
       const count = Math.max(20, Math.min(54, Math.round((w * h) / 22000)));
       nodes = [];
       for (let i = 0; i < count; i++) {
@@ -243,40 +335,29 @@ import { cta } from '@data/cta';
       for (let k = 0; k < pc; k++) {
         packets.push({ i: 0, j: 1, t: Math.random(), sp: rand(0.003, 0.007) });
       }
+      if (reduceMotion) drawStatic();
     }
 
-    resize();
-    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(cv);
-    else window.addEventListener('resize', resize);
-
     function draw(now: number) {
+      if (!running) return;
+      // Advance in 60fps-equivalent ticks: the field used to drift 2.4× faster on
+      // a 144Hz display and stutter after a long frame. Clamped so a stall (tab
+      // restore, GC) doesn't teleport everything.
+      const dt = last ? Math.min((now - last) / 16.667, 3) : 1;
+      last = now;
+
       ctx!.clearRect(0, 0, w, h);
 
-      // 1) connections (constellation)
-      for (let i = 0; i < nodes.length; i++) {
-        const a = nodes[i];
-        for (let j = i + 1; j < nodes.length; j++) {
-          const b = nodes[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < LINK * LINK) {
-            const al = (1 - Math.sqrt(d2) / LINK) * 0.22;
-            ctx!.strokeStyle = `rgba(${GREEN},${al.toFixed(3)})`;
-            ctx!.lineWidth = 1;
-            ctx!.beginPath();
-            ctx!.moveTo(a.x, a.y);
-            ctx!.lineTo(b.x, b.y);
-            ctx!.stroke();
-          }
-        }
-      }
+      // 1) connections (constellation), batched by quantized alpha
+      strokeLinks();
 
       // 2) travelling data packets ride between two moving nodes
+      ctx!.fillStyle = PACKET_FILL;
+      ctx!.beginPath();
       for (const p of packets) {
         const a = nodes[p.i % nodes.length];
         const b = nodes[p.j % nodes.length];
-        p.t += p.sp;
+        p.t += p.sp * dt;
         if (p.t >= 1) {
           p.t = 0;
           p.i = (Math.random() * nodes.length) | 0;
@@ -284,53 +365,39 @@ import { cta } from '@data/cta';
         }
         const px = a.x + (b.x - a.x) * p.t;
         const py = a.y + (b.y - a.y) * p.t;
-        ctx!.fillStyle = `rgba(${GREEN},0.85)`;
-        ctx!.beginPath();
+        ctx!.moveTo(px + 1.8, py);
         ctx!.arc(px, py, 1.8, 0, Math.PI * 2);
-        ctx!.fill();
       }
+      ctx!.fill();
 
       // 3) nodes with a soft pulsing glow
       for (const p of nodes) {
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
         if (p.x < -12) p.x = w + 12;
         else if (p.x > w + 12) p.x = -12;
         if (p.y < -12) p.y = h + 12;
         else if (p.y > h + 12) p.y = -12;
         const pulse = 0.5 + 0.5 * Math.sin(now / 1100 + p.ph);
-        const col = p.a ? ACCENT : GREEN;
-        ctx!.fillStyle = `rgba(${col},${(0.07 + 0.08 * pulse).toFixed(3)})`;
+        const s = Math.min(STEPS - 1, (pulse * STEPS) | 0);
+        const c = p.a ? 1 : 0;
+        ctx!.fillStyle = GLOW_FILL[c][s];
         ctx!.beginPath();
         ctx!.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
         ctx!.fill();
-        ctx!.fillStyle = `rgba(${col},${(0.42 + 0.26 * pulse).toFixed(3)})`;
+        ctx!.fillStyle = CORE_FILL[c][s];
         ctx!.beginPath();
         ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx!.fill();
       }
 
-      requestAnimationFrame(draw);
+      raf = requestAnimationFrame(draw);
     }
 
     function drawStatic() {
+      if (!w || !h) return;
       ctx!.clearRect(0, 0, w, h);
-      for (let i = 0; i < nodes.length; i++) {
-        const a = nodes[i];
-        for (let j = i + 1; j < nodes.length; j++) {
-          const b = nodes[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < LINK * LINK) {
-            ctx!.strokeStyle = `rgba(${GREEN},${((1 - Math.sqrt(d2) / LINK) * 0.22).toFixed(3)})`;
-            ctx!.beginPath();
-            ctx!.moveTo(a.x, a.y);
-            ctx!.lineTo(b.x, b.y);
-            ctx!.stroke();
-          }
-        }
-      }
+      strokeLinks();
       for (const p of nodes) {
         ctx!.fillStyle = `rgba(${p.a ? ACCENT : GREEN},0.5)`;
         ctx!.beginPath();
@@ -339,7 +406,40 @@ import { cta } from '@data/cta';
       }
     }
 
-    if (reduceMotion) drawStatic();
-    else requestAnimationFrame(draw);
+    // ---- Run only while the hero is actually on screen and the tab is awake ---
+    // The loop used to burn a frame's worth of work forever, including scrolled
+    // past the fold, in a background tab, and on mobile (where the canvas is
+    // `hidden`, so it never intersects and never starts).
+    let running = false;
+    let onScreen = false;
+    let raf = 0;
+    let last = 0;
+
+    function sync() {
+      const want = onScreen && !document.hidden && !reduceMotion;
+      if (want === running) return;
+      running = want;
+      if (want) {
+        last = 0; // don't bill the paused interval to the next frame's dt
+        raf = requestAnimationFrame(draw);
+      } else {
+        cancelAnimationFrame(raf);
+      }
+    }
+
+    resize();
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(cv);
+    else window.addEventListener('resize', resize);
+
+    document.addEventListener('visibilitychange', sync);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        onScreen = entries[entries.length - 1].isIntersecting;
+        sync();
+      }).observe(cv);
+    } else {
+      onScreen = true;
+      sync();
+    }
   }
 </script>

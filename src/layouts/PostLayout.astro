@@ -2,9 +2,13 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Container from '@components/Container.astro';
 import Breadcrumb from '@components/Breadcrumb.astro';
+import PageAurora from '@components/PageAurora.astro';
+import RelatedPosts from '@components/RelatedPosts.astro';
 import { site } from '@data/site';
 import { getSilo } from '@data/categories';
-import { createHmac } from 'crypto';
+import { getCollection } from 'astro:content';
+import { relatedPosts } from '@lib/posts';
+import { isSsoAdmin } from '@lib/sso';
 import { serverEnv } from '@lib/env';
 
 interface Props {
@@ -30,33 +34,9 @@ const {
   slug,
 } = Astro.props;
 
-function isSsoAdmin(cookieHeader: string | null, secret: string): boolean {
-  if (!secret || !cookieHeader) return false;
-  try {
-    const cookies = Object.fromEntries(
-      cookieHeader.split(';').map((c) => {
-        const [k, ...v] = c.trim().split('=');
-        return [k.trim(), v.join('=')];
-      }),
-    );
-    const raw = cookies['ag_sso'];
-    if (!raw) return false;
-    const dot = raw.lastIndexOf('.');
-    if (dot < 1) return false;
-    const payloadB64 = raw.slice(0, dot);
-    const sig = raw.slice(dot + 1);
-    const expected = createHmac('sha256', secret).update(payloadB64, 'ascii').digest('base64url');
-    if (sig !== expected) return false;
-    const pad = '='.repeat((4 - (payloadB64.length % 4)) % 4);
-    const payload = JSON.parse(Buffer.from(payloadB64 + pad, 'base64').toString('utf8'));
-    if (!payload.exp || Date.now() / 1000 > payload.exp) return false;
-    return Array.isArray(payload.clients) && payload.clients.includes('*');
-  } catch {
-    return false;
-  }
-}
-const ssoSecret = serverEnv('SSO_SECRET');
-const isAdmin = isSsoAdmin(Astro.request.headers.get('cookie'), ssoSecret);
+// Single source of truth for "is this a site admin" — @lib/sso (which also
+// honours the ADMIN_EMAILS allowlist). This layout used to carry its own copy.
+const isAdmin = isSsoAdmin(Astro.request.headers.get('cookie'), serverEnv('SSO_SECRET'));
 const postSlug = slug ?? Astro.url.pathname.replace(/^\/|\/$/g, '');
 
 const fmt = (d: Date) =>
@@ -80,6 +60,13 @@ const crumbs = isCaseStudy
       { label: title },
     ];
 
+// "Keep reading" row — same silo first, then same kind, then newest. Computed
+// here (not per-page) so every article route gets it for free, including posts
+// published later by the SEO pipeline.
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const self = allPosts.find((p) => p.id === postSlug);
+const related = self ? relatedPosts(self, allPosts, 3) : [];
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
@@ -94,6 +81,12 @@ const jsonLd = {
 ---
 
 <BaseLayout title={title} description={excerpt} type="article">
+  {
+    /* Soft variant: the light field is present but dialled well back, so body
+      copy keeps its AA contrast and long-form reading stays comfortable. */
+  }
+  <PageAurora variant="soft" />
+
   <article data-edit-post={postSlug}>
     <Container size="narrow" class="pt-10 pb-6 lg:pt-12">
       <Breadcrumb items={crumbs} />
@@ -128,12 +121,16 @@ const jsonLd = {
               <img
                 src={heroImage}
                 alt={heroAlt ?? ''}
-                class="border-line bg-canvas aspect-[16/9] w-full rounded-2xl border object-cover"
+                width="1600"
+                height="900"
+                class="border-line bg-canvas shadow-pop aspect-video w-full rounded-2xl border object-cover"
                 loading="eager"
+                fetchpriority="high"
+                decoding="async"
               />
             ) : (
               isAdmin && (
-                <div class="border-line bg-canvas text-muted flex aspect-[16/9] w-full items-center justify-center rounded-2xl border text-sm">
+                <div class="border-line bg-canvas text-muted flex aspect-video w-full items-center justify-center rounded-2xl border text-sm">
                   No hero image yet
                 </div>
               )
@@ -167,13 +164,19 @@ const jsonLd = {
     }
 
     <Container size="narrow" class="pb-12">
-      <div class="prose" data-edit-role="body">
-        <slot />
+      {
+        /* The reading panel sits on top of the aurora with a near-opaque frosted
+          surface, so the drifting green never competes with the body copy. */
+      }
+      <div class="reading-panel border-line rounded-2xl border px-5 py-7 sm:px-8 sm:py-9">
+        <div class="prose" data-edit-role="body">
+          <slot />
+        </div>
       </div>
     </Container>
 
     {/* Internal link up to the topic pillar / back to Portfolio */}
-    <Container size="narrow" class="pb-14">
+    <Container size="narrow" class="pb-6">
       <div class="border-line mt-2 border-t pt-6">
         {
           isCaseStudy ? (
@@ -197,6 +200,11 @@ const jsonLd = {
           )
         }
       </div>
+    </Container>
+
+    {/* Related reading, directly under the "Explore more in <silo>" link. */}
+    <Container size="narrow" class="pb-14">
+      <RelatedPosts posts={related} />
     </Container>
   </article>
 
@@ -278,7 +286,9 @@ const jsonLd = {
         if (file.type && !/^image\/(png|jpe?g|webp)$/.test(file.type))
           return fail('Please choose a PNG, JPG, or WebP image.');
         if (file.size > 5 * 1024 * 1024)
-          return fail(`That image is ${(file.size / 1048576).toFixed(1)} MB — please use one under 5 MB.`);
+          return fail(
+            `That image is ${(file.size / 1048576).toFixed(1)} MB — please use one under 5 MB.`,
+          );
 
         submit.disabled = true;
         submit.textContent = 'Uploading...';
@@ -320,3 +330,16 @@ const jsonLd = {
     })();
   </script>
 </BaseLayout>
+
+<style>
+  /* Reading surface. Deliberately near-opaque (94%): the page aurora should be
+     felt at the margins, never read through the body copy. `backdrop-filter`
+     softens whatever drifts behind it so text contrast stays constant as the
+     blobs move. */
+  .reading-panel {
+    background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+    backdrop-filter: blur(14px) saturate(1.05);
+    -webkit-backdrop-filter: blur(14px) saturate(1.05);
+    box-shadow: var(--shadow-card);
+  }
+</style>

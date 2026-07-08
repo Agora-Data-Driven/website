@@ -107,6 +107,13 @@ const breadcrumbLd = {
   <article>
     <!-- ============================================================ HERO -->
     <header class="border-line relative overflow-hidden border-b">
+      <!-- Roaming green aurora, clipped to this band and painted behind the
+           content (the Container below is lifted to z-10). -->
+      <div class="aurora" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+        <div class="aurora__blob aurora__blob--3"></div>
+      </div>
       <div
         class="bg-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_72%)] opacity-60"
         aria-hidden="true"
@@ -118,7 +125,7 @@ const breadcrumbLd = {
       >
       </div>
 
-      <Container size="wide" class="relative pt-8 pb-16 lg:pt-10 lg:pb-24">
+      <Container size="wide" class="relative z-10 pt-8 pb-16 lg:pt-10 lg:pb-24">
         <!-- Breadcrumb (light) -->
         <nav aria-label="Breadcrumb" class="reveal">
           <ol class="text-muted flex flex-wrap items-center gap-1.5 text-sm">
@@ -264,8 +271,12 @@ const breadcrumbLd = {
     </section>
 
     <!-- ========================================================= INTRO -->
-    <section id="story" class="scroll-mt-24 py-16 lg:py-24">
-      <Container size="narrow">
+    <section id="story" class="relative scroll-mt-24 overflow-hidden py-16 lg:py-24">
+      <div class="aurora aurora--soft" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+      </div>
+      <Container size="narrow" class="relative z-10">
         <p class="eyebrow reveal">The brief</p>
         <p
           class="reveal text-ink mt-5 text-2xl leading-snug font-semibold sm:text-[1.75rem] sm:leading-snug"
@@ -283,8 +294,12 @@ const breadcrumbLd = {
     </section>
 
     <!-- ====================================== VISION: more than a billboard -->
-    <section class="border-line bg-surface border-y py-16 lg:py-24">
-      <Container size="wide">
+    <section class="border-line bg-surface relative overflow-hidden border-y py-16 lg:py-24">
+      <div class="aurora aurora--soft" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+      </div>
+      <Container size="wide" class="relative z-10">
         <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div class="reveal">
             <p class="eyebrow">The vision</p>
@@ -338,8 +353,12 @@ const breadcrumbLd = {
     </section>
 
     <!-- =============================== STRATEGY: treat ourselves like a client -->
-    <section class="py-16 lg:py-24">
-      <Container size="wide">
+    <section class="relative overflow-hidden py-16 lg:py-24">
+      <div class="aurora aurora--soft" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+      </div>
+      <Container size="wide" class="relative z-10">
         <div class="reveal max-w-2xl">
           <p class="eyebrow">The strategy</p>
           <h2 class="text-ink mt-4 text-3xl font-bold sm:text-[2.6rem] sm:leading-[1.05]">
@@ -355,7 +374,7 @@ const breadcrumbLd = {
           {
             strategy.map((s, i) => (
               <div
-                class="reveal border-line bg-surface shadow-card card-hover group flex flex-col rounded-2xl border p-8"
+                class="reveal glow-card border-line bg-surface shadow-card card-hover group flex flex-col rounded-2xl border p-8"
                 style={`--reveal-delay: ${i * 110}ms`}
               >
                 <div class="flex items-center gap-3">
@@ -376,8 +395,12 @@ const breadcrumbLd = {
     </section>
 
     <!-- ================================================ RESULTS: industries -->
-    <section class="border-line bg-surface border-y py-16 lg:py-24">
-      <Container size="wide">
+    <section class="border-line bg-surface relative overflow-hidden border-y py-16 lg:py-24">
+      <div class="aurora aurora--soft" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+      </div>
+      <Container size="wide" class="relative z-10">
         <div class="reveal max-w-2xl">
           <p class="eyebrow">The results</p>
           <h2 class="text-ink mt-4 text-3xl font-bold sm:text-[2.6rem] sm:leading-[1.05]">
@@ -403,8 +426,12 @@ const breadcrumbLd = {
     </section>
 
     <!-- ================================ WHY IT WORKED: support pillars -->
-    <section class="py-16 lg:py-24">
-      <Container size="wide">
+    <section class="relative overflow-hidden py-16 lg:py-24">
+      <div class="aurora aurora--soft" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+      </div>
+      <Container size="wide" class="relative z-10">
         <div class="reveal max-w-2xl">
           <p class="eyebrow">Why it worked</p>
           <h2 class="text-ink mt-4 text-3xl font-bold sm:text-[2.6rem] sm:leading-[1.05]">
@@ -420,7 +447,7 @@ const breadcrumbLd = {
           {
             pillars.map((p, i) => (
               <div
-                class="reveal border-line bg-surface shadow-card card-hover rounded-2xl border p-6"
+                class="reveal glow-card border-line bg-surface shadow-card card-hover rounded-2xl border p-6"
                 style={`--reveal-delay: ${i * 90}ms`}
               >
                 <span
@@ -597,9 +624,76 @@ const breadcrumbLd = {
     background: var(--color-line);
   }
 
+  /* ---- Mouse-follow green spotlight on the strategy / pillar cards -------
+     Decorative only. --mx/--my are set by the script below on pointermove;
+     without JS (touch / reduced motion) the glow simply sits centred at the
+     top and still fades in on hover. Content is lifted above the glow. */
+  .glow-card {
+    position: relative;
+    isolation: isolate;
+    --mx: 50%;
+    --my: 0%;
+  }
+  .glow-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      240px circle at var(--mx) var(--my),
+      rgba(79, 168, 74, 0.14),
+      transparent 72%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-card:hover::before {
+    opacity: 1;
+  }
+  .glow-card > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .led-sweep {
       animation: none;
     }
+    .glow-card::before {
+      transition: none;
+    }
   }
 </style>
+
+<script>
+  // ---- Page motion: bidirectional scroll reveal + card spotlight -----------
+  // Purely additive. No content, copy, or layout is touched.
+  const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+  // BaseLayout reveals each .reveal once, then stops observing. Keep observing
+  // and *toggle*, so blocks animate scrolling UP as well as down. Skipped for
+  // reduced-motion (BaseLayout has already shown everything).
+  if (!prefersReduce && 'IntersectionObserver' in window) {
+    const revealIO = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) e.target.classList.toggle('is-visible', e.isIntersecting);
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
+    );
+    document.querySelectorAll('article .reveal').forEach((el) => revealIO.observe(el));
+  }
+
+  // Green glow follows the cursor across the cards. Desktop + motion-ok only.
+  if (!prefersReduce && !isTouch) {
+    document.querySelectorAll<HTMLElement>('.glow-card').forEach((card) => {
+      card.addEventListener('pointermove', (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+      });
+    });
+  }
+</script>

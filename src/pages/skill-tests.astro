@@ -235,14 +235,19 @@ const steps = [
     </section>
 
     <!-- ── GUEST vs MASTERY ──────────────────────────────────────────────── -->
-    <section class="border-line relative overflow-hidden bg-canvas border-b py-16 lg:py-20">
+    <section class="border-line bg-canvas relative overflow-hidden border-b py-16 lg:py-20">
+      <div class="aurora aurora--soft" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+        <div class="aurora__blob aurora__blob--3"></div>
+      </div>
       <div
         class="pointer-events-none absolute inset-0"
         style="background: radial-gradient(720px 300px at 10% -10%, rgba(79,168,74,0.08), transparent 60%)"
         aria-hidden="true"
       >
       </div>
-      <Container>
+      <Container class="relative z-10">
         <div class="reveal relative mb-10 max-w-2xl">
           <p class="eyebrow mb-3">Guest vs Mastery</p>
           <h2 class="font-display text-ink mb-3 text-3xl font-bold tracking-tight lg:text-4xl">
@@ -291,9 +296,14 @@ const steps = [
 
           <!-- Mastery -->
           <div
-            class="reveal surface-dark dot-grid-dark mastery-card shadow-pop relative flex flex-col overflow-hidden rounded-2xl p-7"
+            class="reveal surface-dark mastery-card shadow-pop relative flex flex-col overflow-hidden rounded-2xl p-7"
             style="--reveal-delay:110ms"
           >
+            <!-- Roaming green light inside the dark card -->
+            <div class="aurora aurora--dark aurora--card" aria-hidden="true">
+              <div class="aurora__blob aurora__blob--1"></div>
+              <div class="aurora__blob aurora__blob--2"></div>
+            </div>
             <span
               class="mastery-badge mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
               style="color:#bff0bd;background:rgba(79,168,74,0.14);border-color:rgba(79,168,74,0.35)"
@@ -346,14 +356,29 @@ const steps = [
         <div class="aurora__blob aurora__blob--3"></div>
       </div>
       <div class="bg-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true"></div>
-      <Container>
-        <!-- Filter row -->
+      <Container class="relative z-10">
+        <!-- Heading (leads the section; the controls sit beneath it) -->
+        <div class="reveal relative mb-8 max-w-2xl">
+          <p class="eyebrow mb-3">The tests</p>
+          <h2 class="font-display text-ink mb-3 text-3xl font-bold tracking-tight lg:text-4xl">
+            Choose a skill test
+          </h2>
+          <p class="text-muted text-lg">
+            Each test checks real, technical proficiency in one field: right and wrong answers, no
+            fluff.
+          </p>
+        </div>
+
+        <!-- Search + field tabs. The <select> is retained (hidden) as the single
+             source of truth so the existing filter logic is untouched; the pills
+             simply drive it and mirror its value. -->
         <div
-          class="border-line bg-surface shadow-card mb-10 flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center"
+          class="reveal border-line bg-surface/85 shadow-card mb-10 rounded-2xl border p-3 backdrop-blur sm:p-4"
+          style="--reveal-delay:80ms"
         >
-          <div class="relative flex-1">
+          <div class="relative">
             <svg
-              class="text-muted pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
+              class="text-muted pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2"
               viewBox="0 0 20 20"
               fill="currentColor"
               aria-hidden="true"
@@ -367,30 +392,42 @@ const steps = [
               id="test-search"
               type="search"
               placeholder="Search tests..."
-              class="border-line bg-canvas text-body placeholder:text-muted focus:border-brand-400 focus:ring-brand-400 w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm focus:ring-1 focus:outline-none"
+              class="border-line bg-canvas text-body placeholder:text-muted focus:border-brand-400 focus:ring-brand-400 w-full rounded-xl border py-3 pr-4 pl-10 text-sm focus:ring-1 focus:outline-none"
               aria-label="Search tests"
             />
           </div>
-          <select
-            id="filter-topic"
-            class="border-line bg-canvas text-body focus:border-brand-400 focus:ring-brand-400 rounded-lg border px-3 py-2.5 text-sm focus:ring-1 focus:outline-none"
-            aria-label="Filter by topic"
+
+          <div
+            class="filter-tabs mt-3 flex items-center gap-2 overflow-x-auto"
+            role="tablist"
+            aria-label="Filter tests by field"
           >
+            <button
+              type="button"
+              role="tab"
+              class="filter-pill is-active"
+              data-value=""
+              aria-selected="true">All fields</button
+            >
+            {
+              quizTopics.map((t: QuizTopic) => (
+                <button
+                  type="button"
+                  role="tab"
+                  class="filter-pill"
+                  data-value={t.id}
+                  aria-selected="false"
+                >
+                  {t.shortTitle}
+                </button>
+              ))
+            }
+          </div>
+
+          <select id="filter-topic" class="hidden" tabindex="-1" aria-hidden="true">
             <option value="">All fields</option>
             {quizTopics.map((t: QuizTopic) => <option value={t.id}>{t.shortTitle}</option>)}
           </select>
-        </div>
-
-        <!-- Heading -->
-        <div class="reveal relative mb-10 max-w-2xl">
-          <p class="eyebrow mb-3">The tests</p>
-          <h2 class="font-display text-ink mb-3 text-3xl font-bold tracking-tight lg:text-4xl">
-            Choose a skill test
-          </h2>
-          <p class="text-muted text-lg">
-            Each test checks real, technical proficiency in one field: right and wrong answers, no
-            fluff.
-          </p>
         </div>
 
         <!-- Test grid -->
@@ -484,8 +521,13 @@ const steps = [
     </section>
 
     <!-- ── HOW IT WORKS ───────────────────────────────────────────────────── -->
-    <section class="border-line relative overflow-hidden bg-canvas border-y py-16 lg:py-20">
-      <!-- Soft green wash + faint grid behind the steps -->
+    <section class="border-line bg-canvas relative overflow-hidden border-y py-16 lg:py-20">
+      <!-- Drifting green aurora + soft wash + faint grid behind the steps -->
+      <div class="aurora aurora--soft" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+        <div class="aurora__blob aurora__blob--3"></div>
+      </div>
       <div
         class="pointer-events-none absolute inset-0"
         style="background: radial-gradient(640px 320px at 50% -8%, rgba(79,168,74,0.09), transparent 62%)"
@@ -493,18 +535,24 @@ const steps = [
       >
       </div>
       <div class="bg-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true"></div>
-      <Container>
+      <Container class="relative z-10">
         <div class="reveal relative mb-10 text-center">
           <p class="eyebrow mb-3">The process</p>
           <h2 class="font-display text-ink text-3xl font-bold tracking-tight lg:text-4xl">
             How it works
           </h2>
         </div>
-        <div class="relative grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="steps-grid relative grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- Connector rail: shows only in the gaps between the opaque cards.
+               Its green fill sweeps across when the row scrolls into view.
+               Desktop-only, so it can never overlap the stacked layouts. -->
+          <div class="steps-line" aria-hidden="true">
+            <span class="steps-line__fill"></span>
+          </div>
           {
             steps.map((step, i) => (
               <div
-                class="reveal card-hover step-card border-line bg-surface shadow-card relative flex flex-col rounded-2xl border p-6"
+                class="reveal step-card border-line bg-surface shadow-card relative flex flex-col rounded-2xl border p-6"
                 style={`--reveal-delay:${i * 90}ms`}
               >
                 <span class="step-num font-display mb-3 block text-4xl font-bold">
@@ -520,13 +568,17 @@ const steps = [
     </section>
 
     <!-- ── FINAL CTA BANNER ──────────────────────────────────────────────── -->
-    <section class="surface-dark relative overflow-hidden py-20 lg:py-24">
+    <section class="surface-dark cta-band relative overflow-hidden py-20 lg:py-24">
       <div class="aurora aurora--dark" aria-hidden="true">
         <div class="aurora__blob aurora__blob--1"></div>
         <div class="aurora__blob aurora__blob--2"></div>
         <div class="aurora__blob aurora__blob--3"></div>
       </div>
-      <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-60" aria-hidden="true"></div>
+      <div
+        class="dot-grid-dark cta-dots pointer-events-none absolute inset-0 opacity-60"
+        aria-hidden="true"
+      >
+      </div>
       <Container>
         <div class="relative z-10 mx-auto max-w-2xl text-center">
           <h2
@@ -1381,7 +1433,48 @@ const steps = [
     z-index: 1;
   }
 
-  /* Mastery card: inner green/violet glow behind its content, for depth. */
+  /* ── Page theme: pure Agora green. No violet anywhere in the gradients. ──
+     `.surface-dark` ships a violet wash globally. `:global()` (not the scoped
+     form) so it also covers the shared Footer on this page; the rule only ships
+     with this page, so other pages keep the stock treatment. Unlayered CSS
+     outranks global.css's `@layer components`. */
+  :global(.surface-dark) {
+    background:
+      radial-gradient(42rem 30rem at 12% -15%, rgba(79, 168, 74, 0.24), transparent 60%),
+      radial-gradient(38rem 30rem at 100% 0%, rgba(47, 122, 58, 0.24), transparent 55%),
+      linear-gradient(165deg, #0a1d13 0%, var(--color-night) 58%, #050f09 100%);
+  }
+
+  /* ── Final CTA band → footer: one continuous dark field ──────────────────
+     They are two separate `.surface-dark` elements, so each restarts its own
+     gradient at the boundary — that's the visible step — and the footer's
+     `border-t` draws a hard line on top of it. Give both a *vertical* gradient
+     meeting on the same colour (#04100a) and drop the border, so the two read
+     as a single uninterrupted surface. The CTA keeps its roaming aurora; the
+     footer deliberately gets none. */
+  .cta-band {
+    background: linear-gradient(180deg, #0a1d13 0%, #06140d 55%, #04100a 100%);
+  }
+  /* The band's dot texture must dissolve before the join, or the dots simply
+     stop at the boundary and redraw the seam we just removed. */
+  .cta-dots {
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 52%, transparent 92%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 52%, transparent 92%);
+  }
+  :global(footer.surface-dark) {
+    border-top: 0;
+    /* Starts on exactly the colour the band ends on, and its green wash is
+       anchored low so nothing brightens the shared edge. */
+    background:
+      radial-gradient(48rem 26rem at 18% 78%, rgba(79, 168, 74, 0.08), transparent 62%),
+      linear-gradient(180deg, #04100a 0%, #06140d 60%, #050f09 100%);
+  }
+
+  /* Mastery card: inner green glow behind its content, for depth.
+     NOTE: the dot texture lives on ::after, never as a `dot-grid-dark` class on
+     this element — that utility sets `background-image`, and `.surface-dark`'s
+     dark gradient *is* a background-image, so the class would wipe it out and
+     leave the card transparent with unreadable white text. */
   .mastery-card {
     isolation: isolate;
   }
@@ -1392,13 +1485,198 @@ const steps = [
     border-radius: inherit;
     background:
       radial-gradient(60% 55% at 88% -8%, rgba(108, 185, 104, 0.38), transparent 60%),
-      radial-gradient(55% 55% at -10% 108%, rgba(106, 106, 234, 0.2), transparent 62%);
+      radial-gradient(55% 55% at -10% 108%, rgba(47, 122, 58, 0.28), transparent 62%);
     pointer-events: none;
     z-index: 0;
   }
-  .mastery-card > :global(*) {
+  .mastery-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 0;
+  }
+  /* Everything except the aurora gets lifted above the glow. (The aurora must
+     stay `position:absolute`, so it is excluded from this rule.) */
+  .mastery-card > :global(*:not(.aurora)) {
     position: relative;
     z-index: 1;
+  }
+  /* Card-sized aurora: smaller, softer blobs and no edge mask, so the light
+     fills the whole card as it roams. */
+  .aurora--card {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .aurora--card .aurora__blob {
+    width: 22rem;
+    height: 22rem;
+    filter: blur(46px);
+  }
+
+  /* Mid-page aurora: same drift, gentler light, feathered at both edges so the
+     green flows continuously between sections with no visible seam. */
+  .aurora--soft {
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 74%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 74%, transparent 100%);
+  }
+  .aurora--soft .aurora__blob {
+    opacity: 0.75;
+  }
+
+  /* ── Field tabs (drive the hidden <select>) ─────────────────────────────── */
+  .filter-tabs {
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-pill {
+    flex: none;
+    scroll-snap-align: start;
+    border-radius: 9999px;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    color: var(--color-body);
+    padding: 0.5rem 0.95rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition:
+      color 0.22s ease,
+      background-color 0.22s ease,
+      border-color 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+  .filter-pill:hover {
+    border-color: var(--color-brand-300);
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+  }
+  /* Selected field tab: a live green gradient that slowly flows across it. */
+  .filter-pill.is-active {
+    background: linear-gradient(
+      120deg,
+      var(--color-brand-400),
+      var(--color-brand-500) 42%,
+      var(--color-emerald) 78%,
+      var(--color-brand-400)
+    );
+    background-size: 220% 100%;
+    animation: pill-flow 7s ease-in-out infinite;
+    border-color: transparent;
+    color: #fff;
+    box-shadow: var(--shadow-glow-sm);
+  }
+  @keyframes pill-flow {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Opening a test carries the same green atmosphere into the quiz overlay. */
+  :global(#quiz-overlay) {
+    background:
+      radial-gradient(60rem 34rem at 85% -8%, rgba(79, 168, 74, 0.1), transparent 62%),
+      radial-gradient(52rem 34rem at -8% 12%, rgba(47, 122, 58, 0.08), transparent 60%),
+      var(--color-canvas);
+  }
+
+  /* ── How it works: connector rail + interactive step cards ──────────────── */
+  .steps-line {
+    display: none;
+    position: absolute;
+    top: 2.75rem;
+    left: 9%;
+    right: 9%;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-line);
+    overflow: hidden;
+    z-index: 0;
+  }
+  @media (min-width: 1024px) {
+    .steps-line {
+      display: block;
+    }
+  }
+  .steps-line__fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--color-brand-400),
+      var(--color-brand-600),
+      var(--color-emerald)
+    );
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+  }
+  .steps-grid.steps-in .steps-line__fill {
+    transform: scaleX(1);
+  }
+
+  .step-card {
+    z-index: 1;
+    isolation: isolate;
+    overflow: hidden;
+    transition:
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s ease,
+      border-color 0.35s ease;
+  }
+  .step-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(120% 80% at 50% -20%, rgba(79, 168, 74, 0.14), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .step-card:hover::before {
+    opacity: 1;
+  }
+  .step-card::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-brand-500), var(--color-emerald));
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .step-card:hover::after {
+    transform: scaleX(1);
+  }
+  .step-card > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+  .step-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--color-brand-300);
+    box-shadow:
+      var(--shadow-pop),
+      0 18px 40px -24px rgba(79, 168, 74, 0.65);
   }
 
   /* How it works: gradient step numbers with a soft green glow. */
@@ -1408,12 +1686,118 @@ const steps = [
     background-clip: text;
     color: transparent;
     filter: drop-shadow(0 6px 18px rgba(79, 168, 74, 0.35));
+    transition:
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.35s ease;
+    transform-origin: left center;
+  }
+  .step-card:hover .step-num {
+    transform: scale(1.09);
+    filter: drop-shadow(0 10px 26px rgba(79, 168, 74, 0.6));
+  }
+
+  /* ── Modern button system: magnetic pull, press feedback, sheen sweep, green
+     hover glow, and the click ripple. Applies to every button on the page.
+     `:global` because the quiz renders its buttons at runtime, so they never
+     carry Astro's scoping attribute. */
+  :global(#hub button),
+  :global(#quiz-overlay button),
+  :global(.mastery-cta) {
+    position: relative;
+    overflow: hidden;
+    /* --bx/--by: magnetic pull (JS). --bs: press feedback. Composed into one
+       transform so the two never fight over the property. */
+    transform: translate(var(--bx, 0px), var(--by, 0px)) scale(var(--bs, 1));
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s ease;
+  }
+  :global(#hub button:hover),
+  :global(#quiz-overlay button:hover),
+  :global(.mastery-cta:hover) {
+    box-shadow: 0 14px 32px -14px rgba(79, 168, 74, 0.6);
+  }
+  :global(#hub button:active),
+  :global(#quiz-overlay button:active),
+  :global(.mastery-cta:active) {
+    --bs: 0.96;
+  }
+
+  /* A light sweeps across the face of the button on hover. */
+  :global(#hub button)::after,
+  :global(#quiz-overlay button)::after,
+  :global(.mastery-cta)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -115%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.34), transparent);
+    transform: skewX(-18deg);
+    pointer-events: none;
+  }
+  :global(#hub button:hover)::after,
+  :global(#quiz-overlay button:hover)::after,
+  :global(.mastery-cta:hover)::after {
+    animation: btn-sweep 0.85s ease;
+  }
+  @keyframes btn-sweep {
+    to {
+      left: 135%;
+    }
+  }
+
+  :global(.ripple) {
+    position: absolute;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0.28;
+    transform: scale(0);
+    animation: ripple-out 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    pointer-events: none;
+  }
+  @keyframes ripple-out {
+    to {
+      transform: scale(2.6);
+      opacity: 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .test-card::before,
-    .guest-card::after {
+    .guest-card::after,
+    .step-card,
+    .step-card::before,
+    .step-card::after,
+    .step-num,
+    .filter-pill {
       transition: none;
+    }
+    .step-card:hover,
+    .step-card:hover .step-num {
+      transform: none;
+    }
+    .steps-line__fill {
+      transition: none;
+      transform: scaleX(1);
+    }
+    .filter-pill.is-active {
+      animation: none;
+    }
+    :global(.ripple) {
+      display: none;
+    }
+    :global(#hub button),
+    :global(#quiz-overlay button),
+    :global(.mastery-cta) {
+      transform: none;
+      transition: none;
+    }
+    :global(#hub button:hover)::after,
+    :global(#quiz-overlay button:hover)::after,
+    :global(.mastery-cta:hover)::after {
+      animation: none;
     }
   }
 </style>
@@ -1431,6 +1815,112 @@ const steps = [
         card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
         card.style.setProperty('--my', `${e.clientY - rect.top}px`);
       });
+    });
+  }
+
+  // ── Bidirectional scroll reveal ───────────────────────────────────────────
+  // BaseLayout reveals each .reveal once then stops observing. Here we keep
+  // observing and *toggle*, so sections animate scrolling UP as well as down.
+  // Reduced-motion is skipped (BaseLayout already shows everything).
+  if (!prefersReduce && 'IntersectionObserver' in window) {
+    const revealIO = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) e.target.classList.toggle('is-visible', e.isIntersecting);
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
+    );
+    document.querySelectorAll('#hub .reveal').forEach((el) => revealIO.observe(el));
+
+    // The step connector sweeps its green fill across as the row enters view.
+    const stepsGrid = document.querySelector('.steps-grid');
+    if (stepsGrid) {
+      const stepsIO = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) e.target.classList.toggle('steps-in', e.isIntersecting);
+        },
+        { threshold: 0.35 },
+      );
+      stepsIO.observe(stepsGrid);
+    }
+  }
+
+  // ── Field tabs → drive the hidden <select> the filter logic already reads ──
+  const topicSelect = document.getElementById('filter-topic') as HTMLSelectElement | null;
+  const pills = Array.from(document.querySelectorAll<HTMLElement>('.filter-pill'));
+  if (topicSelect && pills.length) {
+    const syncPills = () => {
+      pills.forEach((p) => {
+        const on = (p.dataset.value ?? '') === topicSelect.value;
+        p.classList.toggle('is-active', on);
+        p.setAttribute('aria-selected', String(on));
+      });
+    };
+    pills.forEach((p) =>
+      p.addEventListener('click', () => {
+        topicSelect.value = p.dataset.value ?? '';
+        topicSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        syncPills();
+      }),
+    );
+    topicSelect.addEventListener('change', syncPills);
+    // "Clear filters" resets the select directly, so re-sync on the next tick.
+    document
+      .getElementById('clear-filters-btn')
+      ?.addEventListener('click', () => setTimeout(syncPills, 0));
+    syncPills();
+  }
+
+  // ── Click ripple on every button ──────────────────────────────────────────
+  // Delegated from the document so the quiz's runtime-rendered buttons get it
+  // too. Purely decorative: it never intercepts or cancels the click.
+  if (!prefersReduce) {
+    document.addEventListener('pointerdown', (e) => {
+      const target = e.target as HTMLElement | null;
+      const btn = target?.closest<HTMLElement>('#hub button, #quiz-overlay button, .mastery-cta');
+      if (!btn || btn.hasAttribute('disabled')) return;
+      const rect = btn.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const size = Math.max(rect.width, rect.height);
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.width = `${size}px`;
+      ripple.style.height = `${size}px`;
+      ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+      ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+      btn.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+    });
+  }
+
+  // ── Magnetic buttons ──────────────────────────────────────────────────────
+  // Buttons drift a few pixels toward the cursor and spring back on leave.
+  // Writes CSS vars so it composes with the press scale rather than
+  // overwriting the transform. Desktop + motion-ok only.
+  if (!prefersReduce && !isTouch) {
+    const MAX = 5;
+    const attachMagnet = (btn: HTMLElement) => {
+      if (btn.dataset.magnetic) return;
+      btn.dataset.magnetic = '1';
+      btn.addEventListener('pointermove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width / 2)) * 0.22;
+        const dy = (e.clientY - (r.top + r.height / 2)) * 0.32;
+        btn.style.setProperty('--bx', `${Math.max(-MAX, Math.min(MAX, dx))}px`);
+        btn.style.setProperty('--by', `${Math.max(-MAX, Math.min(MAX, dy))}px`);
+      });
+      btn.addEventListener('pointerleave', () => {
+        btn.style.setProperty('--bx', '0px');
+        btn.style.setProperty('--by', '0px');
+      });
+    };
+    document.querySelectorAll<HTMLElement>('#hub button, .mastery-cta').forEach(attachMagnet);
+    // The quiz renders its buttons at runtime — attach on first hover. Answer
+    // options are excluded: they are large blocks, and drifting would feel off.
+    document.addEventListener('pointerover', (e) => {
+      const btn = (e.target as HTMLElement | null)?.closest<HTMLElement>(
+        '#quiz-overlay button:not(.option-btn)',
+      );
+      if (btn) attachMagnet(btn);
     });
   }
 </script>

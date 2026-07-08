@@ -2,8 +2,8 @@
 title: 'Is LED-Wall (DOOH) Advertising Worth It for Local Businesses?'
 publishDate: 2026-06-27
 excerpt: 'This is an honest look at when LED-wall advertising earns its place in a local budget, and when your money belongs elsewhere.'
-heroImage: '/placeholders/cover-1.svg'
-heroAlt: 'A large LED-wall digital out-of-home advertising screen on a busy street.'
+heroImage: '/blog-images/is-led-wall-dooh-advertising-worth-it.webp'
+heroAlt: 'Illuminated LED advertising screens above a busy city crossing at night.'
 category: 'Paid Marketing'
 industry: 'Local Business'
 draft: false

@@ -74,6 +74,24 @@ export async function ghPutFile(
   }
 }
 
+/** Delete a file. `sha` must be the file's current blob sha (see `ghGetSha`). */
+export async function ghDeleteFile(
+  token: string,
+  path: string,
+  message: string,
+  sha: string,
+): Promise<void> {
+  const res = await fetch(`${API}/repos/${GITHUB_REPO}/contents/${path}`, {
+    method: 'DELETE',
+    headers: { ...headers(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, sha, branch: GITHUB_BRANCH }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`GitHub DELETE ${path} -> ${res.status}: ${text}`);
+  }
+}
+
 /** Commit UTF-8 text to a path (create or overwrite). */
 export async function ghPutText(
   token: string,

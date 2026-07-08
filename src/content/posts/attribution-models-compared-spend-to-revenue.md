@@ -2,8 +2,8 @@
 title: 'Which Attribution Model Ties Your Ad Spend to Revenue?'
 publishDate: 2026-06-27
 excerpt: "Get attribution wrong and you'll cut the spend that's quietly doing the work while pouring money into the channel that just happened to be last in line."
-heroImage: '/placeholders/cover-3.svg'
-heroAlt: 'Marketing attribution splitting credit across a multi-touch customer journey.'
+heroImage: '/blog-images/attribution-models-compared-spend-to-revenue.webp'
+heroAlt: 'A laptop showing a marketing analytics dashboard with charts.'
 category: 'Marketing Analytics'
 draft: false
 ---

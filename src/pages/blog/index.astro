@@ -1,137 +1,133 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Container from '@components/Container.astro';
+import PageAurora from '@components/PageAurora.astro';
+import PostCard from '@components/PostCard.astro';
 import BlogThumbnail from '@components/BlogThumbnail.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { blogPosts, topicOptions, industryOptions } from '@data/blogData';
-import type { BlogPost } from '@data/blogData';
 import { cta } from '@data/cta';
+import { silos } from '@data/categories';
+import { cardFromPost, postImage, postImageAlt, readTime } from '@lib/posts';
+import type { CardData } from '@lib/posts';
 
 export const prerender = true;
 
 // All non-draft markdown posts, sorted newest first.
 const markdownPosts = await getCollection('posts', ({ data }) => !data.draft);
 markdownPosts.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+const bySlug = new Map<string, CollectionEntry<'posts'>>(markdownPosts.map((p) => [p.id, p]));
 
-// Body map for accurate read-time calculation.
-const bodyBySlug = new Map<string, string>(markdownPosts.map((p) => [p.id, p.body ?? '']));
-
-const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-
-function getReadTime(slug: string, fallback: string): string {
-  const body = bodyBySlug.get(slug);
-  if (body && body.trim().length > 100) {
-    const words = body.trim().split(/\s+/).length;
-    const mins = Math.max(1, Math.ceil(words / 220));
-    return `${mins} min read`;
-  }
-  return fallback;
-}
-
-// Default thumbnail per silo category for posts not in blogData.ts.
-const thumbByCategory: Record<string, string> = {
-  'Marketing Analytics': 'dashboard-metrics',
-  'Paid Marketing': 'channel-launch',
-  'Organic Growth': 'content-engine',
-  'Strategy & Growth': 'email-retargeting',
-  'Careers & Skill-Building': 'course-review',
-};
-
-// Posts with bespoke custom landing pages, exclude from the carousel.
+// Posts with bespoke custom landing pages, excluded from the carousels.
 const BESPOKE_SLUGS = new Set(['building-an-authentic-brand-identity']);
-
 // Slugs already curated in blogData.ts, don't double-render.
 const curatedSlugs = new Set(blogPosts.map((p) => p.slug));
 
-// Convert any markdown post not already in blogData.ts into a BlogPost card.
-function toCard(p: CollectionEntry<'posts'>): BlogPost {
+/**
+ * A curated blogData entry → a card. Where a real markdown post backs the
+ * entry we take its hero photo + true read time; entries that don't have a page
+ * yet keep their editorial copy and fall back to the branded SVG thumbnail.
+ */
+function cardFromCurated(p: (typeof blogPosts)[number]): CardData {
+  const md = bySlug.get(p.slug);
   return {
-    id: p.id,
-    slug: p.id,
-    title: p.data.title,
-    excerpt: p.data.excerpt,
-    section:
-      p.data.type === 'case-study' || p.data.type === 'data-file'
-        ? 'case-studies'
-        : 'data-driven-marketing',
-    kindLabel:
-      p.data.type === 'case-study'
-        ? 'Case Study'
-        : p.data.type === 'data-file'
-          ? 'The Data Files'
-          : undefined,
-    category: p.data.category,
-    topic: p.data.category,
-    industry: p.data.industry ?? 'All industries',
-    date: fmt(p.data.publishDate),
-    readTimeFallback: `${Math.max(1, Math.ceil((p.body ?? '').split(/\s+/).length / 220))} min read`,
-    thumbnailVariant: thumbByCategory[p.data.category] ?? 'attribution-flow',
-    href: `/${p.id}/`,
+    href: p.href,
+    title: p.title,
+    excerpt: p.excerpt,
+    category: p.category,
+    kindLabel: p.kindLabel,
+    date: p.date,
+    readTime: md ? readTime(md) : p.readTimeFallback,
+    image: md ? postImage(md) : undefined,
+    imageAlt: md ? postImageAlt(md) : undefined,
+    thumbVariant: p.thumbnailVariant,
+    topic: p.topic,
+    industry: p.industry,
   };
 }
 
-const extraCards = markdownPosts
-  .filter((p) => !curatedSlugs.has(p.id) && !BESPOKE_SLUGS.has(p.id))
-  .map(toCard);
+const extras = markdownPosts.filter((p) => !curatedSlugs.has(p.id) && !BESPOKE_SLUGS.has(p.id));
+const isCaseStudySection = (p: CollectionEntry<'posts'>): boolean =>
+  p.data.type === 'case-study' || p.data.type === 'data-file';
 
-// Curated posts first (have proper thumbnail/featured metadata), extras after.
-const ddmPosts: BlogPost[] = [
-  ...blogPosts.filter((p) => p.section === 'data-driven-marketing'),
-  ...extraCards.filter((p) => p.section === 'data-driven-marketing'),
+// Curated posts first (they carry featured/thumbnail metadata), extras after.
+const ddmCards: CardData[] = [
+  ...blogPosts.filter((p) => p.section === 'data-driven-marketing').map(cardFromCurated),
+  ...extras.filter((p) => !isCaseStudySection(p)).map(cardFromPost),
 ];
-const csPosts: BlogPost[] = [
-  ...blogPosts.filter((p) => p.section === 'case-studies'),
-  ...extraCards.filter((p) => p.section === 'case-studies'),
+const csCards: CardData[] = [
+  ...blogPosts.filter((p) => p.section === 'case-studies').map(cardFromCurated),
+  ...extras.filter(isCaseStudySection).map(cardFromPost),
 ];
-const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
+
+const featuredEntry = blogPosts.find((p) => p.featured) ?? blogPosts[0];
+const featured = cardFromCurated(featuredEntry);
+
+// Honest counts for the hero chips — derived, never invented.
+const articleCount = markdownPosts.length;
+const topicCount = new Set(markdownPosts.map((p) => p.data.category)).size;
+const siloCount = silos.length;
 ---
 
 <BaseLayout
   title="Blog | Data-Driven Marketing Insights & Case Studies | Agora Data Driven"
   description="Read data-driven marketing insights, practical guides, course reviews, and real business case studies from Agora Data Driven."
 >
+  <PageAurora />
+
   <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
-  <section class="hero-section border-line bg-surface relative overflow-hidden border-b">
-    <div class="bg-grid pointer-events-none absolute inset-0 opacity-40" aria-hidden="true"></div>
-    <div
-      class="pointer-events-none absolute inset-0"
-      style="background: radial-gradient(800px 500px at 110% -10%, rgba(79,168,74,0.08) 0%, transparent 60%), linear-gradient(150deg, rgba(238,246,237,0.55) 0%, transparent 45%);"
-      aria-hidden="true"
-    >
-    </div>
-    <div
-      class="border-brand-200/25 pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full border"
-      aria-hidden="true"
-    >
-    </div>
-    <div
-      class="border-brand-200/15 pointer-events-none absolute -top-6 -right-6 h-44 w-44 rounded-full border"
-      aria-hidden="true"
-    >
+  <section class="hero-section relative overflow-hidden">
+    <div class="bg-grid pointer-events-none absolute inset-0 opacity-30" aria-hidden="true"></div>
+    <!-- Slow counter-rotating rings: depth without a single extra request. -->
+    <div class="hero-rings pointer-events-none absolute" aria-hidden="true">
+      <span class="hero-ring hero-ring--lg spin-slow"></span>
+      <span class="hero-ring hero-ring--md spin-slower"></span>
     </div>
 
     <Container class="relative py-14 lg:py-20">
       <div class="hero-grid">
         <!-- Left: copy -->
         <div class="hero-left">
-          <p
-            class="eyebrow text-brand-600 mb-3 inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] uppercase"
-          >
-            <span class="bg-brand-500/10 border-brand-200 rounded-full border px-2.5 py-0.5"
-              >Blog</span
+          <p class="mb-4 inline-flex items-center gap-2">
+            <span
+              class="eyebrow text-brand-600 bg-brand-500/8 border-brand-200 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold tracking-[0.18em] uppercase backdrop-blur-sm"
             >
+              <span class="live-dot" aria-hidden="true"></span>
+              Blog
+            </span>
           </p>
-          <h1 class="text-ink font-display text-4xl leading-[1.12] font-bold sm:text-5xl">
-            Insights that<br /><span class="text-gradient">drive growth.</span>
+
+          <h1
+            class="text-ink font-display text-4xl leading-[1.08] font-bold sm:text-5xl lg:text-[3.5rem]"
+          >
+            Insights that<br /><span class="text-gradient-animated">drive growth.</span>
           </h1>
-          <p class="text-muted mt-4 max-w-md text-base leading-relaxed sm:text-[1.0625rem]">
+
+          <p class="text-muted mt-5 max-w-md text-base leading-relaxed sm:text-[1.0625rem]">
             Real-world lessons on marketing, data, and growth, written by practitioners, for
             practitioners.
           </p>
 
-          <!-- Value props -->
+          <!-- Live counts — derived from the collection, so they can never drift. -->
+          <dl class="hero-stats mt-7">
+            <div class="hero-stat">
+              <dt class="text-muted">Articles</dt>
+              <dd class="text-ink font-display">{articleCount}</dd>
+            </div>
+            <span class="hero-stat__rule" aria-hidden="true"></span>
+            <div class="hero-stat">
+              <dt class="text-muted">Topics</dt>
+              <dd class="text-ink font-display">{topicCount}</dd>
+            </div>
+            <span class="hero-stat__rule" aria-hidden="true"></span>
+            <div class="hero-stat">
+              <dt class="text-muted">Silos</dt>
+              <dd class="text-ink font-display">{siloCount}</dd>
+            </div>
+          </dl>
+
+          <!-- Value props (wording preserved) -->
           <ul class="hero-values mt-7 grid grid-cols-2 gap-x-6 gap-y-3">
             {
               [
@@ -139,20 +135,20 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
                 'Data-backed strategy',
                 'Practical frameworks',
                 'Real business stories',
-              ].map((v) => (
-                <li class="text-muted flex items-center gap-2 text-sm">
-                  <svg
-                    class="text-brand-500 h-3.5 w-3.5 shrink-0"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M2 7l3.5 3.5L12 3" />
-                  </svg>
+              ].map((v, i) => (
+                <li class="text-muted flex items-center gap-2 text-sm" style={`--i:${i}`}>
+                  <span class="hero-tick" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M2 7l3.5 3.5L12 3" />
+                    </svg>
+                  </span>
                   {v}
                 </li>
               ))
@@ -160,68 +156,94 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
           </ul>
         </div>
 
-        <!-- Right: featured article card -->
-        {
-          featuredPost && (
-            <div class="hero-right">
-              <a href={featuredPost.href} class="featured-card group block">
-                <article class="border-line bg-surface shadow-pop overflow-hidden rounded-2xl border">
-                  {/* Thumbnail */}
-                  <div class="featured-thumb bg-tint overflow-hidden">
-                    <BlogThumbnail variant={featuredPost.thumbnailVariant} />
+        <!-- Right: featured article -->
+        <div class="hero-right">
+          <div class="featured-float">
+            <a href={featured.href} class="featured-card ring-roam group block rounded-2xl">
+              <article class="border-line card-glass shadow-pop overflow-hidden rounded-2xl border">
+                <div class="featured-thumb bg-tint relative overflow-hidden">
+                  {
+                    featured.image ? (
+                      <img
+                        src={featured.image}
+                        alt={featured.imageAlt ?? featured.title}
+                        width="1600"
+                        height="700"
+                        loading="eager"
+                        fetchpriority="high"
+                        decoding="async"
+                        class="featured-img"
+                      />
+                    ) : (
+                      <BlogThumbnail variant={featured.thumbVariant} />
+                    )
+                  }
+                  <span class="featured-scan" aria-hidden="true"></span>
+                </div>
+                <div class="p-5">
+                  <div class="mb-3 flex flex-wrap items-center gap-2.5">
+                    <span
+                      class="bg-brand-500 rounded-full px-3 py-0.5 text-[10px] font-bold tracking-widest text-white uppercase"
+                    >
+                      Featured
+                    </span>
+                    <span class="text-brand-600 text-[10px] font-bold tracking-widest uppercase">
+                      {featured.category}
+                    </span>
                   </div>
-                  <div class="p-5">
-                    {/* Badges */}
-                    <div class="mb-3 flex flex-wrap items-center gap-2.5">
-                      <span class="bg-brand-500 rounded-full px-3 py-0.5 text-[10px] font-bold tracking-widest text-white uppercase">
-                        Featured
-                      </span>
-                      <span class="text-brand-600 text-[10px] font-bold tracking-widest uppercase">
-                        {featuredPost.category}
-                      </span>
-                    </div>
-                    <h2 class="text-ink group-hover:text-brand-700 text-[0.9375rem] leading-snug font-bold transition-colors sm:text-base">
-                      {featuredPost.title}
-                    </h2>
-                    <p class="text-muted mt-2 line-clamp-2 text-sm leading-relaxed">
-                      {featuredPost.excerpt}
-                    </p>
-                    <div class="mt-4 flex items-center justify-between">
-                      <span class="text-muted text-xs">
-                        {featuredPost.date} ·{' '}
-                        {getReadTime(featuredPost.slug, featuredPost.readTimeFallback)}
-                      </span>
-                      <span class="text-brand-600 group-hover:text-brand-700 inline-flex items-center gap-1.5 text-xs font-semibold transition-all group-hover:gap-2.5">
-                        Read article
+                  <h2
+                    class="text-ink group-hover:text-brand-700 text-lg leading-snug font-bold transition-colors sm:text-xl"
+                  >
+                    {featured.title}
+                  </h2>
+                  <p class="text-muted mt-2 line-clamp-2 text-[0.9375rem] leading-relaxed">
+                    {featured.excerpt}
+                  </p>
+                  <div class="mt-4 flex items-center justify-between gap-3">
+                    <span class="text-muted text-xs">{featured.date} · {featured.readTime}</span>
+                    <span class="read-cta text-brand-600 text-xs font-semibold">
+                      <span class="read-cta__label">Read article</span>
+                      <span class="read-cta__icon" aria-hidden="true">
                         <svg
-                          class="h-3.5 w-3.5 shrink-0"
                           viewBox="0 0 16 16"
                           fill="none"
                           stroke="currentColor"
                           stroke-width="2"
                           stroke-linecap="round"
                           stroke-linejoin="round"
-                          aria-hidden="true"
+                          class="h-3.5 w-3.5"
                         >
-                          <path d="M3 8h10M9 4l4 4-4 4" />
+                          <path d="M3 8h10M9 4l4 4-4 4"></path>
+                        </svg>
+                        <svg
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="h-3.5 w-3.5"
+                        >
+                          <path d="M3 8h10M9 4l4 4-4 4"></path>
                         </svg>
                       </span>
-                    </div>
+                    </span>
                   </div>
-                </article>
-              </a>
-            </div>
-          )
-        }
+                </div>
+              </article>
+            </a>
+          </div>
+        </div>
       </div>
     </Container>
+
+    <div class="border-line border-b" aria-hidden="true"></div>
   </section>
 
   <!-- ── FILTERS + SECTIONS ────────────────────────────────────────────────── -->
   <Container class="py-12 lg:py-16">
     <!-- Search + filter bar -->
     <div class="filter-bar mb-12 flex flex-col gap-3 sm:flex-row sm:items-center">
-      <!-- Search -->
       <div class="relative flex-1 sm:max-w-xs">
         <svg
           class="text-muted pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2"
@@ -240,17 +262,15 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
           type="search"
           placeholder="Search articles…"
           autocomplete="off"
-          class="border-line bg-surface text-ink placeholder:text-muted focus:border-brand-400 w-full rounded-full border py-2.5 pr-4 pl-10 text-sm shadow-sm transition-colors outline-none"
+          class="border-line card-glass text-ink placeholder:text-muted focus:border-brand-400 w-full rounded-full border py-2.5 pr-4 pl-10 text-sm shadow-sm transition-colors outline-none"
         />
       </div>
 
-      <!-- Topic filter -->
       <select id="topic-filter" class="filter-select" aria-label="Filter by topic">
         <option value="all">All topics</option>
         {topicOptions.map((t) => <option value={t}>{t}</option>)}
       </select>
 
-      <!-- Industry filter -->
       <select id="industry-filter" class="filter-select" aria-label="Filter by industry">
         <option value="all">All industries</option>
         {industryOptions.map((i) => <option value={i}>{i}</option>)}
@@ -259,7 +279,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
 
     <!-- ── Section 1: Data Driven Marketing ─────────────────────────────────── -->
     <section class="mb-16" aria-label="Data Driven Marketing articles">
-      <div class="section-header mb-6 flex items-start justify-between gap-4">
+      <div class="section-header mb-6">
         <div class="flex items-start gap-3">
           <div
             class="bg-tint border-brand-100 mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border"
@@ -285,7 +305,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
             </p>
           </div>
         </div>
-        <div class="flex shrink-0 items-center gap-1">
+        <div class="section-header__controls flex shrink-0 items-center gap-1">
           <button
             id="ddm-left"
             class="carousel-btn"
@@ -321,19 +341,29 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
           </button>
           <a
             href="/blog/category/marketing-analytics/"
-            class="text-brand-600 hover:text-brand-700 ml-2 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+            class="text-brand-600 hover:text-brand-700 read-cta ml-2 text-sm font-semibold"
           >
-            See all
-            <svg
-              class="h-3.5 w-3.5"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
-            >
+            <span class="read-cta__label">See all</span>
+            <span class="read-cta__icon" aria-hidden="true">
+              <svg
+                class="h-3.5 w-3.5"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+              >
+              <svg
+                class="h-3.5 w-3.5"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+              >
+            </span>
           </a>
         </div>
       </div>
@@ -341,35 +371,17 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
       <div class="carousel-wrap">
         <div class="carousel-track" id="ddm-track" role="list">
           {
-            ddmPosts.map((post) => (
-              <article
-                class="ddm-card carousel-card"
-                role="listitem"
-                data-section="data-driven-marketing"
-                data-topic={post.topic}
-                data-industry={post.industry}
-                data-search={`${post.title} ${post.excerpt} ${post.category} ${post.topic} ${post.industry}`.toLowerCase()}
-              >
-                <a href={post.href} class="ddm-card-inner group">
-                  <div class="ddm-thumb overflow-hidden">
-                    <BlogThumbnail variant={post.thumbnailVariant} class="ddm-thumb-svg" />
-                  </div>
-                  <div class="ddm-body flex flex-col">
-                    <span class="text-brand-600 text-[10px] font-bold tracking-[0.16em] uppercase">
-                      {post.category}
-                    </span>
-                    <h3 class="text-ink group-hover:text-brand-700 mt-2 line-clamp-2 flex-1 text-[0.875rem] leading-snug font-semibold transition-colors">
-                      {post.title}
-                    </h3>
-                    <p class="text-muted mt-2 line-clamp-2 text-xs leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                    <p class="text-muted mt-3 text-[11px]">
-                      {post.date} · {getReadTime(post.slug, post.readTimeFallback)}
-                    </p>
-                  </div>
-                </a>
-              </article>
+            ddmCards.map((card, i) => (
+              <div class="carousel-card" role="listitem">
+                <PostCard
+                  card={card}
+                  rootClass="ddm-card"
+                  section="data-driven-marketing"
+                  filterable
+                  eager={i < 2}
+                  class="h-full"
+                />
+              </div>
             ))
           }
         </div>
@@ -388,7 +400,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
 
     <!-- ── Section 2: Case Studies ──────────────────────────────────────────── -->
     <section aria-label="Case Studies">
-      <div class="section-header mb-6 flex items-start justify-between gap-4">
+      <div class="section-header mb-6">
         <div class="flex items-start gap-3">
           <div
             class="bg-tint border-brand-100 mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border"
@@ -415,7 +427,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
             </p>
           </div>
         </div>
-        <div class="flex shrink-0 items-center gap-1">
+        <div class="section-header__controls flex shrink-0 items-center gap-1">
           <button id="cs-left" class="carousel-btn" aria-label="Scroll Case Studies left" disabled>
             <svg
               class="h-4 w-4"
@@ -442,19 +454,29 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
           </button>
           <a
             href="/agora-portfolio/"
-            class="text-brand-600 hover:text-brand-700 ml-2 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+            class="text-brand-600 hover:text-brand-700 read-cta ml-2 text-sm font-semibold"
           >
-            See all
-            <svg
-              class="h-3.5 w-3.5"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
-            >
+            <span class="read-cta__label">See all</span>
+            <span class="read-cta__icon" aria-hidden="true">
+              <svg
+                class="h-3.5 w-3.5"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+              >
+              <svg
+                class="h-3.5 w-3.5"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+              >
+            </span>
           </a>
         </div>
       </div>
@@ -462,65 +484,16 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
       <div class="carousel-wrap">
         <div class="carousel-track" id="cs-track" role="list">
           {
-            csPosts.map((post) => (
-              <article
-                class="cs-card carousel-card"
-                role="listitem"
-                data-section="case-studies"
-                data-topic={post.topic}
-                data-industry={post.industry}
-                data-search={`${post.title} ${post.excerpt} ${post.category} ${post.topic} ${post.industry}`.toLowerCase()}
-              >
-                <a href={post.href} class="cs-card-inner group flex h-full flex-col">
-                  <div class="cs-thumb overflow-hidden">
-                    <BlogThumbnail variant={post.thumbnailVariant} />
-                  </div>
-                  <div class="flex flex-1 flex-col p-5">
-                    <div class="mb-2 flex flex-wrap items-center gap-2">
-                      <span class="text-brand-600 text-[10px] font-bold tracking-[0.16em] uppercase">
-                        {post.category}
-                      </span>
-                      {post.kindLabel && (
-                        <span
-                          class={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                            post.kindLabel === 'Case Study'
-                              ? 'bg-tint text-brand-700'
-                              : 'border-line text-muted bg-canvas border'
-                          }`}
-                        >
-                          {post.kindLabel}
-                        </span>
-                      )}
-                    </div>
-                    <h3 class="text-ink group-hover:text-brand-700 line-clamp-2 flex-1 text-[0.875rem] leading-snug font-semibold transition-colors">
-                      {post.title}
-                    </h3>
-                    <p class="text-muted mt-2 line-clamp-2 text-xs leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                    <div class="mt-4 flex items-center justify-between">
-                      <p class="text-muted text-[11px]">
-                        {post.date} · {getReadTime(post.slug, post.readTimeFallback)}
-                      </p>
-                      <span class="text-brand-600 inline-flex items-center gap-1 text-[11px] font-semibold transition-all group-hover:gap-1.5">
-                        Read
-                        <svg
-                          class="h-3 w-3 shrink-0"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M3 8h10M9 4l4 4-4 4" />
-                        </svg>
-                      </span>
-                    </div>
-                  </div>
-                </a>
-              </article>
+            csCards.map((card) => (
+              <div class="carousel-card" role="listitem">
+                <PostCard
+                  card={card}
+                  rootClass="cs-card"
+                  section="case-studies"
+                  filterable
+                  class="h-full"
+                />
+              </div>
             ))
           }
         </div>
@@ -549,11 +522,9 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
           aria-hidden="true"
         >
         </div>
-        <div
-          class="pointer-events-none absolute inset-0"
-          style="background: radial-gradient(600px 400px at 50% 120%, rgba(79,168,74,0.22) 0%, transparent 70%);"
-          aria-hidden="true"
-        >
+        <div class="aurora aurora--dark" aria-hidden="true">
+          <div class="aurora__blob aurora__blob--1"></div>
+          <div class="aurora__blob aurora__blob--2"></div>
         </div>
         <div class="relative">
           <h2 class="font-display text-2xl font-bold text-white sm:text-3xl lg:text-[2rem]">
@@ -566,7 +537,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
             href={cta.becomeClient.href}
             target="_blank"
             rel="noopener noreferrer"
-            class="bg-brand-500 shadow-glow-sm hover:bg-brand-600 hover:shadow-glow mt-8 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-all"
+            class="bg-brand-500 shadow-glow-sm hover:bg-brand-600 hover:shadow-glow btn-sheen mt-8 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-all"
           >
             Let's talk growth
             <svg
@@ -600,20 +571,173 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
     }
   }
 
+  /* Decorative rings, clipped by the section's `overflow-hidden`. */
+  .hero-rings {
+    top: -6rem;
+    right: -6rem;
+    width: 26rem;
+    height: 26rem;
+  }
+  .hero-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1px solid;
+  }
+  .hero-ring--lg {
+    border-color: color-mix(in srgb, var(--color-brand-300) 40%, transparent);
+    border-style: dashed;
+  }
+  .hero-ring--md {
+    inset: 5rem;
+    border-color: color-mix(in srgb, var(--color-brand-300) 28%, transparent);
+  }
+  @media (max-width: 1023px) {
+    .hero-rings {
+      display: none;
+    }
+  }
+
+  /* Pulsing "live" dot in the Blog chip. */
+  .live-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 9999px;
+    background: var(--color-brand-500);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand-500) 60%, transparent);
+    animation: live-dot 2.4s ease-out infinite;
+  }
+  @keyframes live-dot {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand-500) 55%, transparent);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 7px transparent;
+    }
+  }
+
+  /* Derived counts. Tabular figures keep the numerals from shifting. */
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .hero-stat dt {
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .hero-stat dd {
+    margin-top: 0.125rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-stat__rule {
+    width: 1px;
+    height: 1.75rem;
+    background: var(--color-line);
+  }
+
+  .hero-tick {
+    display: grid;
+    place-items: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    flex: none;
+    border-radius: 9999px;
+    background: var(--color-tint);
+    color: var(--color-brand-600);
+  }
+  .hero-tick svg {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  /* Featured card: gentle float, and a slow light sweep across the photo. */
+  .featured-float {
+    animation: float-soft 7s ease-in-out infinite;
+    will-change: transform;
+  }
+  .featured-card {
+    display: block;
+    text-decoration: none;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .featured-card:hover {
+    transform: translateY(-3px);
+  }
+  .featured-card:active {
+    transform: translateY(0) scale(0.995);
+    transition-duration: 0.09s;
+  }
   .featured-thumb {
     aspect-ratio: 16 / 7;
-    background-color: var(--color-tint);
   }
-  .featured-thumb svg {
+  .featured-thumb :global(svg),
+  .featured-img {
+    display: block;
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .featured-card:hover .featured-img,
+  .featured-card:hover .featured-thumb :global(svg) {
+    transform: scale(1.04);
+  }
+  /* A single soft highlight that drifts across the image — reads as "live data",
+     costs one composited layer. */
+  .featured-scan {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 35%,
+      rgba(255, 255, 255, 0.28) 50%,
+      transparent 65%
+    );
+    transform: translateX(-100%);
+    animation: featured-scan 6.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes featured-scan {
+    0%,
+    55% {
+      transform: translateX(-100%);
+    }
+    85%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .featured-float,
+    .featured-scan,
+    .live-dot {
+      animation: none;
+    }
+    .featured-scan {
+      opacity: 0;
+    }
+    .featured-card:hover,
+    .featured-card:active {
+      transform: none;
+    }
   }
 
   /* ── Filter selects ── */
   .filter-select {
     appearance: none;
     -webkit-appearance: none;
-    background-color: var(--color-surface);
+    background-color: color-mix(in srgb, var(--color-surface) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236b6f6c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
@@ -644,6 +768,26 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
     }
   }
 
+  /* ── Section header ──
+     On phones the arrows + "See all" would squeeze the heading into a ~130px
+     column, so the controls drop below the title instead of sitting beside it. */
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .section-header__controls {
+    justify-content: flex-end;
+  }
+  @media (min-width: 640px) {
+    .section-header {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+  }
+
   /* ── Carousel buttons ── */
   .carousel-btn {
     display: inline-flex;
@@ -653,31 +797,38 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
     height: 2rem;
     border-radius: 9999px;
     border: 1px solid var(--color-line);
-    background-color: var(--color-surface);
+    background-color: color-mix(in srgb, var(--color-surface) 88%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: var(--color-body);
     cursor: pointer;
     transition:
       border-color 0.18s ease,
       color 0.18s ease,
-      opacity 0.18s ease;
+      opacity 0.18s ease,
+      transform 0.18s ease;
   }
   .carousel-btn:hover:not(:disabled) {
     border-color: var(--color-brand-300);
     color: var(--color-brand-600);
+    transform: scale(1.08);
+  }
+  .carousel-btn:active:not(:disabled) {
+    transform: scale(0.94);
   }
   .carousel-btn:disabled {
     opacity: 0.35;
     cursor: default;
   }
 
-  /* ── Carousel track ── */
+  /* ── Carousel track (horizontal scroll retained) ── */
   .carousel-wrap {
     position: relative;
-    /* Right fade hint */
-    mask-image: linear-gradient(to right, black 88%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
+    /* Right fade hint. Generous top/bottom padding via the track keeps the
+       card's hover lift + ring from being clipped by the mask. */
+    mask-image: linear-gradient(to right, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
   }
-
   .carousel-track {
     display: flex;
     gap: 1.25rem;
@@ -685,107 +836,34 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-bottom: 8px; /* prevent shadow clip */
+    padding: 6px 0 12px; /* room for the hover lift + shadow */
   }
   .carousel-track::-webkit-scrollbar {
     display: none;
   }
+  .carousel-track[hidden] {
+    display: none;
+  }
 
-  /* Card widths: 1.08 on mobile → 2 on sm → 3 on lg */
+  /* 1 card on mobile → 2 from `sm` up (the previous layout showed 3 at `lg`). */
   .carousel-card {
     flex: 0 0 88%;
     scroll-snap-align: start;
     min-width: 0;
+    display: flex;
+  }
+  .carousel-card > :global(*) {
+    width: 100%;
+  }
+  /* Filtered-out cards must give up their flex slot, so `display:none` has to
+     beat the `display:flex` above. */
+  .carousel-card[hidden] {
+    display: none;
   }
   @media (min-width: 640px) {
     .carousel-card {
       flex: 0 0 calc(50% - 0.625rem);
     }
-  }
-  @media (min-width: 1024px) {
-    .carousel-card {
-      flex: 0 0 calc(33.333% - 0.834rem);
-    }
-  }
-
-  /* ── DDM horizontal mini-card ── */
-  .ddm-card {
-    border: 1px solid var(--color-line);
-    border-radius: 1.25rem;
-    background-color: var(--color-surface);
-    overflow: hidden;
-    transition:
-      box-shadow 0.22s ease,
-      transform 0.22s ease;
-  }
-  .ddm-card:hover {
-    box-shadow: var(--shadow-pop);
-    transform: translateY(-2px);
-  }
-
-  .ddm-card-inner {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    text-decoration: none;
-  }
-
-  .ddm-thumb {
-    flex: 0 0 40%;
-    background-color: var(--color-tint);
-    border-radius: 1.2rem 0 0 1.2rem;
-    overflow: hidden;
-    display: flex;
-    align-items: stretch;
-  }
-  .ddm-thumb-svg {
-    width: 100%;
-    height: 100%;
-    min-height: 140px;
-  }
-
-  .ddm-body {
-    flex: 1;
-    padding: 1.125rem 1.25rem;
-    min-width: 0;
-  }
-
-  /* On mobile, stack vertically */
-  @media (max-width: 479px) {
-    .ddm-card-inner {
-      flex-direction: column;
-    }
-    .ddm-thumb {
-      flex: 0 0 auto;
-      border-radius: 1.2rem 1.2rem 0 0;
-      min-height: 9rem;
-    }
-  }
-
-  /* ── CS vertical card ── */
-  .cs-card {
-    border: 1px solid var(--color-line);
-    border-radius: 1.25rem;
-    background-color: var(--color-surface);
-    overflow: hidden;
-    transition:
-      box-shadow 0.22s ease,
-      transform 0.22s ease;
-  }
-  .cs-card:hover {
-    box-shadow: var(--shadow-pop);
-    transform: translateY(-2px);
-  }
-  .cs-card-inner {
-    text-decoration: none;
-  }
-  .cs-thumb {
-    aspect-ratio: 16 / 9;
-    background-color: var(--color-tint);
-  }
-  .cs-thumb svg {
-    width: 100%;
-    height: 100%;
   }
 
   /* ── CTA Banner ── */
@@ -797,18 +875,22 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
 
 <script>
   // ── Carousel arrow logic ──────────────────────────────────────────────────
-  function setupCarousel(id: string) {
+  // `setupCarousel` is idempotent-ish but adds listeners, so it must run ONCE
+  // per track. Filter changes call `syncButtons` instead of re-running setup.
+  const syncers: Record<string, () => void> = {};
+
+  function setupCarousel(id: string): void {
     const track = document.getElementById(`${id}-track`);
     const leftBtn = document.getElementById(`${id}-left`) as HTMLButtonElement | null;
     const rightBtn = document.getElementById(`${id}-right`) as HTMLButtonElement | null;
     if (!track) return;
 
-    const getScrollAmount = () => {
-      const card = track.querySelector<HTMLElement>('.carousel-card');
+    const getScrollAmount = (): number => {
+      const card = track.querySelector<HTMLElement>('.carousel-card:not([hidden])');
       return card ? card.offsetWidth + 20 : track.clientWidth * 0.9;
     };
 
-    const updateButtons = () => {
+    const updateButtons = (): void => {
       const atStart = track.scrollLeft <= 4;
       const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
       if (leftBtn) leftBtn.disabled = atStart;
@@ -822,6 +904,8 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
       track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
     });
     track.addEventListener('scroll', updateButtons, { passive: true });
+    window.addEventListener('resize', updateButtons, { passive: true });
+    syncers[id] = updateButtons;
     updateButtons();
   }
 
@@ -829,6 +913,11 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
   setupCarousel('cs');
 
   // ── Filtering ─────────────────────────────────────────────────────────────
+  // The filter script toggles the CARD WRAPPER (.carousel-card), not the inner
+  // <article>, so a hidden card also gives up its flex slot in the track.
+  const wrapperOf = (el: Element): HTMLElement =>
+    (el.closest('.carousel-card') as HTMLElement | null) ?? (el as HTMLElement);
+
   const ddmCards = Array.from(document.querySelectorAll<HTMLElement>('.ddm-card'));
   const csCards = Array.from(document.querySelectorAll<HTMLElement>('.cs-card'));
 
@@ -858,7 +947,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
       const matchSearch = !query || cardSearch.includes(query);
 
       const visible = matchTopic && matchIndustry && matchSearch;
-      card.hidden = !visible;
+      wrapperOf(card).hidden = !visible;
       if (visible) shown++;
     }
 
@@ -867,19 +956,15 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
     return shown;
   }
 
-  function applyFilters() {
+  function applyFilters(): void {
     filterSection(ddmCards, 'ddm-track', 'ddm-empty');
     filterSection(csCards, 'cs-track', 'cs-empty');
 
-    // Reset scroll on filter change
-    const ddmTrack = document.getElementById('ddm-track');
-    const csTrack = document.getElementById('cs-track');
-    ddmTrack?.scrollTo({ left: 0, behavior: 'instant' });
-    csTrack?.scrollTo({ left: 0, behavior: 'instant' });
-
-    // Re-sync arrow states after scroll reset
-    setupCarousel('ddm');
-    setupCarousel('cs');
+    for (const id of ['ddm', 'cs']) {
+      const track = document.getElementById(`${id}-track`);
+      track?.scrollTo({ left: 0, behavior: 'instant' as ScrollBehavior });
+      syncers[id]?.();
+    }
   }
 
   topicFilter?.addEventListener('change', () => {
@@ -895,9 +980,7 @@ const featuredPost = ddmPosts.find((p) => p.featured) ?? ddmPosts[0];
     applyFilters();
   });
 
-  // Clear filters, handles both the single clear button (future global) and
-  // the per-section clear buttons inside the empty states.
-  function clearAll() {
+  function clearAll(): void {
     activeTopic = 'all';
     activeIndustry = 'all';
     query = '';

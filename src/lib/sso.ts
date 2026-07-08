@@ -44,10 +44,31 @@ export function ssoPayload(cookieHeader: string | null, secret: string): SsoPayl
   }
 }
 
-/** True iff the cookie is a valid super-admin session (clients includes "*"). */
+/**
+ * Emails always treated as super-admins, regardless of the `clients` claim the
+ * portal put in the cookie. The portal is the normal source of truth (`clients`
+ * includes "*"), but the site owner must never be locked out of the in-page
+ * editor by a portal-side claim regression. Override with `ADMIN_EMAILS`
+ * (comma-separated) if the owning account ever changes.
+ */
+const DEFAULT_ADMIN_EMAILS = ['info@agoradatadriven.com'];
+
+function adminEmails(): string[] {
+  const configured = serverEnv('ADMIN_EMAILS')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return configured.length > 0 ? configured : DEFAULT_ADMIN_EMAILS;
+}
+
+/** True iff the cookie is a valid super-admin session. */
 export function isSsoAdmin(cookieHeader: string | null, secret: string): boolean {
   const p = ssoPayload(cookieHeader, secret);
-  return !!p && Array.isArray(p.clients) && p.clients.includes('*');
+  if (!p) return false;
+  if (Array.isArray(p.clients) && p.clients.includes('*')) return true;
+  // The signature and expiry were already verified above, so trusting `sub`
+  // here is exactly as safe as trusting `clients`.
+  return typeof p.sub === 'string' && adminEmails().includes(p.sub.trim().toLowerCase());
 }
 
 export interface SsoIdentity {
@@ -59,7 +80,7 @@ export interface SsoIdentity {
 export function ssoIdentity(cookieHeader: string | null, secret: string): SsoIdentity | null {
   const p = ssoPayload(cookieHeader, secret);
   if (!p || !p.sub) return null;
-  return { email: String(p.sub), admin: Array.isArray(p.clients) && p.clients.includes('*') };
+  return { email: String(p.sub), admin: isSsoAdmin(cookieHeader, secret) };
 }
 
 /** Convenience: is the current request from a logged-in portal super-admin? */

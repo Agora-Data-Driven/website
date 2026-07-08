@@ -2,8 +2,8 @@
 title: 'Retargeting + Email: Convert Ad Spend to Owned Revenue'
 publishDate: 2026-06-27
 excerpt: 'Stop renting attention: strategically use retargeting to capture emails and build owned, lasting customer relationships.'
-heroImage: '/placeholders/cover-3.svg'
-heroAlt: 'Audiences moving from paid retargeting into an owned email channel.'
+heroImage: '/blog-images/retargeting-plus-email-rented-to-owned.webp'
+heroAlt: 'A row of mailboxes along a country road.'
 category: 'Strategy & Growth'
 industry: 'E-commerce'
 draft: false

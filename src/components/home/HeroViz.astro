@@ -76,12 +76,19 @@
 
       function resize() {
         const r = canvas!.getBoundingClientRect();
-        w = r.width;
-        h = r.height;
+        const nw = r.width;
+        const nh = r.height;
+        // ResizeObserver fires once on observe and again for sub-pixel noise;
+        // rebuilding the baked paths every time would be pure waste.
+        if (nnSynapses.length && Math.abs(nw - w) < 1 && Math.abs(nh - h) < 1) return;
+        w = nw;
+        h = nh;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         canvas!.width = Math.max(1, Math.round(w * dpr));
         canvas!.height = Math.max(1, Math.round(h * dpr));
         ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+        nnLayout();
+        if (w && h && reduce) drawStill();
       }
 
       function dot(x: number, y: number, r: number, color: string) {
@@ -106,40 +113,80 @@
       }
 
       // ---- Scenes ------------------------------------------------------------
-      function neuralNet(_p: number, now: number) {
-        const pad = 22;
-        const layers = [4, 6, 5, 3];
-        const xs = layers.map((_, k) => pad + (k / (layers.length - 1)) * (w - 2 * pad));
-        const nodes = layers.map((n, k) => {
+      // The net's geometry depends only on the canvas box, and — because every
+      // node in layer k shares the same x (xs[k]) — every synapse in group k
+      // shares the same midpoint, so `active` is constant across the group and
+      // `on` is constant across a layer. Nothing per-line needs deciding. Bake
+      // the paths once per resize and just restyle them each frame: 69 stroke()
+      // calls + 18-36 fill() calls collapse to 3 + <=8, with zero allocation.
+      const NN_LAYERS = [4, 6, 5, 3];
+      const NN_PAD = 22;
+      let nnXs: number[] = [];
+      let nnMids: number[] = [];
+      let nnSynapses: Path2D[] = []; // one per layer-to-layer group
+      let nnGlow: Path2D[] = []; // one per layer (r=9 halo)
+      let nnCore: Path2D[] = []; // one per layer (r=5 dot)
+
+      function nnLayout() {
+        const pad = NN_PAD;
+        nnXs = NN_LAYERS.map((_, k) => pad + (k / (NN_LAYERS.length - 1)) * (w - 2 * pad));
+        const nodes = NN_LAYERS.map((n, k) => {
           const arr: { x: number; y: number }[] = [];
           for (let j = 0; j < n; j++) {
             const y = n === 1 ? h / 2 : pad + (j / (n - 1)) * (h - 2 * pad);
-            arr.push({ x: xs[k], y });
+            arr.push({ x: nnXs[k], y });
           }
           return arr;
         });
-        const sweep = (now / 1500) % 1;
-        const pulseX = pad + sweep * (w - 2 * pad);
-        for (let k = 0; k < layers.length - 1; k++) {
-          for (const a of nodes[k]) {
+        nnMids = [];
+        nnSynapses = [];
+        for (let k = 0; k < NN_LAYERS.length - 1; k++) {
+          const p = new Path2D();
+          for (const a of nodes[k])
             for (const b of nodes[k + 1]) {
-              const mid = (a.x + b.x) / 2;
-              const active = Math.abs(mid - pulseX) < 46;
-              ctx!.beginPath();
-              ctx!.moveTo(a.x, a.y);
-              ctx!.lineTo(b.x, b.y);
-              ctx!.strokeStyle = active ? GREEN : GRID;
-              ctx!.lineWidth = active ? 1.6 : 0.8;
-              ctx!.stroke();
+              p.moveTo(a.x, a.y);
+              p.lineTo(b.x, b.y);
             }
-          }
+          nnSynapses.push(p);
+          nnMids.push((nnXs[k] + nnXs[k + 1]) / 2);
         }
-        for (let k = 0; k < layers.length; k++) {
+        nnGlow = [];
+        nnCore = [];
+        for (let k = 0; k < NN_LAYERS.length; k++) {
+          const g = new Path2D();
+          const c = new Path2D();
           for (const nd of nodes[k]) {
-            const on = nd.x <= pulseX + 8;
-            if (on) dot(nd.x, nd.y, 9, 'rgba(79,168,74,0.16)');
-            dot(nd.x, nd.y, 5, on ? GREEN : IDLE);
+            // moveTo before each arc, else Path2D joins them with a stray line
+            g.moveTo(nd.x + 9, nd.y);
+            g.arc(nd.x, nd.y, 9, 0, Math.PI * 2);
+            c.moveTo(nd.x + 5, nd.y);
+            c.arc(nd.x, nd.y, 5, 0, Math.PI * 2);
           }
+          nnGlow.push(g);
+          nnCore.push(c);
+        }
+      }
+
+      function neuralNet(_p: number, now: number) {
+        if (!nnSynapses.length) nnLayout();
+        const sweep = (now / 1500) % 1;
+        const pulseX = NN_PAD + sweep * (w - 2 * NN_PAD);
+        // Synapses, in the original group order (group k never overlaps group k+1).
+        for (let k = 0; k < nnSynapses.length; k++) {
+          const active = Math.abs(nnMids[k] - pulseX) < 46;
+          ctx!.strokeStyle = active ? GREEN : GRID;
+          ctx!.lineWidth = active ? 1.6 : 0.8;
+          ctx!.stroke(nnSynapses[k]);
+        }
+        // Nodes, layer by layer, halo under core — exactly as before.
+        for (let k = 0; k < nnCore.length; k++) {
+          const on = nnXs[k] <= pulseX + 8;
+          if (on) {
+            ctx!.fillStyle = 'rgba(79,168,74,0.16)';
+            ctx!.fill(nnGlow[k]);
+          }
+          ctx!.fillStyle = on ? GREEN : IDLE;
+          ctx!.fill(nnCore[k]);
         }
       }
 
@@ -359,44 +406,86 @@
         return Math.min(1, p / 0.09, (1 - p) / 0.09);
       }
 
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function drawStill() {
+        ctx!.clearRect(0, 0, w, h);
+        neuralNet(0.5, 600);
+      }
+
+      // ---- Loop state ---------------------------------------------------------
+      // This card lives well below the fold, but its loop used to start at page
+      // load and never stop: ~100 draw calls a frame, 60x a second, stealing the
+      // main thread from the hero the visitor is actually looking at. Run it only
+      // while it's on screen and the tab is awake. `elapsed` is accumulated rather
+      // than derived from a `start` stamp, so pausing never skips a scene.
+      let running = false;
+      let onScreen = false;
+      let raf = 0;
+      let last = 0;
+      let idx = 0;
+      let elapsed = 0;
+
+      const frame = (now: number) => {
+        if (!running) return;
+        if (!last) last = now; // resumed: don't bill the paused gap to this frame
+        elapsed += now - last;
+        last = now;
+        if (elapsed >= DUR) {
+          idx = (idx + 1) % scenes.length;
+          elapsed = 0;
+          if (nameEl) nameEl.textContent = scenes[idx].name;
+        }
+        const p = elapsed / DUR;
+        ctx!.clearRect(0, 0, w, h);
+        ctx!.globalAlpha = fade(p);
+        scenes[idx].draw(p, now);
+        ctx!.globalAlpha = 1;
+        raf = requestAnimationFrame(frame);
+      };
+
+      function sync() {
+        const want = onScreen && !document.hidden && !reduce;
+        if (want === running) return;
+        running = want;
+        if (want) {
+          last = 0;
+          raf = requestAnimationFrame(frame);
+        } else {
+          cancelAnimationFrame(raf);
+        }
+      }
+
       resize();
       if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(canvas);
       else window.addEventListener('resize', resize);
-
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // Re-resolve theme colors if the OS/browser scheme flips while open. The
       // animated loop reads the colors each frame; the static frame must redraw.
       themeMq.addEventListener?.('change', () => {
         applyTheme();
-        if (reduce) {
-          ctx.clearRect(0, 0, w, h);
-          neuralNet(0.5, 600);
-        }
+        if (reduce) drawStill();
       });
 
-      if (reduce) {
-        ctx.clearRect(0, 0, w, h);
-        neuralNet(0.5, 600);
-      } else {
-        let idx = 0;
-        let start = performance.now();
+      // (the reduced-motion still frame is painted by resize(), which also
+      //  repaints it whenever the card is resized)
+      if (!reduce) {
         if (nameEl) nameEl.textContent = scenes[0].name;
-        const frame = (now: number) => {
-          let p = (now - start) / DUR;
-          if (p >= 1) {
-            idx = (idx + 1) % scenes.length;
-            start = now;
-            p = 0;
-            if (nameEl) nameEl.textContent = scenes[idx].name;
-          }
-          ctx.clearRect(0, 0, w, h);
-          ctx.globalAlpha = fade(p);
-          scenes[idx].draw(p, now);
-          ctx.globalAlpha = 1;
-          requestAnimationFrame(frame);
-        };
-        requestAnimationFrame(frame);
+        document.addEventListener('visibilitychange', sync);
+        if ('IntersectionObserver' in window) {
+          // 200px of lead-in so the animation is already running by the time the
+          // card is actually looked at — the pause is never perceivable.
+          new IntersectionObserver(
+            (entries) => {
+              onScreen = entries[entries.length - 1].isIntersecting;
+              sync();
+            },
+            { rootMargin: '200px' },
+          ).observe(canvas);
+        } else {
+          onScreen = true;
+          sync();
+        }
       }
     }
   }

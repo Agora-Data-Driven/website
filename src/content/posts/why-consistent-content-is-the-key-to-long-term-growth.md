@@ -2,8 +2,8 @@
 title: 'Why Consistent Content Is the Key to Long-Term Growth'
 publishDate: 2025-05-30
 excerpt: 'Viral moments bring short-term spikes, but consistency builds lasting growth. Here’s why showing up regularly with valuable content is a strategy, not just a best practice.'
-heroImage: '/placeholders/cover-3.svg'
-heroAlt: 'A steady content calendar representing consistent publishing.'
+heroImage: '/blog-images/why-consistent-content-is-the-key-to-long-term-growth.webp'
+heroAlt: 'A person writing in a notebook at a desk.'
 category: 'Organic Growth'
 ---
 
