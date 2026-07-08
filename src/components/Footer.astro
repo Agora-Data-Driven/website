@@ -107,9 +107,14 @@ const year = new Date().getFullYear();
   if (btn) {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Show/hide button based on scroll position
+    // Show/hide button based on scroll position. Only touch the DOM when the
+    // state actually flips — this runs on every scroll event, and writing
+    // classList unconditionally dirties style on each one.
+    let shown: boolean | null = null;
     const handleScroll = () => {
       const isScrolled = window.scrollY > 300;
+      if (isScrolled === shown) return;
+      shown = isScrolled;
       if (isScrolled) {
         btn.classList.remove('opacity-0', 'invisible', 'translate-y-3');
       } else {

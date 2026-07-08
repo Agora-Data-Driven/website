@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Container from '@components/Container.astro';
+import PageAurora from '@components/PageAurora.astro';
+import DataFlowCanvas from '@components/DataFlowCanvas.astro';
 import SectionHeading from '@components/SectionHeading.astro';
 import Button from '@components/Button.astro';
 import { caseStudies, competitions } from '@data/portfolio';
@@ -15,26 +17,103 @@ export const prerender = true;
 const postCaseStudies = (
   await getCollection('posts', ({ data }) => !data.draft && data.type === 'case-study')
 ).sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+// Hero counters — derived from the content, so they can never drift.
+const caseStudyCount = postCaseStudies.length + caseStudies.length;
+const competitionCount = competitions.length;
+// "1st Place · Cash prize recipient" → "1st Place". Real placements, not invented.
+// Best finish leads, so the hero reads "1st · 2nd" however the data is ordered.
+const placements = competitions
+  .map((c) => c.placement.split(/[/·]/)[0].trim())
+  .sort((a, b) => (parseInt(a, 10) || 99) - (parseInt(b, 10) || 99));
 ---
 
 <BaseLayout
   title="Portfolio"
   description="Real-life results from Agora Data Driven: client case studies and award-winning analytics competition placements."
 >
-  <section class="border-line from-tint/50 to-canvas border-b bg-linear-to-b">
-    <Container class="py-16 lg:py-24">
-      <p class="text-brand-600 text-sm font-semibold tracking-wide uppercase">Portfolio</p>
-      <h1 class="text-ink mt-2 max-w-3xl text-4xl font-bold sm:text-5xl">Explore our portfolio</h1>
-      <p class="text-muted mt-4 max-w-2xl text-lg">
-        Our portfolio isn't just a list of projects, it's proof of how we solve problems, drive
-        growth, and adapt fast. Every campaign reflects a challenge we've tackled, a strategy we've
-        shaped, and the results we've delivered.
-      </p>
+  <PageAurora />
+
+  <!-- ── HERO: live data-flow network ──────────────────────────────────────── -->
+  <section class="hero-flow relative isolate overflow-hidden">
+    <DataFlowCanvas />
+    <!-- Left-to-right scrim: keeps the copy at AA contrast over the network. -->
+    <div class="hero-flow__scrim" aria-hidden="true"></div>
+
+    <!-- The copy column lets pointer events fall through to the canvas; the CTAs
+         (and only the CTAs) take them back. -->
+    <Container class="pointer-events-none relative z-10 py-20 lg:py-28">
+      <div class="max-w-2xl">
+        <p class="mb-5">
+          <span
+            class="eyebrow text-brand-300 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-3 py-1 backdrop-blur-sm"
+          >
+            <span class="live-dot" aria-hidden="true"></span>
+            Portfolio
+          </span>
+        </p>
+
+        <h1
+          class="font-display text-4xl leading-[1.04] font-bold text-white sm:text-5xl lg:text-6xl"
+        >
+          Explore our<br /><span class="text-gradient-bright">portfolio</span>
+        </h1>
+
+        <div class="hero-flow__rule" aria-hidden="true"></div>
+
+        <p class="max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
+          Our portfolio isn't just a list of projects, it's proof of how we solve problems, drive
+          growth, and adapt fast. Every campaign reflects a challenge we've tackled, a strategy
+          we've shaped, and the results we've delivered.
+        </p>
+
+        <dl class="hero-flow__stats mt-9">
+          <div class="hero-flow__stat">
+            <dt>Case studies</dt>
+            <dd>{caseStudyCount}</dd>
+          </div>
+          <span class="hero-flow__rule-v" aria-hidden="true"></span>
+          <div class="hero-flow__stat">
+            <dt>Competitions</dt>
+            <dd>{competitionCount}</dd>
+          </div>
+          <span class="hero-flow__rule-v" aria-hidden="true"></span>
+          <div class="hero-flow__stat">
+            <dt>Placements</dt>
+            <dd class="hero-flow__placements">{placements.join(' · ')}</dd>
+          </div>
+        </dl>
+
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a
+            href="#case-studies"
+            class="bg-brand-500 shadow-glow-sm hover:bg-brand-600 hover:shadow-glow btn-sheen pointer-events-auto inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white transition-all"
+          >
+            See the work
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4"></path></svg
+            >
+          </a>
+          <a
+            href="#competitions"
+            class="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:border-white/40 hover:bg-white/10"
+          >
+            Competition wins
+          </a>
+        </div>
+      </div>
     </Container>
   </section>
 
-  <!-- Case studies -->
-  <section id="case-studies" class="border-line border-b py-16 lg:py-24">
+  <!-- ── Case studies ──────────────────────────────────────────────────────── -->
+  <section id="case-studies" class="border-line scroll-mt-24 border-b py-16 lg:py-24">
     <Container>
       <SectionHeading eyebrow="Case studies" title="Real-life results">
         <p class="text-muted mt-3">
@@ -42,11 +121,14 @@ const postCaseStudies = (
           mindset.
         </p>
       </SectionHeading>
-      <div class="mt-10 grid gap-6 md:grid-cols-3">
+      <!-- Two per line. Grid items stretch, and each card is a column whose
+           excerpt flexes — so the badge, title and CTA line up across a row
+           however uneven the copy is. -->
+      <div class="mt-10 grid gap-6 md:grid-cols-2">
         {
           postCaseStudies.map((post, i) => (
             <article
-              class="card-hover reveal border-line bg-surface shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
+              class="tilt-card card-hover reveal ring-roam group border-line card-glass shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
               style={`--reveal-delay: ${i * 80}ms`}
             >
               {post.data.heroImage && (
@@ -54,27 +136,47 @@ const postCaseStudies = (
                   <img
                     src={post.data.heroImage}
                     alt=""
-                    class="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    class="aspect-[16/10] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />
                 </a>
               )}
-              <div class="flex flex-1 flex-col p-6">
+              <div class="relative flex flex-1 flex-col p-6">
                 <span class="bg-tint text-brand-700 w-fit rounded-full px-3 py-1 text-xs font-semibold">
                   Case Study
                 </span>
-                <h3 class="text-ink mt-3 text-xl font-semibold">{post.data.title}</h3>
+                <h3 class="text-ink group-hover:text-brand-700 mt-3 text-xl font-semibold transition-colors">
+                  {post.data.title}
+                </h3>
                 <p class="text-muted mt-2 flex-1 text-sm">{post.data.excerpt}</p>
                 <a
                   href={`/${post.id}/`}
-                  class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+                  class="text-brand-600 hover:text-brand-700 read-cta mt-auto w-fit pt-4 text-sm font-semibold transition-colors"
                 >
-                  Read the story
-                  <span
-                    class="transition-transform duration-200 group-hover:translate-x-1"
-                    aria-hidden="true"
-                  >
-                    →
+                  <span class="read-cta__label">Read the story</span>
+                  <span class="read-cta__icon" aria-hidden="true">
+                    <svg
+                      class="h-3.5 w-3.5"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 8h10M9 4l4 4-4 4" />
+                    </svg>
+                    <svg
+                      class="h-3.5 w-3.5"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 8h10M9 4l4 4-4 4" />
+                    </svg>
                   </span>
                 </a>
               </div>
@@ -84,33 +186,53 @@ const postCaseStudies = (
         {
           caseStudies.map((c, i) => (
             <article
-              class="card-hover reveal border-line bg-surface shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
+              class="tilt-card card-hover reveal ring-roam group border-line card-glass shadow-card hover:shadow-pop flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
               style={`--reveal-delay: ${(postCaseStudies.length + i) * 80}ms`}
             >
               <a href={`/${c.slug}/`} class="bg-canvas block overflow-hidden">
                 <img
                   src={c.cardImage ?? c.image ?? c.heroImage}
                   alt=""
-                  class="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  class="aspect-[16/10] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
               </a>
-              <div class="flex flex-1 flex-col p-6">
+              <div class="relative flex flex-1 flex-col p-6">
                 <span class="bg-tint text-brand-700 w-fit rounded-full px-3 py-1 text-xs font-semibold">
                   {c.tag}
                 </span>
-                <h3 class="text-ink mt-3 text-xl font-semibold">{c.cardTitle}</h3>
+                <h3 class="text-ink group-hover:text-brand-700 mt-3 text-xl font-semibold transition-colors">
+                  {c.cardTitle}
+                </h3>
                 <p class="text-muted mt-2 flex-1 text-sm">{c.summary}</p>
                 <a
                   href={`/${c.slug}/`}
-                  class="text-brand-600 hover:text-brand-700 mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+                  class="text-brand-600 hover:text-brand-700 read-cta mt-auto w-fit pt-4 text-sm font-semibold transition-colors"
                 >
-                  Learn more
-                  <span
-                    class="transition-transform duration-200 group-hover:translate-x-1"
-                    aria-hidden="true"
-                  >
-                    →
+                  <span class="read-cta__label">Learn more</span>
+                  <span class="read-cta__icon" aria-hidden="true">
+                    <svg
+                      class="h-3.5 w-3.5"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 8h10M9 4l4 4-4 4" />
+                    </svg>
+                    <svg
+                      class="h-3.5 w-3.5"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 8h10M9 4l4 4-4 4" />
+                    </svg>
                   </span>
                 </a>
               </div>
@@ -121,8 +243,8 @@ const postCaseStudies = (
     </Container>
   </section>
 
-  <!-- Competitions -->
-  <section id="competitions" class="border-line bg-surface border-b py-16 lg:py-24">
+  <!-- ── Competitions ──────────────────────────────────────────────────────── -->
+  <section id="competitions" class="border-line scroll-mt-24 border-b py-16 lg:py-24">
     <Container>
       <SectionHeading eyebrow="Competitions" title="Skill meets growth">
         <p class="text-muted mt-3">
@@ -134,14 +256,40 @@ const postCaseStudies = (
           competitions.map((c, i) => (
             <a
               href={`/${c.slug}/`}
-              class="card-hover reveal border-line bg-canvas hover:shadow-pop shadow-card flex flex-col rounded-2xl border p-7 transition-all duration-300"
+              class="tilt-card card-hover reveal ring-roam group border-line card-glass hover:shadow-pop shadow-card relative flex flex-col rounded-2xl border p-7 transition-all duration-300"
               style={`--reveal-delay: ${i * 80}ms`}
             >
-              <span class="text-brand-600 text-3xl font-bold">{c.placement}</span>
-              <h3 class="text-ink mt-3 text-xl font-semibold">{c.cardTitle}</h3>
+              <span class="text-gradient text-3xl font-bold">{c.placement}</span>
+              <h3 class="text-ink group-hover:text-brand-700 mt-3 text-xl font-semibold transition-colors">
+                {c.cardTitle}
+              </h3>
               <p class="text-muted mt-2 text-sm">{c.event}</p>
-              <span class="text-brand-600 mt-4 inline-flex items-center gap-1 text-sm font-semibold">
-                See the project <span aria-hidden="true">&rarr;</span>
+              <span class="text-brand-600 read-cta mt-4 text-sm font-semibold">
+                <span class="read-cta__label">See the project</span>
+                <span class="read-cta__icon" aria-hidden="true">
+                  <svg
+                    class="h-3.5 w-3.5"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 8h10M9 4l4 4-4 4" />
+                  </svg>
+                  <svg
+                    class="h-3.5 w-3.5"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 8h10M9 4l4 4-4 4" />
+                  </svg>
+                </span>
               </span>
             </a>
           ))
@@ -150,11 +298,11 @@ const postCaseStudies = (
     </Container>
   </section>
 
-  <!-- Web development -->
+  <!-- ── Web development ───────────────────────────────────────────────────── -->
   <section class="py-16 lg:py-24">
     <Container>
       <div
-        class="border-line bg-surface flex flex-col items-start justify-between gap-6 rounded-2xl border p-8 lg:flex-row lg:items-center"
+        class="reveal border-line card-glass shadow-card flex flex-col items-start justify-between gap-6 rounded-2xl border p-8 lg:flex-row lg:items-center"
       >
         <div>
           <h2 class="text-ink text-2xl font-bold">Looking for high-performance web development?</h2>
@@ -170,3 +318,170 @@ const postCaseStudies = (
     </Container>
   </section>
 </BaseLayout>
+
+<style>
+  /* ── Hero band ──
+     A deep green-black field for the data-flow network to glow against. Same
+     night tokens as the site's other dark accent bands. */
+  /* Same shape as the reference's radial field, in the Agora green family: a
+     lit core off to the right for the ribbons to glow against, falling away to
+     near-black at the edges. */
+  .hero-flow {
+    background: radial-gradient(130% 130% at 66% 48%, #175a34 0%, #0c2316 42%, #04100a 100%);
+  }
+  /* Scrim: hold the ribbons back so the copy never fights them.
+     The reference's scrim is a left-to-right ramp, which works only because its
+     copy sits in a narrow column (30ch) on a full-viewport hero. Ours is wider,
+     and on small screens it spans the whole band — a horizontal ramp cannot
+     protect it, and a fully-lit node (≈rgb(230,255,230)) drifting under the
+     paragraph drops it to ~1.1:1. So: ramp vertically until the viewport is wide
+     enough for the copy to occupy only the left half, then switch to the
+     reference's horizontal ramp. Both are tuned so the darkest the backdrop ever
+     gets under a glyph still clears WCAG AA (verified, not eyeballed). */
+  .hero-flow__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(4, 16, 10, 0.93) 0%,
+      rgba(4, 16, 10, 0.9) 58%,
+      rgba(4, 16, 10, 0.72) 100%
+    );
+  }
+  /* From here up the copy's right edge sits at ~52% of the band, so the
+     reference's horizontal ramp fits — and the fan's big right-hand nodes,
+     which are the point of the composition, stay fully exposed. */
+  @media (min-width: 1280px) {
+    .hero-flow__scrim {
+      background: linear-gradient(
+        90deg,
+        rgba(4, 16, 10, 0.96) 0%,
+        rgba(4, 16, 10, 0.95) 32%,
+        rgba(4, 16, 10, 0.9) 44%,
+        rgba(4, 16, 10, 0.78) 54%,
+        rgba(4, 16, 10, 0.4) 66%,
+        rgba(4, 16, 10, 0) 80%
+      );
+    }
+  }
+  .hero-flow__rule {
+    width: 3.5rem;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--color-brand-400), var(--color-brand-600));
+    margin: 1.75rem 0 1.5rem;
+  }
+
+  .live-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 9999px;
+    background: var(--color-brand-400);
+    animation: live-dot 2.4s ease-out infinite;
+  }
+  @keyframes live-dot {
+    0% {
+      box-shadow: 0 0 0 0 rgba(108, 185, 104, 0.55);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 7px rgba(108, 185, 104, 0);
+    }
+  }
+
+  /* Derived counters. Tabular figures keep the numerals from shifting. */
+  .hero-flow__stats {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .hero-flow__stat dt {
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .hero-flow__stat dd {
+    margin-top: 0.25rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-flow__placements {
+    font-size: 1rem !important;
+    color: var(--color-brand-300) !important;
+  }
+  .hero-flow__rule-v {
+    width: 1px;
+    height: 1.75rem;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  /* ── Cards ──
+     A pointer-following spotlight: `--mx/--my` are written by the script below,
+     the highlight only paints on hover, and it never blocks clicks. */
+  .tilt-card {
+    position: relative;
+    transform-style: preserve-3d;
+  }
+  .tilt-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      16rem 16rem at var(--mx, 50%) var(--my, 50%),
+      rgba(79, 168, 74, 0.13),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .tilt-card:hover::after {
+    opacity: 1;
+  }
+  /* Content sits above the spotlight wash. */
+  .tilt-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot {
+      animation: none;
+    }
+    .tilt-card::after {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Card spotlight: write the pointer position into the card's own custom
+  // properties. `pointerrawupdate`-free, passive, and only while hovering.
+  const cards = document.querySelectorAll<HTMLElement>('.tilt-card');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduce && window.matchMedia('(pointer: fine)').matches) {
+    for (const card of cards) {
+      card.addEventListener(
+        'pointermove',
+        (e: PointerEvent) => {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+          card.style.setProperty('--my', `${e.clientY - r.top}px`);
+        },
+        { passive: true },
+      );
+    }
+  }
+</script>

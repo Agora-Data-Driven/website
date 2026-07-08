@@ -1,0 +1,60 @@
+---
+/**
+ * "Keep reading" row shown at the foot of every article. Uses the same
+ * `PostCard` as the blog index and the category hubs, so a related article
+ * looks identical wherever a reader meets it.
+ *
+ * Renders nothing when there is nothing to suggest, rather than an empty rule.
+ */
+import PostCard from '@components/PostCard.astro';
+import { cardFromPost, type Post } from '@lib/posts';
+
+interface Props {
+  posts: Post[];
+  heading?: string;
+}
+const { posts, heading = 'Keep reading' } = Astro.props;
+---
+
+{
+  posts.length > 0 && (
+    <section class="mt-12" aria-label={heading}>
+      <div class="border-line flex items-baseline justify-between gap-4 border-t pt-8">
+        <h2 class="text-ink text-xl font-bold">{heading}</h2>
+        <a href="/blog/" class="read-cta text-brand-600 hover:text-brand-700 text-sm font-semibold">
+          <span class="read-cta__label">All articles</span>
+          <span class="read-cta__icon" aria-hidden="true">
+            <svg
+              class="h-3.5 w-3.5"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
+            <svg
+              class="h-3.5 w-3.5"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.map((p, i) => (
+          <PostCard card={cardFromPost(p)} class="reveal" style={`--reveal-delay:${i * 60}ms`} />
+        ))}
+      </div>
+    </section>
+  )
+}

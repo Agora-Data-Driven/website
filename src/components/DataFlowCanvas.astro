@@ -1,0 +1,515 @@
+---
+/**
+ * DataFlowCanvas — a fan of data ribbons that launches from the left edge, races
+ * right, holds, fades, and relaunches on a fresh random path. A trunk ribbon
+ * splits into branches; nodes pop as the reveal head sweeps past them; packets
+ * stream continuously along every ribbon.
+ *
+ * Cycle: BUILD (7.5s reveal) → HOLD (5.5s) → FADE (2s) → rebuild. Each pass draws
+ * a different fan, so the loop never reads as a repeat.
+ *
+ * Pure Canvas2D — no assets, no dependencies. It paints itself into whatever
+ * `relative overflow-hidden` box you drop it in, so the caller owns the
+ * background and the text scrim. Colours are the Agora green family.
+ *
+ * Cheap by construction: ribbons are stroked in two batched paths, glows are
+ * pre-baked sprites, the loop pauses when the canvas scrolls off-screen or the
+ * tab is hidden, and `prefers-reduced-motion` gets one static built frame.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<canvas id="data-flow" class:list={['data-flow', className]} aria-hidden="true"></canvas>
+
+<style>
+  .data-flow {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* Feather the field into the band's edges so there's no hard cut. */
+    -webkit-mask-image: radial-gradient(135% 125% at 70% 50%, #000 58%, transparent 100%);
+    mask-image: radial-gradient(135% 125% at 70% 50%, #000 58%, transparent 100%);
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('data-flow') as HTMLCanvasElement | null;
+  const ctx = canvas?.getContext('2d') ?? null;
+
+  if (canvas && ctx) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fine = window.matchMedia('(pointer: fine)').matches;
+
+    const rand = (a: number, b: number): number => a + Math.random() * (b - a);
+    const clamp = (v: number, a: number, b: number): number => Math.max(a, Math.min(b, v));
+    const easeOut = (t: number): number => 1 - (1 - t) * (1 - t);
+
+    // Readings riding the ribbons. Abstract sensor-style decimals — never a
+    // metric we'd be claiming as a result.
+    const bits = [
+      '0.00',
+      '48.63',
+      '74.82',
+      '110.06',
+      '147.67',
+      '75.92',
+      '89.37',
+      '50.25',
+      '113.53',
+    ];
+
+    /** A pre-baked radial glow. Drawing a sprite beats a per-frame gradient. */
+    function makeSprite(inner: string, mid: string): HTMLCanvasElement {
+      const c = document.createElement('canvas');
+      c.width = c.height = 64;
+      const s = c.getContext('2d');
+      if (s) {
+        const g = s.createRadialGradient(32, 32, 0, 32, 32, 32);
+        g.addColorStop(0, inner);
+        g.addColorStop(0.28, mid);
+        g.addColorStop(1, 'rgba(79, 168, 74, 0)');
+        s.fillStyle = g;
+        s.fillRect(0, 0, 64, 64);
+      }
+      return c;
+    }
+    const glowGreen = makeSprite('rgba(236, 255, 234, 1)', 'rgba(140, 205, 138, 0.9)');
+    const glowMint = makeSprite('rgba(226, 255, 244, 1)', 'rgba(118, 226, 176, 0.85)');
+
+    // ── Cycle timing (launch → build → hold → fade → relaunch) ───────────────
+    const BUILD = 7.5;
+    const HOLD = 5.5;
+    const FADE = 2;
+    const CYCLE = BUILD + HOLD + FADE;
+    const STEP = 26; // px between path points (uniform, so arc length = n * STEP)
+    const PULSE_SPEED = 55; // data-packet speed, px/s
+    const NEAR = 150; // pointer influence radius, screen px
+    const MAX_DT = 0.25; // longest frame we bill to the clock, seconds
+
+    let W = 0;
+    let H = 0;
+    let DPR = 1;
+    let MINSP = 40; // minimum spacing between nodes
+    let SPEED = 200; // reveal speed, px/s — derived from width on resize
+
+    interface Pulse {
+      off: number;
+      accent: boolean;
+      size: number;
+      label: string | null;
+    }
+    interface Ribbon {
+      px: number[];
+      py: number[];
+      n: number;
+      len: number;
+      delay: number;
+      trunk: boolean;
+      phase: number;
+      pulses: Pulse[];
+      /** Revealed distance along the path this frame. */
+      rd: number;
+    }
+    interface Node {
+      x: number;
+      y: number;
+      dist: number;
+      ribbon: Ribbon;
+      size: number;
+      accent: boolean;
+      label: string | null;
+      /** Last drawn size / y — reused by the solid pass. */
+      ds: number;
+      dy: number;
+    }
+
+    let ribbons: Ribbon[] = [];
+    let nodes: Node[] = [];
+
+    // The whole simulation is driven by `clock`, which only advances on frames we
+    // actually render. Wall-clock time would let a paused tab fast-forward the
+    // cycle and snap the fan to a new state the moment it comes back.
+    let clock = 0;
+    let cycleStart = 0;
+
+    // Pointer state — a light that travels with the cursor and lifts what's near.
+    const ptr = { x: -9999, y: -9999, inside: false };
+
+    /** Random rightward path, gently steered back toward the horizontal. */
+    function walkPath(
+      x: number,
+      y: number,
+      angle: number,
+      biasY: number,
+    ): { px: number[]; py: number[] } {
+      const px = [x];
+      const py = [y];
+      let a = angle;
+      while (x < W * 1.08 && px.length < 220) {
+        a += rand(-0.09, 0.09) + (0 - a) * 0.06 + biasY * 0.008;
+        a = clamp(a, -0.62, 0.62);
+        x += Math.cos(a) * STEP;
+        y += Math.sin(a) * STEP;
+        if (y < H * -0.04 || y > H * 1.04) a -= Math.sign(y - H * 0.5) * 0.12;
+        px.push(x);
+        py.push(y);
+      }
+      return { px, py };
+    }
+
+    function tooClose(x: number, y: number): boolean {
+      const m2 = MINSP * MINSP;
+      for (let i = 0; i < nodes.length; i++) {
+        const dx = x - nodes[i].x;
+        const dy = y - nodes[i].y;
+        if (dx * dx + dy * dy < m2) return true;
+      }
+      return false;
+    }
+
+    /** Point at distance `d` along a ribbon. */
+    function at(r: Ribbon, d: number): { x: number; y: number } {
+      const dd = clamp(d, 0, r.len - 0.001);
+      const i = Math.min(r.n - 2, (dd / STEP) | 0);
+      const f = dd / STEP - i;
+      return {
+        x: r.px[i] + (r.px[i + 1] - r.px[i]) * f,
+        y: r.py[i] + (r.py[i + 1] - r.py[i]) * f,
+      };
+    }
+
+    function addRibbon(
+      path: { px: number[]; py: number[] },
+      delay: number,
+      trunk: boolean,
+    ): Ribbon {
+      const r: Ribbon = {
+        px: path.px,
+        py: path.py,
+        n: path.px.length,
+        len: (path.px.length - 1) * STEP,
+        delay,
+        trunk,
+        phase: rand(0, 6.28),
+        pulses: [],
+        rd: 0,
+      };
+
+      const pc = trunk ? 3 : 1 + (Math.random() < 0.6 ? 1 : 0);
+      for (let i = 0; i < pc; i++) {
+        r.pulses.push({
+          off: rand(0, r.len),
+          accent: Math.random() < 0.2,
+          size: rand(5, 8.5),
+          label: Math.random() < 0.2 ? bits[(Math.random() * bits.length) | 0] : null,
+        });
+      }
+
+      for (let d = rand(50, 100); d < r.len - 20; d += rand(70, 125)) {
+        const i = Math.min(r.n - 2, (d / STEP) | 0);
+        const f = d / STEP - i;
+        const cx = r.px[i] + (r.px[i + 1] - r.px[i]) * f;
+        const cy = r.py[i] + (r.py[i + 1] - r.py[i]) * f + rand(-8, 8);
+        if (tooClose(cx, cy)) continue;
+        const tR = clamp(cx / W, 0, 1);
+        nodes.push({
+          x: cx,
+          y: cy,
+          dist: d,
+          ribbon: r,
+          size: (3 + tR * tR * 10) * rand(0.8, 1.2),
+          accent: Math.random() < 0.12,
+          label: Math.random() < 0.14 ? bits[(Math.random() * bits.length) | 0] : null,
+          ds: 0,
+          dy: cy,
+        });
+      }
+
+      ribbons.push(r);
+      return r;
+    }
+
+    /** Lay out a fresh fan: one trunk from the left edge, branches off it. */
+    function build(): void {
+      ribbons = [];
+      nodes = [];
+      const trunk = addRibbon(walkPath(-30, H * rand(0.42, 0.58), rand(-0.1, 0.1), 0), 0, true);
+      const wanted = clamp(Math.round(W / 130), 8, 13);
+      const sources: Ribbon[] = [trunk];
+      for (let i = 0; i < wanted; i++) {
+        const src = sources[(Math.random() * sources.length) | 0];
+        const splitD = rand(0.08, 0.42) * src.len; // branch pop happens middle-left
+        const p = at(src, splitD);
+        const up = Math.random() < 0.58 ? -1 : 1; // slight upward bias
+        const path = walkPath(p.x, p.y, up * rand(0.35, 0.75), up * rand(0.9, 1.7));
+        if (path.px.length < 6) continue;
+        const br = addRibbon(path, src.delay + splitD / SPEED, false);
+        if (Math.random() < 0.5) sources.push(br);
+      }
+    }
+
+    function resize(): void {
+      const r = canvas!.getBoundingClientRect();
+      const w = Math.max(1, r.width);
+      const h = Math.max(1, r.height);
+      // A ResizeObserver fires for sub-pixel churn (scrollbars, zoom rounding).
+      // Rebuilding on those would restart the fan mid-flight, so ignore them.
+      if (Math.abs(w - W) < 1 && Math.abs(h - H) < 1 && ribbons.length) return;
+
+      W = w;
+      H = h;
+      DPR = clamp(window.devicePixelRatio || 1, 1, 1.5);
+      canvas!.width = Math.round(W * DPR);
+      canvas!.height = Math.round(H * DPR);
+      ctx!.setTransform(DPR, 0, 0, DPR, 0, 0);
+      MINSP = clamp(Math.min(W, H) * 0.05, 30, 52);
+      SPEED = (W * 1.15) / BUILD;
+
+      build();
+      cycleStart = clock;
+      if (reduced) drawStatic();
+    }
+
+    /** The whole field breathes as one wave — a function of x, never of index. */
+    const shim = (x: number, ph: number, time: number): number =>
+      Math.sin(time * 1.1 + ph + x * 0.006) * 2.4;
+
+    /** 0 at the pointer's influence edge → 1 under the cursor. */
+    function nearBoost(x: number, y: number): number {
+      if (!ptr.inside) return 0;
+      const d = Math.hypot(x - ptr.x, y - ptr.y);
+      return d > NEAR ? 0 : easeOut(1 - d / NEAR);
+    }
+
+    function draw(ct: number, time: number): void {
+      const master = ct < BUILD + HOLD ? 1 : clamp(1 - (ct - BUILD - HOLD) / FADE, 0, 1);
+
+      ctx!.clearRect(0, 0, W, H);
+      if (master <= 0) return;
+
+      for (const r of ribbons) r.rd = clamp((ct - r.delay) * SPEED, 0, r.len);
+
+      // ── Ribbons: two batched strokes (trunk vs branches) ────────────────────
+      for (let pass = 0; pass < 2; pass++) {
+        ctx!.beginPath();
+        for (const r of ribbons) {
+          if ((pass === 0) !== r.trunk) continue;
+          if (r.rd <= 2) continue;
+          const last = Math.min(r.n - 1, r.rd / STEP) | 0;
+          ctx!.moveTo(r.px[0], r.py[0] + shim(r.px[0], r.phase, time));
+          for (let i = 1; i <= last; i++) {
+            ctx!.lineTo(r.px[i], r.py[i] + shim(r.px[i], r.phase, time));
+          }
+          const tip = at(r, r.rd);
+          ctx!.lineTo(tip.x, tip.y + shim(tip.x, r.phase, time));
+        }
+        ctx!.lineCap = 'round';
+        ctx!.lineJoin = 'round';
+        ctx!.lineWidth = pass === 0 ? 3.2 : 1.8;
+        ctx!.strokeStyle = `rgba(155, 211, 154, ${0.2 * master})`;
+        ctx!.stroke();
+      }
+
+      // ── Glow pass ───────────────────────────────────────────────────────────
+      ctx!.globalCompositeOperation = 'lighter';
+
+      // The reveal head: a bright comet dragging a fading tail.
+      for (const r of ribbons) {
+        if (r.rd <= 2 || r.rd >= r.len) continue;
+        const head = at(r, r.rd);
+        const back = at(r, Math.max(0, r.rd - (r.trunk ? 180 : 110)));
+        const hy = head.y + shim(head.x, r.phase, time);
+        const by = back.y + shim(back.x, r.phase, time);
+        const g = ctx!.createLinearGradient(back.x, by, head.x, hy);
+        g.addColorStop(0, 'rgba(190, 235, 185, 0)');
+        g.addColorStop(1, `rgba(236, 255, 232, ${0.85 * master})`);
+        ctx!.strokeStyle = g;
+        ctx!.lineWidth = r.trunk ? 4.5 : 3;
+        ctx!.beginPath();
+        ctx!.moveTo(back.x, by);
+        ctx!.lineTo(head.x, hy);
+        ctx!.stroke();
+        const hr = r.trunk ? 22 : 13;
+        ctx!.globalAlpha = master;
+        ctx!.drawImage(glowGreen, head.x - hr, hy - hr, hr * 2, hr * 2);
+      }
+
+      interface Solid {
+        x: number;
+        y: number;
+        s: number;
+        accent: boolean;
+        label: string | null;
+      }
+      const solids: Solid[] = [];
+
+      // Packets streaming along the revealed part of each ribbon.
+      for (const r of ribbons) {
+        if (r.rd <= 8) continue;
+        for (const pl of r.pulses) {
+          const pd = (pl.off + time * PULSE_SPEED) % r.len;
+          if (pd > r.rd) continue;
+          const p = at(r, pd);
+          const y = p.y + shim(p.x, r.phase, time);
+          const lift = nearBoost(p.x, y);
+          const size = pl.size * (1 + lift * 0.35);
+          const gr = size * 3;
+          ctx!.globalAlpha = (0.5 + lift * 0.4) * master;
+          ctx!.drawImage(pl.accent ? glowMint : glowGreen, p.x - gr, y - gr, gr * 2, gr * 2);
+          solids.push({ x: p.x, y, s: size * 0.7, accent: pl.accent, label: pl.label });
+        }
+      }
+
+      // Nodes pop as the reveal head sweeps past them.
+      for (const c of nodes) {
+        const r = c.ribbon;
+        if (r.rd < c.dist) {
+          c.ds = 0;
+          continue;
+        }
+        let pop = clamp((r.rd - c.dist) / 46, 0, 1.15);
+        pop = pop > 1 ? 1.15 - pop + 1 : pop;
+        // Welded to its ribbon: a node must ride its own line's wave, not a
+        // private phase, or it drifts a few px off the conduit it sits on.
+        const dy = c.y + shim(c.x, r.phase, time);
+        const lift = nearBoost(c.x, dy);
+        const s = c.size * pop * (1 + lift * 0.35);
+        c.ds = s;
+        c.dy = dy;
+        ctx!.globalAlpha = (0.5 + lift * 0.4) * master;
+        ctx!.drawImage(
+          c.accent ? glowMint : glowGreen,
+          c.x - s * 2.4,
+          dy - s * 2.4,
+          s * 4.8,
+          s * 4.8,
+        );
+      }
+
+      // A soft light that travels with the cursor.
+      if (ptr.inside) {
+        const gr = 140;
+        ctx!.globalAlpha = 0.26 * master;
+        ctx!.drawImage(glowGreen, ptr.x - gr, ptr.y - gr, gr * 2, gr * 2);
+      }
+
+      ctx!.globalAlpha = 1;
+      ctx!.globalCompositeOperation = 'source-over';
+
+      // ── Solid pass: the crisp squares + their readings ──────────────────────
+      ctx!.font = '12px ui-monospace, SFMono-Regular, Menlo, monospace';
+      for (const c of nodes) {
+        if (!c.ds) continue;
+        ctx!.fillStyle = c.accent
+          ? `rgba(178, 244, 208, ${0.95 * master})`
+          : `rgba(160, 214, 158, ${0.95 * master})`;
+        ctx!.fillRect(c.x - c.ds, c.dy - c.ds, c.ds * 2, c.ds * 2);
+        if (c.label && c.ds > c.size * 0.9) {
+          ctx!.fillStyle = `rgba(155, 211, 154, ${0.3 * master})`;
+          ctx!.fillText(c.label, c.x + c.ds + 3, c.dy + 3);
+        }
+      }
+      for (const d of solids) {
+        ctx!.fillStyle = d.accent
+          ? `rgba(186, 255, 224, ${0.95 * master})`
+          : `rgba(222, 248, 220, ${0.95 * master})`;
+        ctx!.fillRect(d.x - d.s, d.y - d.s, d.s * 2, d.s * 2);
+        if (d.label) {
+          ctx!.fillStyle = `rgba(155, 211, 154, ${0.45 * master})`;
+          ctx!.fillText(d.label, d.x + d.s + 2, d.y + 4);
+        }
+      }
+    }
+
+    /** Reduced motion: one fully-built frame, held. Repainted on resize, since
+     *  resizing wipes the backing store and no loop will ever restore it. */
+    function drawStatic(): void {
+      draw(BUILD + 0.1, 2.6);
+    }
+
+    // ── Pointer wiring ────────────────────────────────────────────────────────
+    canvas.addEventListener(
+      'pointermove',
+      (e: PointerEvent) => {
+        if (!fine) return;
+        const r = canvas.getBoundingClientRect();
+        ptr.x = e.clientX - r.left;
+        ptr.y = e.clientY - r.top;
+        ptr.inside = true;
+      },
+      { passive: true },
+    );
+    canvas.addEventListener('pointerleave', () => {
+      ptr.inside = false;
+      ptr.x = ptr.y = -9999;
+    });
+
+    // ── Boot ──────────────────────────────────────────────────────────────────
+    resize();
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(canvas);
+    else window.addEventListener('resize', resize, { passive: true });
+
+    if (!reduced) {
+      // The loop runs only while the canvas is both on-screen and in a visible
+      // tab. Tracked separately — otherwise un-hiding the tab would restart a
+      // loop for a canvas that has long since scrolled away.
+      let onScreen = true;
+      let visible = !document.hidden;
+      let queued = false;
+      let last = performance.now();
+
+      const frame = (now: number): void => {
+        queued = false;
+        if (!onScreen || !visible) return;
+
+        // Cap dt so one janky frame can't teleport the reveal head across the
+        // band. The cap must sit BELOW the worst frame time we tolerate, not at
+        // a "good" frame time: clamp at 50ms and any device rendering under
+        // 20fps silently plays the whole cycle in slow motion. 250ms only
+        // clamps a genuine stall (GC pause, tab restore) — and even then the
+        // head advances ~55px, which nobody sees.
+        clock += Math.min((now - last) / 1000, MAX_DT);
+        last = now;
+
+        let ct = clock - cycleStart;
+        if (ct >= CYCLE) {
+          build(); // a fresh fan every cycle — the loop never reads as a repeat
+          cycleStart = clock;
+          ct = 0;
+        }
+        draw(ct, clock);
+
+        queued = true;
+        requestAnimationFrame(frame);
+      };
+
+      const sync = (): void => {
+        if (!onScreen || !visible || queued) return;
+        last = performance.now(); // don't bill the paused interval to the cycle
+        queued = true;
+        requestAnimationFrame(frame);
+      };
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(
+          ([entry]) => {
+            onScreen = entry.isIntersecting;
+            sync();
+          },
+          { threshold: 0 },
+        ).observe(canvas);
+      }
+      document.addEventListener('visibilitychange', () => {
+        visible = !document.hidden;
+        sync();
+      });
+
+      sync();
+    }
+  }
+</script>

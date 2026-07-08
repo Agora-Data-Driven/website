@@ -3,10 +3,13 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import Container from '@components/Container.astro';
 import Breadcrumb from '@components/Breadcrumb.astro';
 import Button from '@components/Button.astro';
+import PageAurora from '@components/PageAurora.astro';
+import PostCard from '@components/PostCard.astro';
 import { getCollection } from 'astro:content';
 import { silos, type Silo } from '@data/categories';
 import { cta } from '@data/cta';
 import { skillMasteryUrl } from '@data/nav';
+import { cardFromPost, type CardData } from '@lib/posts';
 
 export const prerender = true;
 
@@ -31,19 +34,36 @@ const posts = allPosts
   .filter((p) => p.data.category === silo.name)
   .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
 
-const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+const cards = posts.map(cardFromPost);
 
 // Sibling silos that have content, for cross-linking ("link like clusters").
 const populated = new Set(allPosts.map((p) => p.data.category));
 const siblings = silos.filter((s) => s.slug !== silo.slug && populated.has(s.name));
 
+/**
+ * "Explore more topics" now shows the newest article from each sibling silo
+ * beneath the chips, so the row is a real browsing surface rather than a dead
+ * end. Newest-first per silo; at most one card each, capped at three.
+ */
+const siblingPicks: CardData[] = siblings
+  .flatMap((s) => {
+    const newest = allPosts
+      .filter((p) => p.data.category === s.name)
+      .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())[0];
+    return newest ? [cardFromPost(newest)] : [];
+  })
+  .slice(0, 3);
+
 const isTalent = silo.audience === 'talent';
 ---
 
 <BaseLayout title={`${silo.name} | Blog`} description={silo.metaDescription}>
-  <section class="border-line from-tint/40 to-canvas border-b bg-linear-to-b">
-    <Container class="py-12 lg:py-16">
+  <PageAurora />
+
+  <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+  <section class="relative overflow-hidden">
+    <div class="bg-grid pointer-events-none absolute inset-0 opacity-25" aria-hidden="true"></div>
+    <Container class="relative py-12 lg:py-16">
       <Breadcrumb
         items={[
           { label: 'Home', href: '/' },
@@ -51,88 +71,112 @@ const isTalent = silo.audience === 'talent';
           { label: silo.name },
         ]}
       />
-      <p class="eyebrow mt-6">Blog topic</p>
-      <h1 class="text-ink mt-2 text-4xl font-bold sm:text-5xl">{silo.name}</h1>
+
+      <p
+        class="eyebrow text-brand-600 bg-brand-500/8 border-brand-200 mt-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 backdrop-blur-sm"
+      >
+        Blog topic
+      </p>
+      <h1 class="text-ink mt-3 text-4xl font-bold sm:text-5xl">
+        <span class="text-gradient-animated">{silo.name}</span>
+      </h1>
       <p class="text-muted mt-3 max-w-2xl text-lg">{silo.tagline}</p>
+      <p class="text-muted mt-5 text-sm">
+        <span class="text-ink font-semibold">{posts.length}</span>
+        {posts.length === 1 ? 'article' : 'articles'} in this topic
+      </p>
     </Container>
+    <div class="border-line border-b" aria-hidden="true"></div>
   </section>
 
   <Container class="py-12 lg:py-16">
+    <!-- ── ARTICLES ───────────────────────────────────────────────────────── -->
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {
-        posts.map((post) => (
-          <article class="border-line bg-surface shadow-card card-hover flex flex-col rounded-2xl border p-6">
-            <p class="text-brand-600 text-xs font-semibold tracking-wide uppercase">
-              {post.data.category}
-            </p>
-            <h2 class="text-ink mt-2 text-lg font-semibold">
-              <a href={`/${post.id}/`} class="hover:text-brand-700">
-                {post.data.title}
-              </a>
-            </h2>
-            <p class="text-muted mt-2 flex-1 text-sm">{post.data.excerpt}</p>
-            <p class="text-muted mt-4 text-xs">{fmt(post.data.publishDate)}</p>
-          </article>
+        cards.map((card, i) => (
+          <PostCard card={card} eager={i < 3} class="reveal" style={`--reveal-delay:${i * 60}ms`} />
         ))
       }
     </div>
 
-    {/* Audience-aware CTA */}
-    <div class="border-line bg-surface mt-12 rounded-2xl border p-8 text-center">
-      {
-        isTalent ? (
-          <>
-            <h2 class="text-ink text-2xl font-bold">Want to build these skills for real?</h2>
-            <p class="text-muted mx-auto mt-2 max-w-xl">
-              Train with Agora's Skill Mastery program, then apply to join the team.
-            </p>
-            <div class="mt-5 flex flex-wrap justify-center gap-3">
-              <Button href={skillMasteryUrl} external size="lg">
-                Explore Skill Mastery
-              </Button>
-              <Button href={cta.joinTeam.href} external variant="secondary" size="lg">
-                {cta.joinTeam.label}
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <h2 class="text-ink text-2xl font-bold">Want results like these for your business?</h2>
-            <p class="text-muted mx-auto mt-2 max-w-xl">
-              We turn analytics into growth. Let's talk about where you want to go.
-            </p>
-            <div class="mt-5 flex justify-center">
-              <Button href={cta.becomeClient.href} external variant="icon" size="lg">
-                {cta.becomeClient.label}
-              </Button>
-            </div>
-          </>
-        )
-      }
+    <!-- ── Audience-aware CTA (dark band, matching the footer) ─────────────── -->
+    <div class="surface-dark shadow-pop relative mt-16 overflow-hidden rounded-3xl">
+      <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-30" aria-hidden="true">
+      </div>
+      <div class="aurora aurora--dark" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+        <div class="aurora__blob aurora__blob--3"></div>
+      </div>
+
+      <div class="relative px-7 py-14 text-center sm:px-10 lg:py-16">
+        {
+          isTalent ? (
+            <>
+              <h2 class="text-2xl font-bold text-white sm:text-3xl">
+                Want to build these skills <span class="text-gradient-bright">for real?</span>
+              </h2>
+              <p class="mx-auto mt-3 max-w-xl text-white/70">
+                Train with Agora's Skill Mastery program, then apply to join the team.
+              </p>
+              <div class="mt-7 flex flex-wrap justify-center gap-3">
+                <Button href={skillMasteryUrl} external size="lg">
+                  Explore Skill Mastery
+                </Button>
+                <Button href={cta.joinTeam.href} external variant="secondary" size="lg">
+                  {cta.joinTeam.label}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 class="text-2xl font-bold text-white sm:text-3xl">
+                Want results like these <span class="text-gradient-bright">for your business?</span>
+              </h2>
+              <p class="mx-auto mt-3 max-w-xl text-white/70">
+                We turn analytics into growth. Let's talk about where you want to go.
+              </p>
+              <div class="mt-7 flex justify-center">
+                <Button href={cta.becomeClient.href} external variant="icon" size="lg">
+                  {cta.becomeClient.label}
+                </Button>
+              </div>
+            </>
+          )
+        }
+      </div>
     </div>
 
-    {/* Cross-link to sibling silos */}
+    <!-- ── Explore more topics (chips + a live article from each) ──────────── -->
     {
       siblings.length > 0 && (
-        <div class="mt-12">
+        <section class="mt-16" aria-label="Explore more topics">
           <p class="eyebrow">Explore more topics</p>
           <div class="mt-4 flex flex-wrap gap-2">
             {siblings.map((s) => (
               <a
                 href={`/blog/category/${s.slug}/`}
-                class="border-line text-body hover:border-brand-300 hover:text-brand-700 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors"
+                class="border-line text-body hover:border-brand-300 hover:text-brand-700 card-glass rounded-full border px-4 py-1.5 text-sm font-medium transition-colors"
               >
                 {s.name}
               </a>
             ))}
             <a
               href="/blog/"
-              class="border-line text-body hover:border-brand-300 hover:text-brand-700 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors"
+              class="border-line text-body hover:border-brand-300 hover:text-brand-700 card-glass rounded-full border px-4 py-1.5 text-sm font-medium transition-colors"
             >
               All articles
             </a>
           </div>
-        </div>
+
+          {siblingPicks.length > 0 && (
+            <div class="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {siblingPicks.map((card, i) => (
+                <PostCard card={card} class="reveal" style={`--reveal-delay:${i * 60}ms`} />
+              ))}
+            </div>
+          )}
+        </section>
       )
     }
   </Container>

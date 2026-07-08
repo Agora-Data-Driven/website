@@ -2,8 +2,8 @@
 title: 'From Display to Demand: Marketing Our LED Wall'
 publishDate: 2024-12-02
 excerpt: 'How we treated our own LED wall like a client, turning a high-traffic screen into real advertising bookings with a data-informed marketing strategy.'
-heroImage: '/placeholders/cover-1.svg'
-heroAlt: 'A large outdoor LED advertising wall in a high-traffic location.'
+heroImage: '/blog-images/building-an-authentic-brand-identity.webp'
+heroAlt: 'A designer’s studio desk in front of a boldly patterned brand wall.'
 category: 'Strategy & Growth'
 industry: 'Local Business'
 ---

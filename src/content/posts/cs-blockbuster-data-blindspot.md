@@ -1,6 +1,8 @@
 ---
 title: 'Blockbuster Had the Data. They Just Optimised the Wrong Thing.'
 publishDate: 2026-06-27
+heroImage: '/blog-images/cs-blockbuster-data-blindspot.webp'
+heroAlt: 'A woman with popcorn holding a TV remote at home.'
 excerpt: 'At its peak, Blockbuster had 60 million customer transaction records and $800 million a year in late fee revenue. They used the data to protect the fees. Netflix used theirs to eliminate them.'
 category: 'Marketing Analytics'
 type: data-file

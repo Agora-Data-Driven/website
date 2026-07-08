@@ -1,6 +1,8 @@
 ---
 title: 'How Gymshark Found Influencers Nobody Else Was Looking For'
 publishDate: 2026-06-27
+heroImage: '/blog-images/cs-gymshark-influencer-data.webp'
+heroAlt: 'A woman training in a gym.'
 excerpt: 'Ben Francis started Gymshark with no marketing budget. He looked at one number that bigger brands ignored, engagement rate, and used it to find the fitness influencers who actually converted.'
 category: 'Paid Marketing'
 type: data-file

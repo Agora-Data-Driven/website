@@ -2,8 +2,8 @@
 title: 'Lead Nurturing Automation: Shorten Time-to-First-Purchase'
 publishDate: 2026-06-27
 excerpt: 'Shorten your time-to-first-purchase and boost revenue with strategic lead nurturing automation that converts prospects faster.'
-heroImage: '/placeholders/cover-2.svg'
-heroAlt: 'Lead-nurturing automation shortening the time to a first purchase.'
+heroImage: '/blog-images/lead-nurturing-automation-time-to-first-purchase.webp'
+heroAlt: 'A woman working on a laptop from a sofa.'
 category: 'Strategy & Growth'
 industry: 'B2B'
 draft: false

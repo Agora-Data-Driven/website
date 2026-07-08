@@ -2,8 +2,8 @@
 title: 'Why Platform ROAS Overstates Results & Real Revenue'
 publishDate: 2026-06-27
 excerpt: 'Platform-reported ROAS often overstates ad performance because each platform takes credit for the same sales, distorting budget decisions.'
-heroImage: '/placeholders/cover-2.svg'
-heroAlt: 'Platform-reported ad revenue compared against real booked revenue.'
+heroImage: '/blog-images/why-platform-reported-roas-overstates-results.webp'
+heroAlt: 'Hands using a calculator beside a laptop and financial paperwork.'
 category: 'Marketing Analytics'
 industry: 'E-commerce'
 draft: false

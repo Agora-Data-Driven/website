@@ -2,8 +2,8 @@
 title: 'Lifecycle Email Sequences: Convert Leads to Repeat Buyers'
 publishDate: 2026-06-27
 excerpt: 'Lifecycle email sequences transform new leads into loyal repeat customers, closing costly gaps and driving conversions with automated, targeted messaging.'
-heroImage: '/placeholders/cover-1.svg'
-heroAlt: 'An automated lifecycle email sequence moving a lead toward purchase.'
+heroImage: '/blog-images/lifecycle-email-sequences-that-convert.webp'
+heroAlt: 'Overhead view of hands typing on a laptop beside a phone.'
 category: 'Strategy & Growth'
 industry: 'E-commerce'
 draft: false

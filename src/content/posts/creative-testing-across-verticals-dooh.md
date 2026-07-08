@@ -2,8 +2,8 @@
 title: 'Creative Testing: DOOH Lessons Across 6 Verticals'
 publishDate: 2026-06-27
 excerpt: "When testing creative across multiple verticals, the channel's constraints matter more than the message's specifics."
-heroImage: '/placeholders/cover-3.svg'
-heroAlt: 'Ad creative tested across several business verticals on one screen.'
+heroImage: '/blog-images/creative-testing-across-verticals-dooh.webp'
+heroAlt: 'A cluster of roadside billboards advertising competing brands.'
 category: 'Paid Marketing'
 draft: false
 ---

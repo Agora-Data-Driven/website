@@ -1,0 +1,250 @@
+---
+/**
+ * PostCard — the ONE article card, used by the /blog/ carousels, the category
+ * hubs, and the "related reading" rows. Having a single card is what makes
+ * every article the same size wherever it appears.
+ *
+ * Equal height by construction: the media band is a fixed 16/9 ratio, the body
+ * is a flex column, titles clamp to 2 lines, excerpts to 2, and the meta row is
+ * pinned to the bottom with `margin-top:auto`. Nothing depends on copy length.
+ *
+ * Motion (restrained, one gesture each): a green light travels around the
+ * border on hover (`.ring-roam`), the card lifts, the photo scales ~4%, a green
+ * scrim washes up over the image, and pressing settles it back down.
+ */
+import BlogThumbnail from '@components/BlogThumbnail.astro';
+import type { CardData } from '@lib/posts';
+
+interface Props {
+  card: CardData;
+  /** Eager-load the media for above-the-fold cards. */
+  eager?: boolean;
+  class?: string;
+  /** Inline style on the root, e.g. the `--reveal-delay` stagger. */
+  style?: string;
+  /** Hook the /blog/ filter script matches on (e.g. "ddm-card"). */
+  rootClass?: string;
+  /** Emit the topic/industry/search data-attributes the /blog/ filters read. */
+  filterable?: boolean;
+  section?: string;
+}
+const {
+  card,
+  eager = false,
+  class: className = '',
+  style,
+  rootClass = '',
+  filterable = false,
+  section,
+} = Astro.props;
+
+// One lowercased haystack the /blog/ search input matches against.
+const search = filterable
+  ? `${card.title} ${card.excerpt} ${card.category} ${card.topic} ${card.industry}`.toLowerCase()
+  : undefined;
+---
+
+<article
+  class={`post-card ring-roam card-glass border-line rounded-2xl border ${rootClass} ${className}`}
+  style={style}
+  data-section={section}
+  data-topic={filterable ? card.topic : undefined}
+  data-industry={filterable ? card.industry : undefined}
+  data-search={search}
+>
+  <a href={card.href} class="post-card__link group">
+    <div class="post-card__media bg-tint">
+      {
+        card.image ? (
+          <img
+            src={card.image}
+            alt={card.imageAlt ?? card.title}
+            width="1600"
+            height="900"
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+            class="post-card__img"
+          />
+        ) : (
+          <BlogThumbnail variant={card.thumbVariant} />
+        )
+      }
+      <span class="post-card__scrim" aria-hidden="true"></span>
+    </div>
+
+    <div class="post-card__body">
+      <div class="mb-2 flex flex-wrap items-center gap-2">
+        <span class="text-brand-600 text-[10px] font-bold tracking-[0.16em] uppercase">
+          {card.category}
+        </span>
+        {
+          card.kindLabel && (
+            <span
+              class={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                card.kindLabel === 'Case Study'
+                  ? 'bg-tint text-brand-700'
+                  : 'border-line text-muted bg-canvas border'
+              }`}
+            >
+              {card.kindLabel}
+            </span>
+          )
+        }
+      </div>
+
+      <h3 class="post-card__title text-ink group-hover:text-brand-700 transition-colors">
+        {card.title}
+      </h3>
+      <p class="post-card__excerpt text-muted">{card.excerpt}</p>
+
+      <div class="post-card__meta">
+        <span class="text-muted text-xs">{card.date} · {card.readTime}</span>
+        <span class="read-cta text-brand-600 text-xs font-semibold">
+          <span class="read-cta__label">Read</span>
+          <span class="read-cta__icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="h-3.5 w-3.5"
+            >
+              <path d="M3 8h10M9 4l4 4-4 4"></path>
+            </svg>
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="h-3.5 w-3.5"
+            >
+              <path d="M3 8h10M9 4l4 4-4 4"></path>
+            </svg>
+          </span>
+        </span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .post-card {
+    display: flex;
+    overflow: hidden;
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-pop);
+  }
+  /* Press: settle back toward the page, so a click feels physical. */
+  .post-card:active {
+    transform: translateY(-1px) scale(0.994);
+    transition-duration: 0.09s;
+  }
+  /* `hidden` (set by the /blog/ filter script) must beat `display:flex`. */
+  .post-card[hidden] {
+    display: none;
+  }
+
+  .post-card__link {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-decoration: none;
+  }
+
+  /* Fixed ratio → every card in a row is exactly the same height. */
+  .post-card__media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    flex: none;
+  }
+  .post-card__media :global(svg),
+  .post-card__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .post-card__link:hover .post-card__img,
+  .post-card__link:hover .post-card__media :global(svg) {
+    transform: scale(1.045);
+  }
+  /* A whisper of brand green washes up over the photo on hover. */
+  .post-card__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(79, 168, 74, 0.16), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .post-card__link:hover .post-card__scrim {
+    opacity: 1;
+  }
+
+  .post-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 1.25rem 1.375rem 1.375rem;
+    min-width: 0;
+  }
+
+  /* Title clamps to 3 lines, not 2: at this size a long headline needs the
+     third line in a narrow (~340px) grid column, and truncating a title
+     mid-phrase reads as a bug. Card heights stay equal regardless — the clamp
+     caps the maximum and `.post-card__meta` is bottom-pinned. */
+  .post-card__title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-card__excerpt {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  /* `margin-top:auto` pins the meta row to the card's bottom edge, so meta
+     baselines line up across cards even when one title wraps to a single line. */
+  .post-card__meta {
+    margin-top: auto;
+    padding-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post-card:hover,
+    .post-card:active {
+      transform: none;
+    }
+    .post-card__link:hover .post-card__img,
+    .post-card__link:hover .post-card__media :global(svg) {
+      transform: none;
+    }
+  }
+</style>

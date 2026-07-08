@@ -1,6 +1,8 @@
 ---
 title: 'Why a Full-Funnel Strategy Can Break the Sales Plateau'
 publishDate: 2026-06-26
+heroImage: '/blog-images/why-a-full-funnel-strategy-can-break-the-sales-plateau.webp'
+heroAlt: 'A team meeting around a table with notebooks and coffee.'
 excerpt: 'Bottom-funnel ads alone create a growth ceiling. Here is how a full-funnel rebuild, and the demand it creates, more than doubled weekly sales for one Agora client.'
 category: 'Strategy & Growth'
 industry: 'E-commerce'

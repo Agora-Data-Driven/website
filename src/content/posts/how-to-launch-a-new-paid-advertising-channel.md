@@ -2,8 +2,8 @@
 title: 'Launch New Paid Advertising Channel: A Framework'
 publishDate: 2026-06-27
 excerpt: 'Discover a proven framework to launch new paid advertising channels as structured experiments, reducing risk and accelerating growth.'
-heroImage: '/placeholders/cover-2.svg'
-heroAlt: 'Planning a new paid advertising channel as a structured experiment.'
+heroImage: '/blog-images/how-to-launch-a-new-paid-advertising-channel.webp'
+heroAlt: 'A whiteboard covered in a sprint plan and sticky notes.'
 category: 'Paid Marketing'
 draft: false
 ---
