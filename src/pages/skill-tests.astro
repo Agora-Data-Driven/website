@@ -235,9 +235,16 @@ const steps = [
     </section>
 
     <!-- ── GUEST vs MASTERY ──────────────────────────────────────────────── -->
-    <section class="border-line bg-canvas border-b py-16 lg:py-20">
+    <section class="border-line relative overflow-hidden bg-canvas border-b py-16 lg:py-20">
+      <div
+        class="pointer-events-none absolute inset-0"
+        style="background: radial-gradient(720px 300px at 10% -10%, rgba(79,168,74,0.08), transparent 60%)"
+        aria-hidden="true"
+      >
+      </div>
       <Container>
-        <div class="mb-10 max-w-2xl">
+        <div class="reveal relative mb-10 max-w-2xl">
+          <p class="eyebrow mb-3">Guest vs Mastery</p>
           <h2 class="font-display text-ink mb-3 text-3xl font-bold tracking-tight lg:text-4xl">
             Two ways in
           </h2>
@@ -250,7 +257,7 @@ const steps = [
         <div class="grid gap-5 lg:grid-cols-2">
           <!-- Guest -->
           <div
-            class="reveal card-hover border-line bg-surface shadow-card flex flex-col rounded-2xl border p-7"
+            class="reveal guest-card card-hover border-line bg-surface shadow-card flex flex-col rounded-2xl border p-7"
           >
             <span
               class="text-brand-700 bg-brand-50 border-brand-200 mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
@@ -284,7 +291,7 @@ const steps = [
 
           <!-- Mastery -->
           <div
-            class="reveal surface-dark shadow-pop flex flex-col rounded-2xl p-7"
+            class="reveal surface-dark dot-grid-dark mastery-card shadow-pop relative flex flex-col overflow-hidden rounded-2xl p-7"
             style="--reveal-delay:110ms"
           >
             <span
@@ -331,7 +338,14 @@ const steps = [
     </section>
 
     <!-- ── FILTER BAR + TEST GRID ────────────────────────────────────────── -->
-    <section id="test-section" class="py-16 lg:py-20">
+    <section id="test-section" class="relative overflow-hidden py-16 lg:py-20">
+      <!-- Green atmosphere: drifting aurora (masks off toward the cards) + grid -->
+      <div class="aurora" aria-hidden="true">
+        <div class="aurora__blob aurora__blob--1"></div>
+        <div class="aurora__blob aurora__blob--2"></div>
+        <div class="aurora__blob aurora__blob--3"></div>
+      </div>
+      <div class="bg-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true"></div>
       <Container>
         <!-- Filter row -->
         <div
@@ -368,7 +382,8 @@ const steps = [
         </div>
 
         <!-- Heading -->
-        <div class="mb-10 max-w-2xl">
+        <div class="reveal relative mb-10 max-w-2xl">
+          <p class="eyebrow mb-3">The tests</p>
           <h2 class="font-display text-ink mb-3 text-3xl font-bold tracking-tight lg:text-4xl">
             Choose a skill test
           </h2>
@@ -469,18 +484,30 @@ const steps = [
     </section>
 
     <!-- ── HOW IT WORKS ───────────────────────────────────────────────────── -->
-    <section class="border-line bg-canvas border-y py-16 lg:py-20">
+    <section class="border-line relative overflow-hidden bg-canvas border-y py-16 lg:py-20">
+      <!-- Soft green wash + faint grid behind the steps -->
+      <div
+        class="pointer-events-none absolute inset-0"
+        style="background: radial-gradient(640px 320px at 50% -8%, rgba(79,168,74,0.09), transparent 62%)"
+        aria-hidden="true"
+      >
+      </div>
+      <div class="bg-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true"></div>
       <Container>
-        <div class="mb-10 text-center">
+        <div class="reveal relative mb-10 text-center">
+          <p class="eyebrow mb-3">The process</p>
           <h2 class="font-display text-ink text-3xl font-bold tracking-tight lg:text-4xl">
             How it works
           </h2>
         </div>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="relative grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {
-            steps.map((step) => (
-              <div class="reveal border-line bg-surface shadow-card flex flex-col rounded-2xl border p-6">
-                <span class="font-display text-brand-200 mb-3 text-3xl font-bold">
+            steps.map((step, i) => (
+              <div
+                class="reveal card-hover step-card border-line bg-surface shadow-card relative flex flex-col rounded-2xl border p-6"
+                style={`--reveal-delay:${i * 90}ms`}
+              >
+                <span class="step-num font-display mb-3 block text-4xl font-bold">
                   {step.number}
                 </span>
                 <h3 class="font-display text-ink mb-2 text-base font-bold">{step.title}</h3>
@@ -499,6 +526,7 @@ const steps = [
         <div class="aurora__blob aurora__blob--2"></div>
         <div class="aurora__blob aurora__blob--3"></div>
       </div>
+      <div class="dot-grid-dark pointer-events-none absolute inset-0 opacity-60" aria-hidden="true"></div>
       <Container>
         <div class="relative z-10 mx-auto max-w-2xl text-center">
           <h2
@@ -1289,4 +1317,120 @@ const steps = [
     .catch(() => {
       /* stay signed-out */
     });
+</script>
+
+<style>
+  /* ── Skill Tests hub: green atmosphere + motion (page-scoped) ──────────────
+     All decorative. Content is always lifted above the glow layers via
+     `> * { position: relative; z-index: 1 }`, and `isolation: isolate` keeps
+     each card's stacking self-contained. */
+
+  /* Mouse-follow green spotlight on the test cards. --mx/--my are set by the
+     script below on pointermove; without JS (touch / reduced motion) the glow
+     simply sits centered at the top and still fades in on hover. */
+  .test-card {
+    position: relative;
+    isolation: isolate;
+    --mx: 50%;
+    --my: 0%;
+  }
+  .test-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      240px circle at var(--mx) var(--my),
+      rgba(79, 168, 74, 0.16),
+      transparent 72%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .test-card:hover::before {
+    opacity: 1;
+  }
+  .test-card > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Guest card: soft green wash blooms from the top on hover. */
+  .guest-card {
+    position: relative;
+    isolation: isolate;
+  }
+  .guest-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(130% 90% at 50% -25%, rgba(79, 168, 74, 0.12), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .guest-card:hover::after {
+    opacity: 1;
+  }
+  .guest-card > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Mastery card: inner green/violet glow behind its content, for depth. */
+  .mastery-card {
+    isolation: isolate;
+  }
+  .mastery-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(60% 55% at 88% -8%, rgba(108, 185, 104, 0.38), transparent 60%),
+      radial-gradient(55% 55% at -10% 108%, rgba(106, 106, 234, 0.2), transparent 62%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .mastery-card > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* How it works: gradient step numbers with a soft green glow. */
+  .step-num {
+    background: linear-gradient(135deg, var(--color-brand-500), var(--color-emerald));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 6px 18px rgba(79, 168, 74, 0.35));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .test-card::before,
+    .guest-card::after {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Green mouse-follow spotlight on the test cards — the "moving" accent.
+  // Desktop + motion-ok only; touch and reduced-motion fall back to the
+  // centered hover glow defined in the scoped <style> above.
+  const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+  if (!prefersReduce && !isTouch) {
+    document.querySelectorAll<HTMLElement>('.test-card').forEach((card) => {
+      card.addEventListener('pointermove', (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+      });
+    });
+  }
 </script>
