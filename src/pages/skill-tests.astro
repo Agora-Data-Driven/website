@@ -234,6 +234,89 @@ const steps = [
       </Container>
     </section>
 
+    <!-- ── QUIZ FROM MY NOTES ────────────────────────────────────────────── -->
+    <!-- Bring-your-own-material: upload docs / paste text and the Skill Mastery
+         engine writes a quiz on exactly that. Generation is gated behind the
+         shared Mastery sign-in (enforced by /api/notes-quiz). -->
+    <section class="border-line bg-surface relative overflow-hidden border-b py-14 lg:py-16">
+      <div
+        class="pointer-events-none absolute inset-0"
+        style="background: radial-gradient(820px 360px at 90% -20%, rgba(79,168,74,0.10), transparent 60%)"
+        aria-hidden="true"
+      >
+      </div>
+      <Container class="relative z-10">
+        <div
+          class="border-brand-200 from-brand-50 reveal relative overflow-hidden rounded-2xl border bg-gradient-to-br to-transparent p-7 lg:p-9"
+        >
+          <div class="grid items-center gap-6 lg:grid-cols-[1fr_auto]">
+            <div class="max-w-2xl">
+              <p
+                class="eyebrow text-brand-600 mb-3 inline-flex items-center gap-2 text-xs font-bold tracking-[0.16em] uppercase"
+              >
+                <span class="bg-brand-500/10 border-brand-200 rounded-full border px-2.5 py-0.5"
+                  >New · Bring your own material</span
+                >
+              </p>
+              <h2 class="font-display text-ink mb-3 text-2xl font-bold tracking-tight lg:text-3xl">
+                Quiz yourself on your own notes
+              </h2>
+              <p class="text-muted mb-5 text-base leading-relaxed">
+                Upload a lecture PDF, a photo of your notes, or paste any text, and the Skill
+                Mastery engine writes a real quiz on exactly that: your material, real right and
+                wrong answers, an explanation after every question. Pick how many questions and how
+                hard.
+              </p>
+              <div class="flex flex-wrap items-center gap-3">
+                <button
+                  id="notes-quiz-btn"
+                  type="button"
+                  class="btn-sheen bg-brand-500 shadow-glow-sm hover:bg-brand-600 focus-visible:outline-brand-500 inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2"
+                >
+                  <svg
+                    class="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M12 18v-6"></path>
+                    <path d="M9.5 14.5 12 12l2.5 2.5"></path>
+                  </svg>
+                  Create a quiz from my notes
+                </button>
+                <span class="text-muted text-xs">PDF, images, or text · Mastery sign-in</span>
+              </div>
+            </div>
+            <div
+              class="text-brand-600/80 hidden shrink-0 lg:block"
+              aria-hidden="true"
+            >
+              <svg
+                class="h-28 w-28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.1"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                <path d="M14 3v5h5"></path>
+                <path d="M9 13h6"></path>
+                <path d="M9 17h4"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+
     <!-- ── GUEST vs MASTERY ──────────────────────────────────────────────── -->
     <section class="border-line bg-canvas relative overflow-hidden border-b py-16 lg:py-20">
       <div class="aurora aurora--soft" aria-hidden="true">
@@ -705,7 +788,64 @@ const steps = [
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
+  // "Quiz from my notes": an ad-hoc topic built at runtime from AI-generated
+  // questions, plus its own builder state. Generic proficiency bands (the same
+  // shape as the authored topics) drive the results screen.
+  const notesState = { files: [], count: 8, difficulty: 'auto', authed: null };
+  let customTopic = null;
+  const NOTES_BANDS = [
+    {
+      id: 'expert',
+      label: 'Strong command',
+      min: 85,
+      max: 100,
+      summary: 'You clearly know this material well: you handled the tricky items, not just the easy recall.',
+      recommendations: [
+        'Push into the parts you have not written down yet, then quiz yourself on those.',
+        'Teach it back or apply it to a real project to lock it in.',
+        'Sign in to Mastery Mode to keep it sharp with spaced repetition.',
+      ],
+    },
+    {
+      id: 'proficient',
+      label: 'Solid grasp',
+      min: 70,
+      max: 84,
+      summary: 'A good working understanding, with a few gaps worth closing.',
+      recommendations: [
+        'Re-read the sections behind the questions you missed, then retake the quiz.',
+        'Turn each miss into a flashcard and review it tomorrow.',
+        'Sign in to Mastery Mode to drill the weak spots automatically.',
+      ],
+    },
+    {
+      id: 'developing',
+      label: 'Getting there',
+      min: 45,
+      max: 69,
+      summary: 'The basics are landing, but the material has not fully stuck yet.',
+      recommendations: [
+        'Study the material again in smaller chunks, then quiz one chunk at a time.',
+        'Focus first on the questions you got wrong: read the explanation for each.',
+        'Sign in to Mastery Mode for guided, spaced-repetition practice.',
+      ],
+    },
+    {
+      id: 'novice',
+      label: 'Just starting',
+      min: 0,
+      max: 44,
+      summary: 'This material is still new to you. That is exactly what practice is for.',
+      recommendations: [
+        'Work through the material once more, slowly, before testing again.',
+        'Review every explanation on the results below: they are the fastest way in.',
+        'Sign in to Mastery Mode to build it up from the fundamentals.',
+      ],
+    },
+  ];
+
   function getTopic(id) {
+    if (id === 'my-notes') return customTopic;
     return quizTopicsData.find((t) => t.id === id);
   }
 
@@ -890,6 +1030,306 @@ const steps = [
     document.getElementById('setup-start-btn').addEventListener('click', () => {
       startQuiz(state.topicId, state.questionCount);
     });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Screen: Quiz from my notes (builder)
+  // ---------------------------------------------------------------------------
+  function fmtBytes(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return Math.round(b / 1024) + ' KB';
+    return (b / 1024 / 1024).toFixed(1) + ' MB';
+  }
+  function fileGlyph(f) {
+    const n = (f.name || '').toLowerCase();
+    const m = (f.type || '').toLowerCase();
+    if (m.startsWith('image/') || /\.(png|jpe?g|webp|gif|heic|heif)$/.test(n)) return '🖼️';
+    if (m === 'application/pdf' || /\.pdf$/.test(n)) return '📄';
+    return '📝';
+  }
+  const NOTES_MAX_FILES = 12;
+  const NOTES_MAX_BYTES = 16 * 1024 * 1024;
+
+  function renderNotesFileList() {
+    const wrap = document.getElementById('notes-file-list');
+    if (!wrap) return;
+    if (!notesState.files.length) {
+      wrap.innerHTML = '';
+      wrap.classList.add('hidden');
+      return;
+    }
+    wrap.classList.remove('hidden');
+    wrap.innerHTML = notesState.files
+      .map(
+        (f, i) => `
+      <div class="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-2.5">
+        <span class="text-base leading-none" aria-hidden="true">${fileGlyph(f)}</span>
+        <span class="min-w-0 flex-1 truncate text-sm font-medium text-ink" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span>
+        <span class="text-xs text-muted">${fmtBytes(f.size)}</span>
+        <button type="button" data-remove="${i}" class="notes-file-x flex h-6 w-6 items-center justify-center rounded-lg bg-canvas text-muted transition-colors hover:bg-red-50 hover:text-red-600" aria-label="Remove ${escapeHtml(f.name)}">×</button>
+      </div>`,
+      )
+      .join('');
+    wrap.querySelectorAll('.notes-file-x').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        notesState.files.splice(parseInt(btn.dataset.remove, 10), 1);
+        renderNotesFileList();
+      });
+    });
+  }
+
+  function addNotesFiles(fileList) {
+    const errEl = document.getElementById('notes-error');
+    if (errEl) errEl.textContent = '';
+    for (const f of Array.from(fileList || [])) {
+      if (notesState.files.length >= NOTES_MAX_FILES) {
+        if (errEl) errEl.textContent = `You can add up to ${NOTES_MAX_FILES} files.`;
+        break;
+      }
+      if (f.size > NOTES_MAX_BYTES) {
+        if (errEl) errEl.textContent = `"${f.name}" is over 16 MB and was skipped.`;
+        continue;
+      }
+      notesState.files.push(f);
+    }
+    renderNotesFileList();
+  }
+
+  function showNotesSetupScreen() {
+    state.phase = 'notes-setup';
+    state.topicId = 'my-notes';
+    notesState.files = [];
+    openOverlay();
+    setOverlayTitle('Quiz from my notes');
+    setProgressLabel('');
+    setProgressBar(null);
+
+    const countOpts = [5, 10, 20];
+    const diffOpts = [
+      ['auto', 'Auto'],
+      ['core', 'Core'],
+      ['balanced', 'Balanced'],
+      ['challenge', 'Challenge'],
+    ];
+    const content = document.getElementById('quiz-content');
+    content.innerHTML = `
+      <div class="mx-auto max-w-xl">
+        <div class="mb-6 text-center">
+          <div class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-tint">
+            <svg class="h-7 w-7 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 18v-6"/><path d="M9.5 14.5 12 12l2.5 2.5"/>
+            </svg>
+          </div>
+          <h2 class="font-display mb-2 text-2xl font-bold tracking-tight text-ink lg:text-3xl">Quiz from my notes</h2>
+          <p class="text-sm leading-relaxed text-muted">Upload documents or paste text. The Skill Mastery engine writes a quiz on exactly that material, with an explanation after every question.</p>
+        </div>
+
+        <div id="notes-auth-note" class="mb-5 hidden rounded-xl border px-4 py-3 text-sm"></div>
+
+        <label id="notes-drop" for="notes-files" class="mb-3 flex cursor-pointer flex-col items-center gap-1.5 rounded-2xl border-2 border-dashed border-line bg-canvas px-6 py-8 text-center transition-colors hover:border-brand-400 hover:bg-brand-50">
+          <input type="file" id="notes-files" multiple class="hidden"
+            accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.heic,.txt,.text,.md,.markdown,.csv,.tsv,.json,.yaml,.yml,.html,.htm,.tex,.rst,.log,application/pdf,image/*,text/*" />
+          <svg class="h-9 w-9 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>
+          <span class="text-sm text-ink"><strong>Click to choose files</strong> or drop them here</span>
+          <span class="text-xs text-muted">PDF, images (png/jpg), or text/markdown, up to 12 files</span>
+        </label>
+        <div id="notes-file-list" class="mb-4 hidden space-y-2"></div>
+
+        <div class="my-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-muted">
+          <span class="h-px flex-1 bg-line"></span>and / or<span class="h-px flex-1 bg-line"></span>
+        </div>
+
+        <label class="mb-1.5 block text-sm font-semibold text-ink" for="notes-text">Paste text</label>
+        <textarea id="notes-text" rows="5" class="mb-5 w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm leading-relaxed text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
+          placeholder="Paste your notes, an article, definitions, a transcript, anything you want to be quizzed on."></textarea>
+
+        <div class="mb-5">
+          <p class="mb-2 text-sm font-semibold text-ink">How many questions?</p>
+          <div class="flex gap-2" id="notes-count-group" role="group" aria-label="Number of questions">
+            ${countOpts
+              .map(
+                (n) => `<button type="button" data-count="${n}" class="notes-count-btn flex-1 rounded-xl border-2 py-2.5 text-sm font-semibold transition-all ${
+                  n === notesState.count
+                    ? 'border-brand-500 bg-brand-50 text-brand-700'
+                    : 'border-line text-body hover:border-brand-300 hover:bg-brand-50'
+                }" aria-pressed="${n === notesState.count}">${n}</button>`,
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <p class="mb-2 text-sm font-semibold text-ink">Difficulty</p>
+          <div class="flex flex-wrap gap-2" id="notes-diff-group" role="group" aria-label="Difficulty">
+            ${diffOpts
+              .map(
+                ([v, label]) => `<button type="button" data-diff="${v}" class="notes-diff-btn rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-all ${
+                  v === notesState.difficulty
+                    ? 'border-brand-500 bg-brand-50 text-brand-700'
+                    : 'border-line text-body hover:border-brand-300 hover:bg-brand-50'
+                }" aria-pressed="${v === notesState.difficulty}">${label}</button>`,
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <label class="mb-1.5 block text-sm font-semibold text-ink" for="notes-context">Extra instructions for the AI <span class="font-normal text-muted">(optional)</span></label>
+        <textarea id="notes-context" rows="2" class="mb-6 w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm leading-relaxed text-body placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100"
+          placeholder="e.g. Focus on chapter 3, quiz me on the formulas only, or keep it applied to real scenarios."></textarea>
+
+        <button id="notes-generate-btn" type="button"
+          class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3.5 text-sm font-semibold text-white shadow-glow-sm transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">
+          Create my quiz
+        </button>
+        <div id="notes-loader" class="mt-4 hidden items-center justify-center gap-3 text-sm text-muted">
+          <span class="h-4 w-4 animate-spin rounded-full border-2 border-brand-200 border-t-brand-500"></span>
+          <span>Reading your material and writing questions...</span>
+        </div>
+        <p id="notes-error" class="mt-3 text-center text-sm text-red-600"></p>
+      </div>
+    `;
+
+    // Count buttons
+    content.querySelectorAll('.notes-count-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        notesState.count = parseInt(btn.dataset.count, 10);
+        content.querySelectorAll('.notes-count-btn').forEach((b) => {
+          const on = parseInt(b.dataset.count, 10) === notesState.count;
+          b.classList.toggle('border-brand-500', on);
+          b.classList.toggle('bg-brand-50', on);
+          b.classList.toggle('text-brand-700', on);
+          b.classList.toggle('border-line', !on);
+          b.classList.toggle('text-body', !on);
+          b.setAttribute('aria-pressed', String(on));
+        });
+      });
+    });
+    // Difficulty buttons
+    content.querySelectorAll('.notes-diff-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        notesState.difficulty = btn.dataset.diff;
+        content.querySelectorAll('.notes-diff-btn').forEach((b) => {
+          const on = b.dataset.diff === notesState.difficulty;
+          b.classList.toggle('border-brand-500', on);
+          b.classList.toggle('bg-brand-50', on);
+          b.classList.toggle('text-brand-700', on);
+          b.classList.toggle('border-line', !on);
+          b.classList.toggle('text-body', !on);
+          b.setAttribute('aria-pressed', String(on));
+        });
+      });
+    });
+    // File input + drag/drop
+    document.getElementById('notes-files').addEventListener('change', (e) => {
+      addNotesFiles(e.target.files);
+      e.target.value = '';
+    });
+    const drop = document.getElementById('notes-drop');
+    ['dragenter', 'dragover'].forEach((ev) =>
+      drop.addEventListener(ev, (e) => {
+        e.preventDefault();
+        drop.classList.add('border-brand-400', 'bg-brand-50');
+      }),
+    );
+    ['dragleave', 'dragend'].forEach((ev) =>
+      drop.addEventListener(ev, () => drop.classList.remove('border-brand-400', 'bg-brand-50')),
+    );
+    drop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      drop.classList.remove('border-brand-400', 'bg-brand-50');
+      if (e.dataTransfer && e.dataTransfer.files) addNotesFiles(e.dataTransfer.files);
+    });
+
+    document.getElementById('notes-generate-btn').addEventListener('click', generateNotesQuiz);
+    renderNotesFileList();
+    applyNotesAuthState();
+  }
+
+  // Reflect sign-in state: gate generation behind the shared Mastery login.
+  function applyNotesAuthState() {
+    const note = document.getElementById('notes-auth-note');
+    const btn = document.getElementById('notes-generate-btn');
+    if (!note || !btn) return;
+    const render = (authed) => {
+      notesState.authed = authed;
+      if (authed) {
+        note.classList.add('hidden');
+        btn.disabled = false;
+        btn.textContent = 'Create my quiz';
+      } else {
+        note.className = 'mb-5 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-body';
+        note.innerHTML = `Generating a quiz from your material uses the Skill Mastery engine, so it needs a <a href="${masteryHref}" class="font-semibold text-brand-700 underline hover:text-brand-800">Mastery sign-in</a>. Sign in, then come back here.`;
+        note.classList.remove('hidden');
+      }
+    };
+    if (notesState.authed !== null) {
+      render(notesState.authed);
+      return;
+    }
+    fetch('/api/me', { credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((me) => render(!!(me && me.authed)))
+      .catch(() => render(true)); // network hiccup: don't block; the endpoint still enforces auth
+  }
+
+  async function generateNotesQuiz() {
+    const text = (document.getElementById('notes-text').value || '').trim();
+    const errEl = document.getElementById('notes-error');
+    errEl.textContent = '';
+    if (!notesState.files.length && !text) {
+      errEl.textContent = 'Add at least one file or paste some text first.';
+      return;
+    }
+    if (notesState.authed === false) {
+      applyNotesAuthState();
+      return;
+    }
+    const btn = document.getElementById('notes-generate-btn');
+    const loader = document.getElementById('notes-loader');
+    btn.disabled = true;
+    loader.classList.remove('hidden');
+    loader.classList.add('flex');
+
+    try {
+      const fd = new FormData();
+      fd.append('count', String(notesState.count));
+      fd.append('difficulty', notesState.difficulty);
+      fd.append('extraContext', (document.getElementById('notes-context').value || '').trim());
+      if (text) fd.append('text', text);
+      notesState.files.forEach((f) => fd.append('files', f, f.name));
+
+      const res = await fetch('/api/notes-quiz', { method: 'POST', credentials: 'same-origin', body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        notesState.authed = false;
+        applyNotesAuthState();
+        return;
+      }
+      if (!res.ok || !data.ok) throw new Error(data.error || `Request failed (${res.status})`);
+      if (!Array.isArray(data.questions) || !data.questions.length) {
+        throw new Error('No questions came back. Try adding more material.');
+      }
+
+      // Build the ad-hoc topic and run it through the normal quiz flow.
+      const label = data.sourceLabel || 'My notes';
+      customTopic = {
+        id: 'my-notes',
+        title: 'Quiz from my notes',
+        shortTitle: label.length > 32 ? label.slice(0, 31) + '…' : label,
+        description: 'A quiz generated from your own material.',
+        iconPath: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z',
+        availableQuestionCounts: [data.questions.length],
+        questions: data.questions,
+        bands: NOTES_BANDS,
+      };
+      startQuiz('my-notes', data.questions.length);
+    } catch (e) {
+      errEl.textContent = 'Could not build the quiz: ' + (e && e.message ? e.message : e);
+    } finally {
+      btn.disabled = false;
+      loader.classList.add('hidden');
+      loader.classList.remove('flex');
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -1280,6 +1720,10 @@ const steps = [
     showSetupScreen(quizTopicsData[0].id);
   });
 
+  document.getElementById('notes-quiz-btn')?.addEventListener('click', () => {
+    showNotesSetupScreen();
+  });
+
   // ---------------------------------------------------------------------------
   // Test grid card clicks
   // ---------------------------------------------------------------------------
@@ -1305,6 +1749,8 @@ const steps = [
     if (state.phase === 'questions' && state.currentIndex > 0) {
       state.currentIndex--;
       renderQuestion();
+    } else if (state.phase === 'questions' && state.topicId === 'my-notes') {
+      showNotesSetupScreen();
     } else if (state.phase === 'questions') {
       showSetupScreen(state.topicId);
     } else {
