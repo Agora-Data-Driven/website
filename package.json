@@ -28,7 +28,8 @@
     "@astrojs/sitemap": "^3",
     "@fontsource-variable/archivo": "^5",
     "@fontsource/lato": "^5",
-    "astro": "^5"
+    "astro": "^5",
+    "google-auth-library": "^10.9.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
