@@ -1291,14 +1291,36 @@ const steps = [
     loader.classList.add('flex');
 
     try {
-      const fd = new FormData();
-      fd.append('count', String(notesState.count));
-      fd.append('difficulty', notesState.difficulty);
-      fd.append('extraContext', (document.getElementById('notes-context').value || '').trim());
-      if (text) fd.append('text', text);
-      notesState.files.forEach((f) => fd.append('files', f, f.name));
-
-      const res = await fetch('/api/notes-quiz', { method: 'POST', credentials: 'same-origin', body: fd });
+      // Read files to base64 and send JSON (not multipart): Astro's checkOrigin
+      // CSRF guard only inspects form content-types and mis-fires behind Cloud
+      // Run's TLS proxy, so a form POST is wrongly 403'd; JSON is exempt + safe.
+      const files = await Promise.all(
+        notesState.files.map(
+          (f) =>
+            new Promise((resolve, reject) => {
+              const r = new FileReader();
+              r.onload = () => {
+                const s = String(r.result || '');
+                const comma = s.indexOf(',');
+                resolve({ name: f.name, mime: f.type || '', dataBase64: comma >= 0 ? s.slice(comma + 1) : s });
+              };
+              r.onerror = () => reject(r.error || new Error('read failed'));
+              r.readAsDataURL(f);
+            }),
+        ),
+      );
+      const res = await fetch('/api/notes-quiz', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          files,
+          count: notesState.count,
+          difficulty: notesState.difficulty,
+          extraContext: (document.getElementById('notes-context').value || '').trim(),
+        }),
+      });
       const data = await res.json().catch(() => ({}));
       if (res.status === 401) {
         notesState.authed = false;

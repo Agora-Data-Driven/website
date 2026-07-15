@@ -3,12 +3,20 @@
  *
  * Powers the "Quiz from my notes" flow on /skill-tests/. Gated behind the shared
  * portal login (`ag_sso`): any signed-in user may generate, anonymous visitors
- * get 401 (the page then prompts them to sign in). Multipart form:
- *   text?         string   — pasted material
- *   files?        File[]   — uploaded docs (PDF / image / text/markdown), repeatable
- *   count?        string   — number of questions (1-30, default 8)
- *   difficulty?   string   — 'auto' | 'core' | 'balanced' | 'challenge'
- *   extraContext? string   — optional free-text steer for the AI
+ * get 401 (the page then prompts them to sign in). JSON body:
+ *   text?         string                              — pasted material
+ *   files?        {name,mime,dataBase64}[]            — uploaded docs (PDF / image / text)
+ *   count?        number                              — number of questions (1-30, default 8)
+ *   difficulty?   string                              — 'auto' | 'core' | 'balanced' | 'challenge'
+ *   extraContext? string                              — optional free-text steer for the AI
+ *
+ * JSON (not multipart) on purpose: Astro's checkOrigin CSRF guard only inspects
+ * form content-types, and behind Cloud Run's TLS-terminating proxy it computes
+ * the request URL as http:// while the browser sends an https:// Origin, so a
+ * genuine same-origin form POST is wrongly rejected (403). application/json is
+ * not a CSRF-"simple" content-type, so it is exempt from that check AND is itself
+ * CSRF-safe (cross-origin JSON POSTs require a CORS preflight). Site-wide
+ * checkOrigin stays ON.
  *
  * PDFs and images are transcribed by Gemini's multimodal reading; text/markdown
  * files are decoded directly. Returns { ok, questions[], count, sourceLabel,
@@ -65,39 +73,46 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: 'You are generating quizzes very quickly. Give it a minute and try again.' }, 429);
   }
 
-  let form: FormData;
+  interface UploadFile {
+    name?: unknown;
+    mime?: unknown;
+    dataBase64?: unknown;
+  }
+  let body: { text?: unknown; files?: unknown; count?: unknown; difficulty?: unknown; extraContext?: unknown };
   try {
-    form = await request.formData();
+    body = await request.json();
   } catch {
-    return json({ ok: false, error: 'Invalid form data' }, 400);
+    return json({ ok: false, error: 'Invalid JSON body' }, 400);
   }
 
-  const count = Math.min(30, Math.max(1, parseInt(String(form.get('count') ?? '8'), 10) || 8));
-  const difficultyRaw = String(form.get('difficulty') ?? 'auto');
+  const count = Math.min(30, Math.max(1, parseInt(String(body.count ?? '8'), 10) || 8));
+  const difficultyRaw = String(body.difficulty ?? 'auto');
   const difficulty = ['core', 'balanced', 'challenge'].includes(difficultyRaw) ? difficultyRaw : 'auto';
-  const extraContext = String(form.get('extraContext') ?? '').slice(0, 1200);
+  const extraContext = String(body.extraContext ?? '').slice(0, 1200);
 
   const sources: { label: string; text: string }[] = [];
   const notes: string[] = [];
   const names: string[] = [];
 
-  const pasted = String(form.get('text') ?? '').trim();
+  const pasted = String(body.text ?? '').trim();
   if (pasted) sources.push({ label: 'Pasted text', text: pasted });
 
-  const files = form.getAll('files').filter((f): f is File => f instanceof File).slice(0, MAX_FILES);
+  const files = (Array.isArray(body.files) ? (body.files as UploadFile[]) : []).slice(0, MAX_FILES);
   for (const file of files) {
-    const name = (file.name || 'file').slice(0, 200);
-    const mime = (file.type || '').toLowerCase();
-    if (file.size === 0) {
+    const name = String(file?.name ?? 'file').slice(0, 200);
+    const mime = String(file?.mime ?? '').toLowerCase();
+    const dataBase64 = String(file?.dataBase64 ?? '');
+    if (!dataBase64) {
       notes.push(`${name}: empty file, skipped`);
       continue;
     }
-    if (file.size > MAX_FILE_BYTES) {
+    // Rough decoded-size guard from the base64 length (4 chars ≈ 3 bytes).
+    if (dataBase64.length * 0.75 > MAX_FILE_BYTES) {
       notes.push(`${name}: too large (max 16 MB), skipped`);
       continue;
     }
     try {
-      const buf = Buffer.from(await file.arrayBuffer());
+      const buf = Buffer.from(dataBase64, 'base64');
       if (TEXT_MIME.test(mime) || TEXT_EXT.test(name)) {
         const text = buf.toString('utf8').trim();
         if (text) {
@@ -106,7 +121,7 @@ export const POST: APIRoute = async ({ request }) => {
         } else notes.push(`${name}: no readable text, skipped`);
       } else if (DOC_MIME.test(mime) || DOC_EXT.test(name)) {
         const mimeType = mime && DOC_MIME.test(mime) ? mime : /\.pdf$/i.test(name) ? 'application/pdf' : 'image/png';
-        const text = await extractDocumentText({ mimeType, dataBase64: buf.toString('base64'), name });
+        const text = await extractDocumentText({ mimeType, dataBase64, name });
         if (text) {
           sources.push({ label: name, text });
           names.push(name);
