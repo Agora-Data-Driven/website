@@ -1,20 +1,26 @@
 /**
  * POST /api/edit/create-blog — write a new blog post with the SEO pipeline.
- *   body: { topic: string }  ->  { ok, execution }
+ *   body: { topic?: string }  ->  { ok, topic, execution }
  *
- * Admin-only. Fires the `seo-pipeline-daily` Cloud Run Job with `--topic "<topic>"`, which runs the
- * full 0-9 chain for that one topic (brief -> draft -> adversarial proofread -> grounded fact-check ->
- * interlink -> metadata -> publish). If it clears every quality gate the pipeline commits the post to
- * src/content/posts/ and this site auto-deploys, so it's live in a few minutes. If a gate rejects it,
- * nothing is published — by design (we never force a weak post live).
+ * Admin-only. Fires the `seo-pipeline-daily` Cloud Run Job, which runs the full 0-9 chain (brief ->
+ * draft -> adversarial proofread -> grounded fact-check -> interlink -> metadata -> publish). If it
+ * clears every quality gate the pipeline commits the post to src/content/posts/ and this site
+ * auto-deploys, so it's live in a few minutes. If a gate rejects it, nothing is published — by design.
+ *
+ * The `topic` field is OPTIONAL:
+ *   - given  -> we first run it through Gemini (topicFromDescription) to turn a rough idea into a
+ *               concrete, searchable keyword, then run the job with `--topic "<keyword>"`.
+ *   - blank  -> we run the job with NO overrides, so the pipeline picks from its own curated,
+ *               keyword-researched topic queue (respecting the daily volume cap).
  *
  * The job is async: this returns as soon as the execution is created, not when the post exists.
  * Auth to the Cloud Run API uses the site's own service account token from the metadata server — no
- * key material, nothing to configure. That SA needs roles/run.invoker on the job.
+ * key material. That SA needs run.jobs.run + run.jobs.runWithOverrides on the job.
  */
 import type { APIRoute } from 'astro';
 export const prerender = false;
 import { isAdminRequest } from '@lib/sso';
+import { topicFromDescription } from '@lib/gemini';
 
 const PROJECT = 'agora-data-driven';
 const REGION = 'us-central1';
@@ -53,14 +59,26 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: 'invalid JSON' }, 400);
   }
 
-  const topic = (payload.topic ?? '').trim().replace(/\s+/g, ' ');
-  if (!topic)
-    return json({ ok: false, error: 'Tell the writer what the post should be about' }, 400);
-  if (topic.length > MAX_TOPIC_LEN)
-    return json({ ok: false, error: `Keep it under ${MAX_TOPIC_LEN} characters` }, 400);
+  const rawTopic = (payload.topic ?? '').trim().replace(/\s+/g, ' ').slice(0, MAX_TOPIC_LEN);
+
+  // Optional topic: if the admin typed an idea, normalise it to a searchable keyword via Gemini;
+  // if they left it blank, run with no override so the pipeline works its own curated queue.
+  let topic = '';
+  if (rawTopic) {
+    try {
+      topic = (await topicFromDescription(rawTopic)).trim();
+    } catch {
+      topic = rawTopic; // never block on the transform — fall back to the raw idea
+    }
+    if (!topic) topic = rawTopic;
+  }
 
   const token = await accessToken();
   if (!token) return json({ ok: false, error: 'Could not authenticate to Cloud Run' }, 500);
+
+  // Args are appended to the image ENTRYPOINT (`python -m seo_pipeline.main`): with a topic this runs
+  // the single-article path; with none the pipeline runs its scheduled-style queue sweep.
+  const body = topic ? { overrides: { containerOverrides: [{ args: ['--topic', topic] }] } } : {};
 
   try {
     const res = await fetch(
@@ -68,11 +86,7 @@ export const POST: APIRoute = async ({ request }) => {
       {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        // Args are appended to the image ENTRYPOINT (`python -m seo_pipeline.main`), so this runs the
-        // single-topic path rather than the scheduled queue sweep.
-        body: JSON.stringify({
-          overrides: { containerOverrides: [{ args: ['--topic', topic] }] },
-        }),
+        body: JSON.stringify(body),
       },
     );
     const data = (await res.json()) as {
@@ -88,7 +102,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
     // v2 :run returns a long-running operation; the execution id is on its metadata.
     const execution = data.metadata?.name?.split('/').pop() ?? data.name?.split('/').pop() ?? '';
-    return json({ ok: true, execution });
+    return json({ ok: true, topic, execution });
   } catch (err) {
     return json({ ok: false, error: err instanceof Error ? err.message : String(err) }, 500);
   }

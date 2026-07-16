@@ -1036,8 +1036,8 @@ const siloCount = silos.length;
               id="ag-cb-topic"
               type="text"
               maxlength="200"
-              placeholder="What kind of blog? e.g. server side tracking for GA4"
-              aria-label="What the blog post should be about"
+              placeholder="Optional — a topic or rough idea (leave blank to let the pipeline pick)"
+              aria-label="Optional topic or rough idea for the blog post"
               class="border-line card-glass text-ink placeholder:text-muted focus:border-brand-400 w-full flex-1 rounded-full border px-4 py-2.5 text-sm shadow-sm transition-colors outline-none"
             />
             <button
@@ -1064,27 +1064,25 @@ const siloCount = silos.length;
 
         const submit = async (): Promise<void> => {
           const topic = input.value.trim();
-          if (!topic) {
-            say('Tell the writer what the post should be about.', 'err');
-            input.focus();
-            return;
-          }
           go.disabled = true;
-          say('Starting the pipeline…');
+          say(topic ? 'Refining your idea into a topic…' : 'Starting the pipeline…');
           try {
             const res = await fetch('/api/edit/create-blog', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ topic }),
             });
-            const data = (await res.json()) as { ok?: boolean; error?: string };
+            const data = (await res.json()) as { ok?: boolean; error?: string; topic?: string };
             if (!data.ok) {
               say(data.error || 'Could not start the pipeline.', 'err');
               go.disabled = false;
               return;
             }
+            const wrote = (data.topic ?? '').trim();
             say(
-              `Writing “${topic}”. It runs the full quality chain and, if it passes, publishes itself here in a few minutes. You can close this page.`,
+              wrote
+                ? `Writing “${wrote}”. It runs the full quality chain and, if it passes, publishes itself here in a few minutes. You can close this page.`
+                : 'Picking a topic from the queue and writing it. If it clears every gate it publishes here in a few minutes. You can close this page.',
               'ok',
             );
             input.value = '';

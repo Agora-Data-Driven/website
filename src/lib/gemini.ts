@@ -40,9 +40,13 @@ async function projectId(): Promise<string> {
   return projectIdPromise;
 }
 
-async function vertexTarget(model: string, method: string): Promise<{ url: string; token: string }> {
+async function vertexTarget(
+  model: string,
+  method: string,
+): Promise<{ url: string; token: string }> {
   const project = await projectId();
-  const host = LOCATION === 'global' ? 'aiplatform.googleapis.com' : `${LOCATION}-aiplatform.googleapis.com`;
+  const host =
+    LOCATION === 'global' ? 'aiplatform.googleapis.com' : `${LOCATION}-aiplatform.googleapis.com`;
   const url = `https://${host}/v1/projects/${project}/locations/${LOCATION}/publishers/google/models/${model}:${method}`;
   const token = await auth.getAccessToken();
   if (!token) throw new Error('Vertex AI auth failed: no access token from ADC');
@@ -114,7 +118,13 @@ function callGemini(prompt: string, opts: GenOpts = {}): Promise<string> {
 
 /* ----------------------------- JSON parsing ------------------------------- */
 
-const CTRL_ESCAPES: Record<number, string> = { 8: '\\b', 9: '\\t', 10: '\\n', 12: '\\f', 13: '\\r' };
+const CTRL_ESCAPES: Record<number, string> = {
+  8: '\\b',
+  9: '\\t',
+  10: '\\n',
+  12: '\\f',
+  13: '\\r',
+};
 function escapeRawControlsInStrings(s: string): string {
   let out = '';
   let inStr = false;
@@ -182,6 +192,45 @@ function parseLooseJson(raw: string): unknown {
   }
 }
 
+/* ------------------------- Blog topic normalisation ----------------------- */
+
+/**
+ * Turn a rough idea from the "Create Blog" box (e.g. "data for marketing", or a
+ * whole sentence) into ONE concrete, searchable blog topic the SEO pipeline can
+ * use as its `--topic`. The pipeline looks the phrase up in DataForSEO and builds
+ * a brief around it, so a vague phrase yields weak (or deferred) results — this
+ * tightens it into a real keyword aligned to Agora's silos. Returns a clean
+ * single-line phrase; on any failure returns the trimmed input unchanged so the
+ * button still works.
+ */
+export async function topicFromDescription(raw: string): Promise<string> {
+  const input = raw.trim().replace(/\s+/g, ' ').slice(0, 400);
+  if (!input) return '';
+  const prompt = `You are an SEO content strategist for Agora Data Driven, a data-driven marketing and analytics agency. Its blog covers three areas:
+- Analytics & Measurement (GA4, server-side tracking, attribution, measurement, first-party data)
+- Paid Acquisition & Creative Testing (paid media strategy, DOOH / out-of-home, ad creative testing, launching ad channels)
+- Lead Conversion & Lifecycle (lead nurturing, lead scoring, lifecycle & automated email, conversion)
+
+Turn the user's rough idea into ONE specific, searchable blog topic: a concise keyword phrase a real person would type into Google (about 3-8 words), tightly aligned to the agency's focus above. Prefer a phrase with genuine search demand over a clever title. Do NOT return a sentence, a question, quotes, or any explanation — output ONLY the phrase on a single line.
+
+User's idea: "${input}"`;
+
+  try {
+    const out = await callGemini(prompt, { thinking: false, maxOutputTokens: 40 });
+    // Take the first non-empty line, strip surrounding quotes / trailing punctuation.
+    const phrase = (out.split('\n').find((l) => l.trim()) ?? '')
+      .trim()
+      .replace(/^["'`]+|["'`]+$/g, '')
+      .replace(/[.?!]+$/g, '')
+      .replace(/\s+/g, ' ')
+      .slice(0, 120)
+      .trim();
+    return phrase || input.slice(0, 120);
+  } catch {
+    return input.slice(0, 120);
+  }
+}
+
 /* ---------------------------- Quiz generation ----------------------------- */
 
 export interface GeneratedQuestion {
@@ -206,7 +255,8 @@ function normalizeMcq(raw: RawMcq): GeneratedQuestion | null {
 
   let idx = raw.answerIndex;
   if (typeof idx === 'string' && /^\d+$/.test(idx.trim())) idx = parseInt(idx, 10);
-  if (typeof idx !== 'number' || !Number.isInteger(idx) || idx < 0 || idx >= options.length) return null;
+  if (typeof idx !== 'number' || !Number.isInteger(idx) || idx < 0 || idx >= options.length)
+    return null;
 
   const question = raw.question.trim();
   if (!question) return null;
@@ -234,7 +284,10 @@ const MCQ_SCHEMA = {
 const MCQ_ARRAY_SCHEMA = { type: 'array', items: MCQ_SCHEMA };
 
 function avoidBlock(existing: string[]): string {
-  const list = existing.map((q) => q.trim()).filter(Boolean).slice(0, 60);
+  const list = existing
+    .map((q) => q.trim())
+    .filter(Boolean)
+    .slice(0, 60);
   if (!list.length) return '';
   return `ALREADY WRITTEN (do NOT duplicate or paraphrase any of these):\n${list
     .map((q) => `- ${q}`)
@@ -310,12 +363,20 @@ Return ONLY a JSON array of ${n} objects: [{"question": "text", "options": ["A",
     const avoid = out.map((q) => q.question);
     let batch: unknown;
     try {
-      batch = parseLooseJson(await callGemini(build(n, avoid), { json: true, schema: MCQ_ARRAY_SCHEMA, thinking: false }));
+      batch = parseLooseJson(
+        await callGemini(build(n, avoid), {
+          json: true,
+          schema: MCQ_ARRAY_SCHEMA,
+          thinking: false,
+        }),
+      );
     } catch {
       throw new Error('Quiz generator returned non-JSON content');
     }
     const arr = Array.isArray(batch) ? batch : [batch];
-    const clean = arr.map((q) => normalizeMcq(q as RawMcq)).filter((q): q is GeneratedQuestion => q !== null);
+    const clean = arr
+      .map((q) => normalizeMcq(q as RawMcq))
+      .filter((q): q is GeneratedQuestion => q !== null);
     if (!clean.length) break; // material exhausted or model stalling
     for (const q of clean) {
       if (out.length >= total) break;
