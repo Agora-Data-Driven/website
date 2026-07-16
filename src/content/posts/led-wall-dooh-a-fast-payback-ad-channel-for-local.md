@@ -1,7 +1,7 @@
 ---
 title: "LED-Wall DOOH: A Fast-Payback Ad Channel for Local"
 publishDate: 2026-07-16
-excerpt: ""
+excerpt: "Local brands often dismiss LED-wall DOOH as 'big-budget only.' Here's why that assumption is outdated — and how short booking windows and shared inventory change the maths."
 category: "Paid Media"
 draft: false
 ---

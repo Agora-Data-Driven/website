@@ -2,3 +2,9 @@ dist/
 .astro/
 node_modules/
 package-lock.json
+
+# Blog posts are prose, and the SEO pipeline commits them automatically (daily + on demand from
+# the /blog "Create Blog" button). Their markdown style comes from the writer model, so a
+# prettier --check on generated content just turns CI red on every auto-publish. Content is
+# validated by the posts collection's zod schema (and the pipeline's own gates), not by prettier.
+src/content/posts/

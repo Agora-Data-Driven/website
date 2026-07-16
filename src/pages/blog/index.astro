@@ -242,6 +242,13 @@ const siloCount = silos.length;
 
   <!-- ── FILTERS + SECTIONS ────────────────────────────────────────────────── -->
   <Container class="py-12 lg:py-16">
+    {
+      /* Admin-only "Create Blog" panel. This page is prerendered, so the panel is injected
+        client-side for a signed-in admin in edit mode (?edit=1) — same approach the header uses
+        for its "Edit this page" button. Public visitors get nothing but this empty div. */
+    }
+    <div id="ag-create-blog"></div>
+
     <!-- Search + filter bar -->
     <div class="filter-bar mb-12 flex flex-col gap-3 sm:flex-row sm:items-center">
       <div class="relative flex-1 sm:max-w-xs">
@@ -993,4 +1000,105 @@ const siloCount = silos.length;
   document.querySelectorAll('.clear-filters').forEach((btn) => {
     btn.addEventListener('click', clearAll);
   });
+</script>
+
+<script>
+  // ---- Admin: "Create Blog" (fires the SEO content pipeline) ------------------------------
+  // This page is prerendered, so there's no server-side cookie read here — the panel is injected
+  // client-side after /api/me confirms an admin, mirroring the header's "Edit this page" button.
+  // Public visitors: the edit check fails immediately and nothing is fetched or rendered.
+  {
+    const mount = document.getElementById('ag-create-blog');
+    const editing =
+      new URLSearchParams(location.search).get('edit') === '1' ||
+      document.cookie.split('; ').includes('ag_edit=1');
+
+    if (mount && editing) {
+      void (async (): Promise<void> => {
+        let me: { admin?: boolean } = {};
+        try {
+          me = (await fetch('/api/me').then((r) => r.json())) as typeof me;
+        } catch {
+          return;
+        }
+        if (!me.admin) return;
+
+        const panel = document.createElement('div');
+        panel.className = 'border-line card-glass mb-10 rounded-2xl border p-5 shadow-sm';
+        panel.innerHTML = `
+          <div class="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span class="inline-block h-2 w-2 rounded-full bg-brand-500"></span>
+            <strong class="text-ink text-sm">Create a blog post</strong>
+            <span class="text-muted text-xs">The pipeline writes it, fact-checks it, and publishes only if it clears every quality gate — about 3–5 minutes.</span>
+          </div>
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <input
+              id="ag-cb-topic"
+              type="text"
+              maxlength="200"
+              placeholder="What kind of blog? e.g. server side tracking for GA4"
+              aria-label="What the blog post should be about"
+              class="border-line card-glass text-ink placeholder:text-muted focus:border-brand-400 w-full flex-1 rounded-full border px-4 py-2.5 text-sm shadow-sm transition-colors outline-none"
+            />
+            <button
+              id="ag-cb-go"
+              type="button"
+              class="inline-flex w-fit items-center justify-center rounded-full bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
+            >Create Blog</button>
+          </div>
+          <p id="ag-cb-status" class="text-muted mt-3 text-xs" role="status" aria-live="polite" hidden></p>
+        `;
+        mount.appendChild(panel);
+
+        const input = document.getElementById('ag-cb-topic') as HTMLInputElement;
+        const go = document.getElementById('ag-cb-go') as HTMLButtonElement;
+        const status = document.getElementById('ag-cb-status') as HTMLParagraphElement;
+
+        const say = (msg: string, tone: 'ok' | 'err' | 'info' = 'info'): void => {
+          status.hidden = false;
+          status.textContent = msg;
+          status.className =
+            'mt-3 text-xs ' +
+            (tone === 'err' ? 'text-red-600' : tone === 'ok' ? 'text-brand-600' : 'text-muted');
+        };
+
+        const submit = async (): Promise<void> => {
+          const topic = input.value.trim();
+          if (!topic) {
+            say('Tell the writer what the post should be about.', 'err');
+            input.focus();
+            return;
+          }
+          go.disabled = true;
+          say('Starting the pipeline…');
+          try {
+            const res = await fetch('/api/edit/create-blog', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ topic }),
+            });
+            const data = (await res.json()) as { ok?: boolean; error?: string };
+            if (!data.ok) {
+              say(data.error || 'Could not start the pipeline.', 'err');
+              go.disabled = false;
+              return;
+            }
+            say(
+              `Writing “${topic}”. It runs the full quality chain and, if it passes, publishes itself here in a few minutes. You can close this page.`,
+              'ok',
+            );
+            input.value = '';
+          } catch {
+            say('Network error — could not reach the pipeline.', 'err');
+          }
+          go.disabled = false;
+        };
+
+        go.addEventListener('click', () => void submit());
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') void submit();
+        });
+      })();
+    }
+  }
 </script>
