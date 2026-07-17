@@ -97,9 +97,8 @@ const linkBase =
           class="border-line text-ink hover:border-brand-600 hover:text-brand-600 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
           >Login</a
         >
-        <!-- Signed-in (revealed by /api/me): account menu only. The old "Atrium" and "Edit this
-             page" header buttons were removed -- the portal (My dashboards) is the way into Atrium,
-             and admins enter edit mode from the portal's Website Editor link (?edit=1). -->
+        <!-- Signed-in (revealed by /api/me): an app-switcher account menu. One login carries across
+             the suite, so the menu links Atrium / Sentinel / Website Editor (?edit=1) + Log out. -->
         <div id="agAccount" class="relative hidden">
           <button
             id="agAccountBtn"
@@ -115,15 +114,26 @@ const linkBase =
                 clip-rule="evenodd"></path>
             </svg>
           </button>
+          <!-- One login carries across the whole Agora suite, so the menu is an app switcher:
+               Atrium (portal) / Sentinel / Website Editor, then Log out. -->
           <div
             id="agAccountMenu"
             class="border-line bg-surface shadow-pop absolute top-full right-0 mt-2 hidden w-48 rounded-xl border p-1.5"
           >
             <a
-              id="agDashLink"
               href="https://portal.agoradatadriven.com/"
               class="text-body hover:bg-canvas hover:text-brand-600 block rounded-lg px-3 py-2 text-sm"
-              >My dashboards</a
+              >Atrium</a
+            >
+            <a
+              href="https://sentinel.agoradatadriven.com/login"
+              class="text-body hover:bg-canvas hover:text-brand-600 block rounded-lg px-3 py-2 text-sm"
+              >Sentinel</a
+            >
+            <a
+              href="/?edit=1"
+              class="text-body hover:bg-canvas hover:text-brand-600 block rounded-lg px-3 py-2 text-sm"
+              >Website Editor</a
             >
             <button
               id="agLogoutBtn"
@@ -133,9 +143,12 @@ const linkBase =
             >
           </div>
         </div>
-        <Button href={cta.becomeClient.href} external variant="icon">
-          {cta.becomeClient.label}
-        </Button>
+        <!-- Hidden once signed in (revealed default) -- a client doesn't need "Become a client". -->
+        <div class="js-become-client">
+          <Button href={cta.becomeClient.href} external variant="icon">
+            {cta.becomeClient.label}
+          </Button>
+        </div>
       </div>
 
       <!-- Mobile toggle -->
@@ -200,9 +213,11 @@ const linkBase =
         <Button href={cta.clientLogin.href} external variant="secondary" size="lg"
           >{cta.clientLogin.label}</Button
         >
-        <Button href={cta.becomeClient.href} external variant="icon" size="lg">
-          {cta.becomeClient.label}
-        </Button>
+        <div class="js-become-client">
+          <Button href={cta.becomeClient.href} external variant="icon" size="lg">
+            {cta.becomeClient.label}
+          </Button>
+        </div>
       </div>
     </Container>
   </div>
@@ -310,6 +325,8 @@ const linkBase =
       if (!me.authed) return;
       el('agLoginBtn')?.classList.add('hidden');
       el('agAccount')?.classList.remove('hidden');
+      // Signed in -> the "Become a client" CTA no longer applies (desktop + mobile).
+      document.querySelectorAll('.js-become-client').forEach((n) => n.classList.add('hidden'));
       const nameEl = el('agAccountName');
       if (nameEl) nameEl.textContent = me.name || me.email || 'Account';
     })
