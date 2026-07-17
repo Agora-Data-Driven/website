@@ -97,21 +97,9 @@ const linkBase =
           class="border-line text-ink hover:border-brand-600 hover:text-brand-600 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
           >Login</a
         >
-        <!-- Signed-in: quick link into Agora Atrium (portal routes admins to the console, clients to
-             their workspace). Revealed by /api/me. -->
-        <a
-          id="agAtriumBtn"
-          href="https://portal.agoradatadriven.com/"
-          class="border-brand-600 text-brand-700 hover:bg-brand-50 hidden rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
-          >Atrium</a
-        >
-        <!-- Signed-in (revealed by /api/me): Edit this page (admins) + account menu. -->
-        <button
-          id="agEditBtn"
-          type="button"
-          class="bg-brand-600 hover:bg-brand-700 hidden rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
-          >Edit this page</button
-        >
+        <!-- Signed-in (revealed by /api/me): account menu only. The old "Atrium" and "Edit this
+             page" header buttons were removed -- the portal (My dashboards) is the way into Atrium,
+             and admins enter edit mode from the portal's Website Editor link (?edit=1). -->
         <div id="agAccount" class="relative hidden">
           <button
             id="agAccountBtn"
@@ -310,11 +298,6 @@ const linkBase =
     if (!accBtn?.contains(t) && !accMenu.contains(t)) accMenu.classList.add('hidden');
   });
 
-  // "Edit this page" -> turn on edit mode (a cookie the server reads) + reload.
-  el('agEditBtn')?.addEventListener('click', () => {
-    document.cookie = 'ag_edit=1; path=/; max-age=3600; samesite=lax';
-    window.location.reload();
-  });
   // Log out at the portal (clears the shared cookie), then come back here.
   el('agLogoutBtn')?.addEventListener('click', () => {
     window.location.href = `${PORTAL}/logout?next=${encodeURIComponent(window.location.href)}`;
@@ -326,12 +309,9 @@ const linkBase =
     .then((me: { authed: boolean; name?: string; email?: string; admin?: boolean }) => {
       if (!me.authed) return;
       el('agLoginBtn')?.classList.add('hidden');
-      el('agAtriumBtn')?.classList.remove('hidden');
       el('agAccount')?.classList.remove('hidden');
       const nameEl = el('agAccountName');
       if (nameEl) nameEl.textContent = me.name || me.email || 'Account';
-      const editable = !!document.querySelector('[data-ag-editable]');
-      if (me.admin && editable) el('agEditBtn')?.classList.remove('hidden');
     })
     .catch(() => {
       /* stay signed-out */
