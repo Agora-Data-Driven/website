@@ -25,12 +25,6 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
 ---
 
 {
-  /* Marker so the header can show "Edit this page" ONLY where editing actually works (admin + an
-    SSR page where the cookie is readable). Absent on prerendered pages / for anonymous visitors. */
-}
-{isAdmin && <div data-ag-editable hidden />}
-
-{
   editing && (
     <div id="ag-editor">
       <div id="ag-toolbar">
@@ -333,7 +327,10 @@ const editing = isAdmin && (editParam === '1' || (editParam !== '0' && editCooki
           return;
         }
         if (file.size > 5 * 1024 * 1024) {
-          toast(`That image is ${(file.size / 1048576).toFixed(1)} MB — please use one under 5 MB.`, false);
+          toast(
+            `That image is ${(file.size / 1048576).toFixed(1)} MB — please use one under 5 MB.`,
+            false,
+          );
           imgInput.value = '';
           return;
         }
