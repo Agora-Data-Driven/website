@@ -99,12 +99,131 @@ scripts/        setup + startday bootstrap scripts (PowerShell + bash)
 Cards, category hubs, and "keep reading" rows all render the same `PostCard.astro` from the `CardData`
 shape in `src/lib/posts.ts` — add a surface there, not a new card.
 
+## Deploy
+
+Two paths, both landing on Cloud Run service `agora-data-driven` in **`asia-southeast1`**:
+
+| Path | Trigger |
+|---|---|
+| **Automatic** (normal) | Push to `main` → `.github/workflows/deploy.yml` → Workload Identity (SA `github-deployer@`, no key) |
+| **Manual** | `npm run deploy` — `gcloud run deploy … --source .` with `SSO_SECRET` + `GITHUB_TOKEN` secrets |
+
+> ⚠️ `npm run deploy` passes `--update-secrets`. Both secrets must stay on the command, or the
+> in-page editor and SSO break.
+
+> ⚠️ **Region is `asia-southeast1`.** The Mastery Engine and seo-pipeline are `us-central1`.
+
+The in-page editor writes commits to `main`, so **an admin clicking Save triggers a production
+deploy** a few minutes later. Treat every editor-facing change as production-affecting.
+
+## SSR vs prerender — this decision matters
+
+`output: 'server'`. Pages opt into static with `export const prerender = true`.
+
+**A page must be SSR (`prerender = false`) to be editable in-place**, because the editor reads
+the `ag_sso` admin cookie at request time. Currently SSR: `index.astro`, `[slug].astro` (blog
+posts). Everything else is prerendered.
+
+Prerendered pages can still show admin UI, but it must be **injected client-side** after a
+`fetch('/api/me')` — that's exactly why [`src/pages/api/me.ts`](src/pages/api/me.ts) exists as an
+on-demand endpoint. See the Create-Blog panel in `blog/index.astro`.
+
+## API routes
+
+| Route | Purpose |
+|---|---|
+| `api/me.ts` | Current identity — callable from prerendered pages |
+| `api/notes-quiz.ts` | **Skill Tests** — BYO-notes quiz generation (`src/lib/gemini.ts`) |
+| `api/edit/image.ts` | Replace any site image → commits to `public/<path>` |
+| `api/edit/post.ts` | GET/POST raw post markdown → commits `src/content/posts/<slug>.md` |
+| `api/edit/create-blog.ts` | Create a new post from the blog index |
+| `api/update-hero.ts` | Legacy, superseded by `edit/image.ts` |
+
+Shared libs: `src/lib/` — `sso.ts` (auth), `github.ts` (Contents API commits), `posts.ts`
+(`CardData`), `gemini.ts`, `env.ts`.
+
+## Gotchas
+
+### 🔴 Content is cut off on mobile instead of scrolling
+
+`body { overflow-x: clip }` ([global.css:87](src/styles/global.css#L87)) is deliberate — it stops
+sideways scrolling while keeping the sticky header working (`hidden` would break it). The side
+effect: **anything wider than the viewport is silently cut off, not scrollable.**
+
+The usual culprit is a bare `grid` with long unbroken content, which sizes to `max-content` and
+blows out. Fix at the source:
+- add `grid-cols-1` (or explicit columns) rather than relying on the default,
+- add `min-w-0` on flex/grid children that contain long text,
+- give wide elements (tables, code blocks) their own `overflow-x: auto` wrapper — the prose table
+  rule at [global.css:271](src/styles/global.css#L271) is the pattern.
+
+**Always check a new section at 360px wide.**
+
+### 🔴 A POST to an API route 403s
+
+Astro's `checkOrigin` CSRF guard **only inspects form-ish content types**
+(`multipart/form-data`, `application/x-www-form-urlencoded`). Sending files as multipart trips it.
+
+**Send JSON with base64 payloads instead** — that's why `api/notes-quiz.ts` takes JSON
+([notes-quiz.ts:13](src/pages/api/notes-quiz.ts#L13)) and `skill-tests.astro` base64-encodes files
+client-side. **Do not disable `checkOrigin` to work around this.**
+
+### 🟡 An image can't be replaced by the editor
+
+Build-hashed `/_astro/*` images aren't editable. Editable images must live in `public/`, and
+**one file per post** — two posts sharing a hero path would overwrite each other.
+
+### 🟡 A renamed slug breaks SEO
+
+URLs are preserved from the old WordPress site. Renaming a slug requires a 301 in
+`astro.config.mjs → redirects`. One key per source — Astro normalises trailing slashes, so listing
+both `/x` and `/x/` collides.
+
+### 🟡 Tailwind has no config file
+
+Tailwind v4. All tokens live in the `@theme` block in `src/styles/global.css`. There is no
+`tailwind.config.js` — don't create one.
+
+## Verify your change
+
+```
+npm run check      # astro type-check (TS strict)
+npm run lint       # eslint + prettier --check
+npm run build      # the real gate — catches content-collection + SSR errors
+npm run dev        # then check the page at 360px AND desktop
+```
+
+**Run `npm run build` before pushing.** A push to `main` auto-deploys, so a build error becomes a
+failed production deploy.
+
+## Never do this
+
+| ❌ | Why |
+|---|---|
+| Create `tailwind.config.js` | v4 — tokens live in `@theme` in `global.css`. |
+| Disable Astro's `checkOrigin` | Send JSON+base64 instead. |
+| Rename a slug without a 301 | Breaks preserved SEO URLs. |
+| Hard-code a hex or magic px | Design tokens only. |
+| Share a `heroImage` path between posts | The editor's Replace would overwrite both. |
+| Make a page prerendered when it needs the admin cookie | Editor silently stops working. |
+| Fabricate testimonials, metrics, logos, names | Real content only — see Content rules. |
+| Use `us-central1` | This service is **`asia-southeast1`**. |
+
 ## Commits
 
 - Logical, incremental commits per phase/section (see docs/PLAN.md §9). Conventional style (`feat:`, `chore:`, `content:`, `fix:`).
 - **Do not commit/push unless asked.** Ask before any destructive or irreversible action.
+- Pushing to `main` deploys. There is no staging environment.
 
 ## Workflow guardrails
 
 - Explore → plan → **get sign-off** → build incrementally. Run the dev server and verify each page renders + is responsive before moving on.
 - Definition of done: all real pages rebuilt (responsive, AA, cohesive), template content gone, blog on Markdown, SEO essentials in place, redirect map provided, Lighthouse ≥90 across the board, clean README.
+
+## Related repos
+
+- [`../seo-pipeline`](../seo-pipeline) **auto-publishes blog posts into this repo** via the GitHub
+  API (`src/content/posts/`), then triggers this site's deploy. If posts appear that nobody wrote
+  by hand, that's the pipeline.
+- The `/web-development` page was ported from the retired standalone `Web-port` React app; its
+  assets live in `public/web-development/`.
