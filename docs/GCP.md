@@ -2,7 +2,7 @@
 
 > **Audience:** Claude / any AI agent (and humans) operating on Agora's Google Cloud.
 > **Purpose:** Understand the structure _before_ touching anything, and follow the safety rules.
-> **Last verified:** 2026-06-26 (account `info@agoradatadriven.com`). Re-verify live before destructive actions — cloud state drifts.
+> **Last verified:** 2026-07-29 (account `info@agoradatadriven.com`; full org audit 2026-06-26 — see §11). Re-verify live before destructive actions — cloud state drifts.
 
 ---
 
@@ -79,12 +79,12 @@ agoradatadriven.com  (org 758813992383)
 
 This one project hosts all three active products plus the central data warehouse. **Do not move or delete it.**
 
-**Cloud Run services** (verified 2026-06-26):
+**Cloud Run services** (verified 2026-06-26; website rows re-verified 2026-07-29):
 
 | Service             | Region                 | What it is                                                                       |
 | ------------------- | ---------------------- | -------------------------------------------------------------------------------- |
-| `agora-data-driven` | `australia-southeast1` | The marketing **website** (Astro SSR)                                            |
-| `agora-data-driven` | `asia-southeast1`      | **Duplicate** website deployment in a 2nd region — _candidate for consolidation_ |
+| `agora-data-driven` | `asia-southeast1`      | The marketing **website** (Astro SSR). **The only region either deploy path targets** — `npm run deploy` and `.github/workflows/deploy.yml` both pin `--region asia-southeast1` |
+| `agora-data-driven` | `australia-southeast1` | **Stale** earlier website deployment — nothing deploys to it anymore; candidate for retirement |
 | `mastery-engine`    | `us-central1`          | **Skill Mastery**                                                                |
 | `platform-dash`     | `asia-southeast1`      | **Atrium** (internal platform/dashboard)                                         |
 
@@ -92,12 +92,12 @@ This one project hosts all three active products plus the central data warehouse
 
 - **Firestore:** one Native DB (`(default)`, `us-central1`).
 - **BigQuery (~18 datasets):** the data warehouse — e.g. `mastery_analytics`, `upwork`, `jeff_nippard`, `popflex`, `iron_neck`, `edge_lifestyle`, `rooming_house_experts`, `RHE`, `wildapricot`, plus `clothing_store_*`, `ecom_*`, `sales_data_synthetic`, `DB_1`, `Classroom`.
-- **Secrets (Secret Manager):** `GEMINI_API_KEY`, `APP_PASSWORD`, `SESSION_SECRET`, `platform-dash-session-key`, `platform-sso-key`, `platform-super-admin-password`.
+- **Secrets (Secret Manager):** `GEMINI_API_KEY`, `APP_PASSWORD`, `SESSION_SECRET`, `platform-dash-session-key`, `platform-sso-key`, `platform-super-admin-password`, `SEO_GITHUB_TOKEN` (GitHub token mounted as `GITHUB_TOKEN` on the website service — powers the in-page editor's + seo-pipeline's commits).
 - **Cloud Storage:** `agora-data-driven-platform-dash`, `agora-riverdance-report`, `*_cloudbuild`, `run-sources-*`.
 - **Artifact Registry (Docker):** `agora`, `cloud-run-source-deploy`.
 - **Service accounts:** `platform-dash-web@…`, the default compute SA.
 
-**Website deploy** (from the website repo): `npm run deploy` → builds remotely via **Cloud Build** → pushes image to **Artifact Registry** → deploys to **Cloud Run**. gcloud project `agora-data-driven`. (See repo `CLAUDE.md` / `README.md`.)
+**Website deploy** (from the website repo): `npm run deploy` → builds remotely via **Cloud Build** → pushes image to **Artifact Registry** → deploys to **Cloud Run** (`asia-southeast1`, with `--update-secrets=SSO_SECRET=platform-sso-key:latest,GITHUB_TOKEN=SEO_GITHUB_TOKEN:latest` — load-bearing for SSO + the in-page editor). gcloud project `agora-data-driven`. (See repo `AGENTS.md` / `README.md`.)
 
 ---
 
@@ -198,8 +198,8 @@ gcloud projects list --filter="lifecycleState=DELETE_REQUESTED"   # pending purg
 
 ## 12. Known follow-ups / open questions
 
-- [ ] **Website deployed in 2 regions** (`asia-southeast1` + `australia-southeast1`) — intentional, or consolidate to one to cut cost?
+- [ ] **Website service still exists in `australia-southeast1`** — but both deploy paths target only `asia-southeast1` (verified 2026-07-29), so the australia one is stale; decide whether to delete it to cut cost.
 - [ ] **Second org `1075941031589`** still needs cleanup — requires `ian@100.digital` re-auth or an IAM grant.
 - [ ] Decide whether to **bulk-delete** the `Archive-Stale` contents once confirmed unused (esp. dormant clients).
 - [ ] Decide whether to keep `roles/owner` on `info@` or revert to Organization Admin.
-- [ ] The 6 soft-deleted projects purge permanently ~2026-07-26 unless undeleted.
+- [x] ~~The 6 soft-deleted projects purge permanently ~2026-07-26 unless undeleted.~~ **EXPIRED** (checked 2026-07-29): the 30-day window closed ~2026-07-26 with no undelete — assume they are permanently purged.
