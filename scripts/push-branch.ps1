@@ -37,9 +37,12 @@ Set-Location $repo
 # 1. Resolve the owner name: -Dev (and remember it) > scripts/.devname > this machine's name.
 $devFile = Join-Path $PSScriptRoot ".devname"
 if (-not [string]::IsNullOrWhiteSpace($Dev)) {
+    # Refuse flag-like names: a stray argument once got captured and committed as '-Message'.
+    if ($Dev.Trim() -match '^-') { Die "-Dev '$($Dev.Trim())' starts with '-' (a flag, not a name) -- refusing to save it." }
     Set-Content -Path $devFile -Value $Dev.Trim() -Encoding ascii   # remember for next time
 } elseif (Test-Path $devFile) {
     $Dev = (Get-Content $devFile -Raw).Trim()
+    if ($Dev -match '^-') { $Dev = "" }   # a stray argument once got captured and committed as '-Message'
 }
 if ([string]::IsNullOrWhiteSpace($Dev)) { $Dev = $env:COMPUTERNAME }
 
