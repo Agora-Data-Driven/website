@@ -103,10 +103,10 @@ shape in `src/lib/posts.ts` — add a surface there, not a new card.
 
 Two paths, both landing on Cloud Run service `agora-data-driven` in **`asia-southeast1`**:
 
-| Path | Trigger |
-|---|---|
+| Path                   | Trigger                                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------------------- |
 | **Automatic** (normal) | Push to `main` → `.github/workflows/deploy.yml` → Workload Identity (SA `github-deployer@`, no key) |
-| **Manual** | `npm run deploy` — `gcloud run deploy … --source .` with `SSO_SECRET` + `GITHUB_TOKEN` secrets |
+| **Manual**             | `npm run deploy` — `gcloud run deploy … --source .` with `SSO_SECRET` + `GITHUB_TOKEN` secrets      |
 
 > ⚠️ `npm run deploy` passes `--update-secrets`. Both secrets must stay on the command, or the
 > in-page editor and SSO break.
@@ -130,14 +130,14 @@ on-demand endpoint. See the Create-Blog panel in `blog/index.astro`.
 
 ## API routes
 
-| Route | Purpose |
-|---|---|
-| `api/me.ts` | Current identity — callable from prerendered pages |
-| `api/notes-quiz.ts` | **Skill Tests** — BYO-notes quiz generation (`src/lib/gemini.ts`) |
-| `api/edit/image.ts` | Replace any site image → commits to `public/<path>` |
-| `api/edit/post.ts` | GET/POST raw post markdown → commits `src/content/posts/<slug>.md` |
-| `api/edit/create-blog.ts` | Create a new post from the blog index |
-| `api/update-hero.ts` | Legacy, superseded by `edit/image.ts` |
+| Route                     | Purpose                                                            |
+| ------------------------- | ------------------------------------------------------------------ |
+| `api/me.ts`               | Current identity — callable from prerendered pages                 |
+| `api/notes-quiz.ts`       | **Skill Tests** — BYO-notes quiz generation (`src/lib/gemini.ts`)  |
+| `api/edit/image.ts`       | Replace any site image → commits to `public/<path>`                |
+| `api/edit/post.ts`        | GET/POST raw post markdown → commits `src/content/posts/<slug>.md` |
+| `api/edit/create-blog.ts` | Create a new post from the blog index                              |
+| `api/update-hero.ts`      | Legacy, superseded by `edit/image.ts`                              |
 
 Shared libs: `src/lib/` — `sso.ts` (auth), `github.ts` (Contents API commits), `posts.ts`
 (`CardData`), `gemini.ts`, `env.ts`.
@@ -152,6 +152,7 @@ effect: **anything wider than the viewport is silently cut off, not scrollable.*
 
 The usual culprit is a bare `grid` with long unbroken content, which sizes to `max-content` and
 blows out. Fix at the source:
+
 - add `grid-cols-1` (or explicit columns) rather than relying on the default,
 - add `min-w-0` on flex/grid children that contain long text,
 - give wide elements (tables, code blocks) their own `overflow-x: auto` wrapper — the prose table
@@ -198,16 +199,16 @@ failed production deploy.
 
 ## Never do this
 
-| ❌ | Why |
-|---|---|
-| Create `tailwind.config.js` | v4 — tokens live in `@theme` in `global.css`. |
-| Disable Astro's `checkOrigin` | Send JSON+base64 instead. |
-| Rename a slug without a 301 | Breaks preserved SEO URLs. |
-| Hard-code a hex or magic px | Design tokens only. |
-| Share a `heroImage` path between posts | The editor's Replace would overwrite both. |
-| Make a page prerendered when it needs the admin cookie | Editor silently stops working. |
-| Fabricate testimonials, metrics, logos, names | Real content only — see Content rules. |
-| Use `us-central1` | This service is **`asia-southeast1`**. |
+| ❌                                                     | Why                                           |
+| ------------------------------------------------------ | --------------------------------------------- |
+| Create `tailwind.config.js`                            | v4 — tokens live in `@theme` in `global.css`. |
+| Disable Astro's `checkOrigin`                          | Send JSON+base64 instead.                     |
+| Rename a slug without a 301                            | Breaks preserved SEO URLs.                    |
+| Hard-code a hex or magic px                            | Design tokens only.                           |
+| Share a `heroImage` path between posts                 | The editor's Replace would overwrite both.    |
+| Make a page prerendered when it needs the admin cookie | Editor silently stops working.                |
+| Fabricate testimonials, metrics, logos, names          | Real content only — see Content rules.        |
+| Use `us-central1`                                      | This service is **`asia-southeast1`**.        |
 
 ## Commits
 

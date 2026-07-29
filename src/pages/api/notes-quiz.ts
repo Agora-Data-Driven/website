@@ -35,8 +35,10 @@ const MAX_FILE_BYTES = 16 * 1024 * 1024; // 16 MB per file
 const MAX_CHARS = 120_000; // total prompt material cap
 
 // Files decoded as UTF-8 directly (no model call needed).
-const TEXT_MIME = /^text\/|application\/(json|xml|x-yaml|yaml|markdown|rtf|csv|javascript|typescript)/i;
-const TEXT_EXT = /\.(txt|text|md|markdown|mdown|csv|tsv|json|ya?ml|log|html?|xml|tex|rst|org|py|js|ts|java|c|cpp|cs|go|rb|rs|sql|sh|css)$/i;
+const TEXT_MIME =
+  /^text\/|application\/(json|xml|x-yaml|yaml|markdown|rtf|csv|javascript|typescript)/i;
+const TEXT_EXT =
+  /\.(txt|text|md|markdown|mdown|csv|tsv|json|ya?ml|log|html?|xml|tex|rst|org|py|js|ts|java|c|cpp|cs|go|rb|rs|sql|sh|css)$/i;
 // Files Gemini reads natively (transcribe to text): PDFs and images.
 const DOC_MIME = /^(application\/pdf|image\/(png|jpe?g|webp|gif|heic|heif))/i;
 const DOC_EXT = /\.(pdf|png|jpe?g|webp|gif|heic|heif)$/i;
@@ -67,10 +69,20 @@ function json(obj: object, status = 200): Response {
 export const POST: APIRoute = async ({ request }) => {
   // --- auth: any signed-in portal user ---
   const id = ssoIdentity(request.headers.get('cookie'), serverEnv('SSO_SECRET'));
-  if (!id) return json({ ok: false, error: 'Please sign in to Mastery Mode to generate a quiz from your notes.' }, 401);
+  if (!id)
+    return json(
+      { ok: false, error: 'Please sign in to Mastery Mode to generate a quiz from your notes.' },
+      401,
+    );
 
   if (rateLimited(id.email.toLowerCase())) {
-    return json({ ok: false, error: 'You are generating quizzes very quickly. Give it a minute and try again.' }, 429);
+    return json(
+      {
+        ok: false,
+        error: 'You are generating quizzes very quickly. Give it a minute and try again.',
+      },
+      429,
+    );
   }
 
   interface UploadFile {
@@ -78,7 +90,13 @@ export const POST: APIRoute = async ({ request }) => {
     mime?: unknown;
     dataBase64?: unknown;
   }
-  let body: { text?: unknown; files?: unknown; count?: unknown; difficulty?: unknown; extraContext?: unknown };
+  let body: {
+    text?: unknown;
+    files?: unknown;
+    count?: unknown;
+    difficulty?: unknown;
+    extraContext?: unknown;
+  };
   try {
     body = await request.json();
   } catch {
@@ -87,7 +105,9 @@ export const POST: APIRoute = async ({ request }) => {
 
   const count = Math.min(30, Math.max(1, parseInt(String(body.count ?? '8'), 10) || 8));
   const difficultyRaw = String(body.difficulty ?? 'auto');
-  const difficulty = ['core', 'balanced', 'challenge'].includes(difficultyRaw) ? difficultyRaw : 'auto';
+  const difficulty = ['core', 'balanced', 'challenge'].includes(difficultyRaw)
+    ? difficultyRaw
+    : 'auto';
   const extraContext = String(body.extraContext ?? '').slice(0, 1200);
 
   const sources: { label: string; text: string }[] = [];
@@ -120,14 +140,21 @@ export const POST: APIRoute = async ({ request }) => {
           names.push(name);
         } else notes.push(`${name}: no readable text, skipped`);
       } else if (DOC_MIME.test(mime) || DOC_EXT.test(name)) {
-        const mimeType = mime && DOC_MIME.test(mime) ? mime : /\.pdf$/i.test(name) ? 'application/pdf' : 'image/png';
+        const mimeType =
+          mime && DOC_MIME.test(mime)
+            ? mime
+            : /\.pdf$/i.test(name)
+              ? 'application/pdf'
+              : 'image/png';
         const text = await extractDocumentText({ mimeType, dataBase64, name });
         if (text) {
           sources.push({ label: name, text });
           names.push(name);
         } else notes.push(`${name}: nothing readable was found, skipped`);
       } else {
-        notes.push(`${name}: unsupported file type (use PDF, an image, or a text/markdown file), skipped`);
+        notes.push(
+          `${name}: unsupported file type (use PDF, an image, or a text/markdown file), skipped`,
+        );
       }
     } catch (e) {
       notes.push(`${name}: could not read it (${e instanceof Error ? e.message : String(e)})`);
@@ -136,7 +163,11 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (!sources.length) {
     return json(
-      { ok: false, error: 'No usable material. Paste some text or upload a PDF, image, or text/markdown file.', notes },
+      {
+        ok: false,
+        error: 'No usable material. Paste some text or upload a PDF, image, or text/markdown file.',
+        notes,
+      },
       400,
     );
   }
@@ -145,10 +176,19 @@ export const POST: APIRoute = async ({ request }) => {
   if (combined.length > MAX_CHARS) combined = combined.slice(0, MAX_CHARS);
 
   const sourceLabel =
-    names.length === 1 ? names[0].replace(/\.[a-z0-9]+$/i, '') : names.length ? 'Your uploads' : 'Your notes';
+    names.length === 1
+      ? names[0].replace(/\.[a-z0-9]+$/i, '')
+      : names.length
+        ? 'Your uploads'
+        : 'Your notes';
 
   try {
-    const generated = await generateQuizFromContent({ content: combined, extraContext, count, difficulty });
+    const generated = await generateQuizFromContent({
+      content: combined,
+      extraContext,
+      count,
+      difficulty,
+    });
     const questions = generated.map((q, i) => ({
       id: `note-${i + 1}`,
       question: q.question,
