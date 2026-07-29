@@ -81,12 +81,12 @@ This one project hosts all three active products plus the central data warehouse
 
 **Cloud Run services** (verified 2026-06-26; website rows re-verified 2026-07-29):
 
-| Service             | Region                 | What it is                                                                       |
-| ------------------- | ---------------------- | -------------------------------------------------------------------------------- |
+| Service             | Region                 | What it is                                                                                                                                                                      |
+| ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `agora-data-driven` | `asia-southeast1`      | The marketing **website** (Astro SSR). **The only region either deploy path targets** — `npm run deploy` and `.github/workflows/deploy.yml` both pin `--region asia-southeast1` |
-| `agora-data-driven` | `australia-southeast1` | **Stale** earlier website deployment — nothing deploys to it anymore; candidate for retirement |
-| `mastery-engine`    | `us-central1`          | **Skill Mastery**                                                                |
-| `platform-dash`     | `asia-southeast1`      | **Atrium** (internal platform/dashboard)                                         |
+| `agora-data-driven` | `australia-southeast1` | **Stale** earlier website deployment — nothing deploys to it anymore; candidate for retirement                                                                                  |
+| `mastery-engine`    | `us-central1`          | **Skill Mastery**                                                                                                                                                               |
+| `platform-dash`     | `asia-southeast1`      | **Atrium** (internal platform/dashboard)                                                                                                                                        |
 
 **Other resources in this project:**
 
