@@ -121,10 +121,12 @@ function Test-ReversionRisk([string]$mainRef, [string]$intgRef) {
 }
 
 function Get-MergedDevBranches([string[]]$Skip) {
+    # wip/* is PARKED work (agora-park.ps1): never integrated, and never pruned
+    # here either -- a fully-merged park is deleted by its owner (start-day nags).
     git branch -r --merged origin/main --format='%(refname:short)' |
         Where-Object { $_ -and $_ -ne 'origin/HEAD' -and $_ -ne 'origin' -and $_ -notlike '*->*' } |
         ForEach-Object { ($_ -replace '^origin/', '').Trim() } |
-        Where-Object { $_ -and ($Skip -notcontains $_) -and ($_ -notlike 'integration/*') }
+        Where-Object { $_ -and ($Skip -notcontains $_) -and ($_ -notlike 'integration/*') -and ($_ -notlike 'wip/*') }
 }
 function Remove-RemoteBranches([string[]]$Branches) {
     foreach ($b in $Branches) {
@@ -177,11 +179,19 @@ if ($Resume) {
     $baseMain = "$(git rev-parse origin/main)".Trim(); Must "resolve origin/main"
 }
 
-$branches = git branch -r --format='%(refname:short)' |
+# PARKED branches (wip/*, pushed by agora-park.ps1) are EXPLICITLY skipped: ship
+# integrates every dev branch it finds, so without this rule parking would ship
+# unfinished work. Skipped loudly, never silently.
+$allRemote = @(git branch -r --format='%(refname:short)' |
     ForEach-Object { $_.Trim() } |
     Where-Object { $_ -like 'origin/*' } |
     ForEach-Object { $_ -replace '^origin/', '' } |
-    Where-Object { $_ -and ($skip -notcontains $_) -and ($_ -notlike 'integration/*') -and ($_ -ne 'HEAD') }
+    Where-Object { $_ -and ($skip -notcontains $_) -and ($_ -notlike 'integration/*') -and ($_ -ne 'HEAD') })
+$parkedBranches = @($allRemote | Where-Object { $_ -like 'wip/*' })
+$branches = @($allRemote | Where-Object { $_ -notlike 'wip/*' })
+if ($parkedBranches.Count -gt 0) {
+    Write-Host "[PARKED] $($parkedBranches.Count) parked branch(es) ignored (wip/* never ships): $($parkedBranches -join ', ')" -ForegroundColor Yellow
+}
 
 if (-not $branches) {
     Write-Host "[OK] no dev branches to merge -- origin/main is already current." -ForegroundColor Green
@@ -291,12 +301,15 @@ git merge --ff-only origin/main; Must "sync local main to origin/main"
 git merge --ff-only $intg;       Must "fast-forward main to $intg"
 git -c http.version=HTTP/1.1 push origin main; Must "push origin main"
 Write-Host "[OK] landed -- main is now $(git rev-parse --short HEAD)" -ForegroundColor Green
-Write-Host "[OK] GitHub Actions (deploy.yml) will now build + deploy to Cloud Run." -ForegroundColor Green
-if (Get-Command gh -ErrorAction SilentlyContinue) { Write-Host "     Watch it:  gh run watch   (or the repo's Actions tab)" -ForegroundColor DarkGray }
+# Landing is only the deploy TRIGGER: GitHub Actions (deploy.yml) builds + deploys ASYNC
+# from here, so the site is NOT live yet -- verify the run actually went green.
+Write-Host "[OK] deploy TRIGGERED -- GitHub Actions (deploy.yml) is building + deploying asynchronously; the site is NOT live yet." -ForegroundColor Green
+Write-Host "     Verify it:  gh run list --limit 3   (deploy.yml must go green; the separate CI workflow's" -ForegroundColor DarkGray
+Write-Host "     lint job is expected green too since commit c876f42 -- a red lint there is a real failure, not noise)" -ForegroundColor DarkGray
 
 # ---- 6. prune merged dev branches -----------------------------------------
 git -c http.version=HTTP/1.1 fetch origin --prune *>$null
 $m = @(Get-MergedDevBranches $skip)
 if ($m.Count -gt 0) { Write-Host "[..] Pruning merged dev branches: $($m -join ', ')" -ForegroundColor Cyan; Remove-RemoteBranches $m }
 
-Write-Host "`n[OK] DONE -- integrated, landed on main; CI is deploying." -ForegroundColor Green
+Write-Host "`n[OK] DONE -- integrated, landed on main; deploy triggered (async). Confirm with: gh run list --limit 3" -ForegroundColor Green

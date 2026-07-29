@@ -37,9 +37,12 @@ Set-Location $repo
 # 1. Resolve the owner name: -Dev (and remember it) > scripts/.devname > this machine's name.
 $devFile = Join-Path $PSScriptRoot ".devname"
 if (-not [string]::IsNullOrWhiteSpace($Dev)) {
+    # Refuse flag-like names: a stray argument once got captured and committed as '-Message'.
+    if ($Dev.Trim() -match '^-') { Die "-Dev '$($Dev.Trim())' starts with '-' (a flag, not a name) -- refusing to save it." }
     Set-Content -Path $devFile -Value $Dev.Trim() -Encoding ascii   # remember for next time
 } elseif (Test-Path $devFile) {
     $Dev = (Get-Content $devFile -Raw).Trim()
+    if ($Dev -match '^-') { $Dev = "" }   # a stray argument once got captured and committed as '-Message'
 }
 if ([string]::IsNullOrWhiteSpace($Dev)) { $Dev = $env:COMPUTERNAME }
 
@@ -80,6 +83,36 @@ if (-not [string]::IsNullOrWhiteSpace((git status --porcelain))) {
 # 6. Prune stale remote-tracking refs first (a merged-and-deleted branch leaves a ghost
 #    origin/<branch> that makes --force-with-lease reject with "stale info").
 git -c http.version=HTTP/1.1 fetch --prune origin 2>$null
+
+# 6b. SYNC WITH MAIN (safe reconcile) -- never publish a branch built on STALE main; the
+#     merge-branches staleness gate would refuse it, and integrating one can silently REVERT
+#     newer work. This copy historically LACKED this step (every other repo's had it), which
+#     bit on 2026-07-29: the seo-pipeline published posts to main mid-release and this branch
+#     went stale between push and land. Your work is already COMMITTED above, so the merge is
+#     non-destructive; a real conflict STOPS the push with guidance -- nothing is lost.
+git rev-parse -q --verify origin/main *>$null
+if ($LASTEXITCODE -eq 0) {
+    git merge-base --is-ancestor origin/main HEAD 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        $behind = "$(git rev-list --count HEAD..origin/main 2>$null)".Trim()
+        Write-Host "[push-branch] '$branch' is $behind commit(s) behind origin/main -- merging main in first (your committed work is preserved)..." -ForegroundColor Cyan
+        git merge --no-edit origin/main
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "[push-branch] merged origin/main into '$branch' cleanly (+$behind). Pushing the reconciled branch." -ForegroundColor Green
+        } else {
+            $conf = @(git diff --name-only --diff-filter=U | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+            Write-Host ""
+            Write-Host "[push-branch] STOP: your branch is OUTDATED and merging the latest main hit conflicts." -ForegroundColor Red
+            Write-Host "   Your work is SAFE -- it's already committed on '$branch'; only these files overlap main's newer changes:" -ForegroundColor Yellow
+            $conf | ForEach-Object { Write-Host "      $_" -ForegroundColor Yellow }
+            Write-Host "   Fix each file (keep BOTH your change AND main's), then re-run to push:" -ForegroundColor Yellow
+            Write-Host "      git add -A; git commit --no-edit" -ForegroundColor Yellow
+            Write-Host "      .\scripts\push-branch.ps1" -ForegroundColor Yellow
+            Write-Host "   Not ready? Back out the merge (keeps all your work):  git merge --abort" -ForegroundColor DarkGray
+            exit 1
+        }
+    }
+}
 
 # 7. Push with upstream over HTTP/1.1 (pushes to these repos HANG over HTTP/2 -- documented
 #    Agora gotcha). --force-with-lease so re-running updates YOUR branch safely.

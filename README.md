@@ -7,7 +7,7 @@ Marketing site + blog for **Agora Data Driven**, a data-driven marketing & analy
 - **Content:** Markdown via Astro Content Collections
 - **Hosting:** Google Cloud Run (container) via Cloud Build + Artifact Registry
 
-See [docs/PLAN.md](docs/PLAN.md) for the original build plan and [CLAUDE.md](CLAUDE.md) for conventions.
+See [docs/PLAN.md](docs/PLAN.md) for the original build plan and [AGENTS.md](AGENTS.md) for conventions.
 
 ## Quick start
 
@@ -99,11 +99,16 @@ scripts/        setup + startday bootstrap scripts (PowerShell + bash)
    title: 'Your Post Title'
    publishDate: 2026-06-21
    excerpt: 'One–two sentence summary used on cards and meta description.'
-   heroImage: '../../assets/posts/your-image.jpg'
+   heroImage: '/blog-images/your-post-slug.webp'
    heroAlt: 'Describe the image for screen readers.'
    category: 'Marketing'
    ---
    ```
+
+   The hero image file goes in **`public/blog-images/<slug>.webp`** — one file per post, never a
+   shared path. It must live in `public/`, not `src/assets/`: images from `src/assets` get
+   build-hashed (`/_astro/*`) and the in-page editor can't replace them. `heroImage` is optional —
+   omit it and the post card falls back to the branded SVG thumbnail.
 
 3. Write the body in Markdown. Run `npm run dev` — the post appears on `/blog/` and at `/<slug>/`.
 
@@ -114,9 +119,15 @@ The `Dockerfile` builds a standalone Node server; Cloud Build builds the image r
 ```bash
 npm run deploy
 # = gcloud run deploy agora-data-driven --source . \
-#     --project agora-data-driven --region australia-southeast1 \
-#     --allow-unauthenticated
+#     --project agora-data-driven --region asia-southeast1 \
+#     --allow-unauthenticated \
+#     --update-secrets=SSO_SECRET=platform-sso-key:latest,GITHUB_TOKEN=SEO_GITHUB_TOKEN:latest
 ```
+
+> ⚠️ The `--update-secrets` flags are **load-bearing**: `SSO_SECRET` powers the shared `ag_sso`
+> login and `GITHUB_TOKEN` powers the in-page editor's commits back to this repo. Deploying
+> without them breaks both. The CD workflow (`.github/workflows/deploy.yml`) passes the same
+> flags — keep the two in sync.
 
 Cloud Run injects `PORT` (8080); the Astro Node adapter binds to `HOST=0.0.0.0` and that port automatically. Map the custom domain (`agoradatadriven.com`) via **Cloud Run → Manage custom domains** once verified.
 

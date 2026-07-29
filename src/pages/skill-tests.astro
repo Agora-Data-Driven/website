@@ -293,10 +293,7 @@ const steps = [
                 <span class="text-muted text-xs">PDF, images, or text · Mastery sign-in</span>
               </div>
             </div>
-            <div
-              class="text-brand-600/80 hidden shrink-0 lg:block"
-              aria-hidden="true"
-            >
+            <div class="text-brand-600/80 hidden shrink-0 lg:block" aria-hidden="true">
               <svg
                 class="h-28 w-28"
                 viewBox="0 0 24 24"
@@ -390,8 +387,7 @@ const steps = [
             <span
               class="mastery-badge mb-4 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold tracking-wide uppercase"
               style="color:#bff0bd;background:rgba(79,168,74,0.14);border-color:rgba(79,168,74,0.35)"
-              data-auth-label="Mastery Mode · Signed in"
-              >Mastery Mode · Sign in</span
+              data-auth-label="Mastery Mode · Signed in">Mastery Mode · Sign in</span
             >
             <h3 class="font-display mb-2 text-xl font-bold" style="color:#fff">
               Actually master it
@@ -799,7 +795,8 @@ const steps = [
       label: 'Strong command',
       min: 85,
       max: 100,
-      summary: 'You clearly know this material well: you handled the tricky items, not just the easy recall.',
+      summary:
+        'You clearly know this material well: you handled the tricky items, not just the easy recall.',
       recommendations: [
         'Push into the parts you have not written down yet, then quiz yourself on those.',
         'Teach it back or apply it to a real project to lock it in.',
@@ -1148,11 +1145,12 @@ const steps = [
           <div class="flex gap-2" id="notes-count-group" role="group" aria-label="Number of questions">
             ${countOpts
               .map(
-                (n) => `<button type="button" data-count="${n}" class="notes-count-btn flex-1 rounded-xl border-2 py-2.5 text-sm font-semibold transition-all ${
-                  n === notesState.count
-                    ? 'border-brand-500 bg-brand-50 text-brand-700'
-                    : 'border-line text-body hover:border-brand-300 hover:bg-brand-50'
-                }" aria-pressed="${n === notesState.count}">${n}</button>`,
+                (n) =>
+                  `<button type="button" data-count="${n}" class="notes-count-btn flex-1 rounded-xl border-2 py-2.5 text-sm font-semibold transition-all ${
+                    n === notesState.count
+                      ? 'border-brand-500 bg-brand-50 text-brand-700'
+                      : 'border-line text-body hover:border-brand-300 hover:bg-brand-50'
+                  }" aria-pressed="${n === notesState.count}">${n}</button>`,
               )
               .join('')}
           </div>
@@ -1163,11 +1161,12 @@ const steps = [
           <div class="flex flex-wrap gap-2" id="notes-diff-group" role="group" aria-label="Difficulty">
             ${diffOpts
               .map(
-                ([v, label]) => `<button type="button" data-diff="${v}" class="notes-diff-btn rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-all ${
-                  v === notesState.difficulty
-                    ? 'border-brand-500 bg-brand-50 text-brand-700'
-                    : 'border-line text-body hover:border-brand-300 hover:bg-brand-50'
-                }" aria-pressed="${v === notesState.difficulty}">${label}</button>`,
+                ([v, label]) =>
+                  `<button type="button" data-diff="${v}" class="notes-diff-btn rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-all ${
+                    v === notesState.difficulty
+                      ? 'border-brand-500 bg-brand-50 text-brand-700'
+                      : 'border-line text-body hover:border-brand-300 hover:bg-brand-50'
+                  }" aria-pressed="${v === notesState.difficulty}">${label}</button>`,
               )
               .join('')}
           </div>
@@ -1257,7 +1256,8 @@ const steps = [
         btn.disabled = false;
         btn.textContent = 'Create my quiz';
       } else {
-        note.className = 'mb-5 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-body';
+        note.className =
+          'mb-5 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-body';
         note.innerHTML = `Generating a quiz from your material uses the Skill Mastery engine, so it needs a <a href="${masteryHref}" class="font-semibold text-brand-700 underline hover:text-brand-800">Mastery sign-in</a>. Sign in, then come back here.`;
         note.classList.remove('hidden');
       }
@@ -1302,7 +1302,11 @@ const steps = [
               r.onload = () => {
                 const s = String(r.result || '');
                 const comma = s.indexOf(',');
-                resolve({ name: f.name, mime: f.type || '', dataBase64: comma >= 0 ? s.slice(comma + 1) : s });
+                resolve({
+                  name: f.name,
+                  mime: f.type || '',
+                  dataBase64: comma >= 0 ? s.slice(comma + 1) : s,
+                });
               };
               r.onerror = () => reject(r.error || new Error('read failed'));
               r.readAsDataURL(f);
@@ -1989,7 +1993,13 @@ const steps = [
   /* Mid-page aurora: same drift, gentler light, feathered at both edges so the
      green flows continuously between sections with no visible seam. */
   .aurora--soft {
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 74%, transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      #000 20%,
+      #000 74%,
+      transparent 100%
+    );
     mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 74%, transparent 100%);
   }
   .aurora--soft .aurora__blob {
